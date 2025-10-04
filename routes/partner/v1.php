@@ -8,6 +8,7 @@ use App\Http\Controllers\Partner\Api\DayController;
 use App\Http\Controllers\Partner\Api\LocationsController;
 use App\Http\Controllers\Partner\Api\MediaController;
 use App\Http\Controllers\Partner\Api\TagController;
+use App\Http\Controllers\Partner\Api\UserController;
 use App\Http\Middleware\Auth\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,21 @@ Route::group(
 
         Route::post('logout', 'logout')->name('logout');
         Route::post('changePassword', 'changePassword')->name('changePassword');
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'user',
+        'controller' => UserController::class,
+        'name' => 'user.',
+    ],
+    function (): void {
+        Route::get('get', 'get')->name('get');
+        Route::post('update', 'update')->name('update');
+        Route::post('uploadProfileImage', 'uploadProfileImage')->name('uploadProfileImage');
+        Route::post('deleteProfileImage', 'deleteProfileImage')->name('deleteProfileImage');
+        Route::delete('delete', 'delete')->name('delete');
     }
 );
 

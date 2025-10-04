@@ -16,7 +16,6 @@ final class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // return parent::toArray($request);
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -28,6 +27,7 @@ final class UserResource extends JsonResource
             'is_notifiable' => $this->is_notifiable,
             'is_active' => $this->is_active,
             'created_at' => $this->created_at,
+            'profile_image' => $this->mediaByName('profile_image'),
         ];
     }
 }

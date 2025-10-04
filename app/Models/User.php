@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Traits\CodeHandler;
+use App\Traits\MediaHandler;
 use App\Traits\NotificationsHandler;
 use App\Traits\VerificationHandler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,6 +16,7 @@ final class User extends Authenticatable implements JWTSubject
 {
     use CodeHandler;
     use HasFactory;
+    use MediaHandler;
     use NotificationsHandler;
     use VerificationHandler;
 

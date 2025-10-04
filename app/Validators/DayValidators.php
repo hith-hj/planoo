@@ -20,8 +20,8 @@ final class DayValidators
     {
         return Validator::make($data, [
             'day' => ['required', 'string', Rule::in(getWeekDays())],
-            'start' => ['required', 'date_format:H:i'],
-            'end' => ['required', 'date_format:H:i'],
+            'start' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
+            'end' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
         ]);
     }
 

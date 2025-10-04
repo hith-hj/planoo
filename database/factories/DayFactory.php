@@ -36,8 +36,8 @@ final class DayFactory extends Factory
     {
         return [
             'day' => fake()->randomElement(getWeekDays()),
-            'start' => fake()->time('H:i'),
-            'end' => fake()->time('H:i'),
+            'start' => fake()->regexify('([01]\d|2[0-3]):(00|30)'),
+            'end' => fake()->regexify('([01]\d|2[0-3]):(00|30)'),
         ];
     }
 }

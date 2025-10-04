@@ -52,7 +52,9 @@ trait MediaHandler
             $fileName,
             'public'
         );
-        defer(fn() => $this->syncImagesToPublic());
+        if (! app()->environment(['local', 'testing'])) {
+            defer(fn () => $this->syncImagesToPublic());
+        }
 
         return $this->medias()->create([
             'url' => $path,
@@ -103,13 +105,13 @@ trait MediaHandler
     {
         try {
             Log::info('Syncing Images');
-            $command = "rsync -a --delete --inplace --quiet "
-             . "/home/planoo/repositories/planoo/public/uploads/ "
-             . "/home/planoo/public_html/uploads";
+            $command = 'rsync -a --delete --inplace --quiet '
+             .'/home/planoo/repositories/planoo/public/uploads/ '
+             .'/home/planoo/public_html/uploads';
             $guarded = "nice -n 10 ionice -c2 -n7 $command";
             $result = shell_exec($guarded);
             Log::info('Images Synced', ['result' => $result]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::info('images syncing error', ['error' => $e->getMessage()]);
         }
     }

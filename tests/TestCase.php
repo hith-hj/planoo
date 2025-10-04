@@ -50,4 +50,11 @@ abstract class TestCase extends BaseTestCase
         $this->user = $user;
         return $this->api();
     }
+
+    public function clearUser()
+    {
+        $this->user = null;
+        $this->withHeaders(['Authorization' => ""]);
+        return $this;
+    }
 }
