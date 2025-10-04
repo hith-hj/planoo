@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 trait MediaHandler
@@ -51,6 +52,7 @@ trait MediaHandler
             $fileName,
             'public'
         );
+        defer(fn() => $this->syncImagesToPublic());
 
         return $this->medias()->create([
             'url' => $path,
@@ -95,5 +97,20 @@ trait MediaHandler
             mb_strtolower(Str::plural(class_basename($this::class))),
             $this->id
         );
+    }
+
+    private function syncImagesToPublic()
+    {
+        try {
+            Log::info('Syncing Images');
+            $command = "rsync -a --delete --inplace --quiet "
+             . "/home/planoo/repositories/planoo/public/uploads/ "
+             . "/home/planoo/public_html/uploads";
+            $guarded = "nice -n 10 ionice -c2 -n7 $command";
+            $result = shell_exec($guarded);
+            Log::info('Images Synced', ['result' => $result]);
+        } catch (\Exception $e) {
+            Log::info('images syncing error', ['error' => $e->getMessage()]);
+        }
     }
 }
