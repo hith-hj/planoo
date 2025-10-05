@@ -34,6 +34,10 @@ final class UserServices
 
     public function uploadProfileImage(User $user, array $data)
     {
+        $oldMedia = $user->mediaByName('profile_image');
+        if(!$oldMedia === null){
+            $this->deleteProfileImage($oldMedia);
+        }
         return $user->uploadMedia('image', 'profile_image', $data['profile_image']);
     }
 

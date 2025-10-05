@@ -49,8 +49,11 @@ final class UserController extends Controller
     {
         $user = $this->services->get(Auth::id());
         $media = $user->mediaByName('profile_image');
-        $res = $this->services->deleteProfileImage($media);
+        if($media === null){
+            return Success('profile image missing');
+        }
+        $this->services->deleteProfileImage($media);
 
-        return Success(payload: ['profile_image' => $res]);
+        return Success('profile image deleted');
     }
 }

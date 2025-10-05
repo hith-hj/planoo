@@ -14,14 +14,9 @@ final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $start = now();
-        dump('seeding: categories');
         $this->createCategories();
-        dump('seeding: tags');
         $this->createTags();
-        dump('seeding: users');
         $this->createUsers();
-        dump($start->diffForHumans());
     }
 
     private function createUsers()

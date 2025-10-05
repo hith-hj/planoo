@@ -27,7 +27,7 @@ final class UserResource extends JsonResource
             'is_notifiable' => $this->is_notifiable,
             'is_active' => $this->is_active,
             'created_at' => $this->created_at,
-            'profile_image' => $this->mediaByName('profile_image'),
+            'profile_image' => MediaResource::make($this->mediaByName('profile_image')),
         ];
     }
 }

@@ -38,7 +38,6 @@ final class UserFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (User $user) {
-            dump('Seeding: User Activities');
             Activity::factory()->for($user, 'user')->create();
         });
     }

@@ -39,7 +39,6 @@ final class ActivityFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Activity $activity) {
-            dump("Seeding: Activity {$activity->name}");
             $category = Category::inRandomOrder()->take(1)->first();
             $activity->category()->associate($category)->save();
             $tags = Tag::inRandomOrder()->take(2)->get();
