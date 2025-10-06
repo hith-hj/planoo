@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\UsersTypes;
+use App\Models\Activity;
+use App\Models\Appointment;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,6 +19,7 @@ final class DatabaseSeeder extends Seeder
         $this->createCategories();
         $this->createTags();
         $this->createUsers();
+        $this->createAppointments();
     }
 
     private function createUsers()
@@ -33,6 +36,13 @@ final class DatabaseSeeder extends Seeder
                 'email' => 's@s.com',
                 'phone' => '0911111111',
                 'account_type' => UsersTypes::stadium->name,
+            ],
+            [
+                'name' => 'm',
+                'email' => 'm@m.com',
+                'phone' => '0933333333',
+                'account_type' => UsersTypes::stadium->name,
+                'password' => 'Mm12345@@'
             ],
         ]);
     }
@@ -59,6 +69,14 @@ final class DatabaseSeeder extends Seeder
                 ['name' => 'AC', 'icon' => '#'],
                 ['name' => 'charging', 'icon' => '#'],
             ]);
+        }
+    }
+
+    private function createAppointments()
+    {
+        $activities = Activity::all();
+        foreach ($activities as $activity) {
+            Appointment::factory(5)->for($activity, 'holder')->create();
         }
     }
 }

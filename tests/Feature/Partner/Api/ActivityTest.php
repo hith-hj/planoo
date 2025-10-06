@@ -22,7 +22,7 @@ describe('Activity Controller tests', function () {
 		expect($res->json('payload.activities'))->toHaveCount(2);
 	});
 
-	it('finds a specific activity by ID', function () {
+	it('finds a specific activity for user by ID', function () {
 		$activity = Activity::factory()->for($this->user, 'user')->create();
 
 		$res = $this->getJson("$this->url/find?activity_id=$activity->id");
@@ -31,7 +31,7 @@ describe('Activity Controller tests', function () {
 		expect($res->json('payload.activity.id'))->toBe($activity->id);
 	});
 
-	it('cant finds a specific activity by invalid ID', function () {
+	it('cant finds a specific activity for user by invalid ID', function () {
 		$this->getJson("$this->url/find?activity_id=422")->assertStatus(422);
 	});
 

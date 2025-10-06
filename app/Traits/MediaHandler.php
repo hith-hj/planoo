@@ -46,14 +46,14 @@ trait MediaHandler
         UploadedFile $file,
     ): Media {
         $type = $this->getFileType($file);
-        $fileName = time().'_'.$file->hashName();
+        $fileName = time() . '_' . $file->hashName();
         $path = $file->storeAs(
             $this->getFolder($type),
             $fileName,
             'public'
         );
         if (! app()->environment(['local', 'testing'])) {
-            defer(fn () => $this->syncImagesToPublic());
+            defer(fn() => $this->syncImagesToPublic());
         }
 
         return $this->medias()->create([
@@ -104,13 +104,17 @@ trait MediaHandler
     private function syncImagesToPublic()
     {
         try {
-            Log::info('Syncing Images');
-            $command = 'rsync -a --delete --inplace --quiet '
-             .'/home/planoo/repositories/planoo/public/uploads/ '
-             .'/home/planoo/public_html/uploads';
-            $guarded = "nice -n 10 ionice -c2 -n7 $command";
-            $result = shell_exec($guarded);
-            Log::info('Images Synced', ['result' => $result]);
+            if (function_exists('shell_exec')) {
+                Log::info('Syncing Images');
+                $command = 'rsync -a --delete --inplace --quiet '
+                    . '/home/planoo/repositories/planoo/public/uploads/ '
+                    . '/home/planoo/public_html/uploads';
+                $guarded = "nice -n 10 ionice -c2 -n7 $command";
+                $result = \shell_exec($guarded);
+                Log::info('Images Synced', ['result' => $result]);
+            } else {
+                Log::info('Shell is not enabled');
+            }
         } catch (Exception $e) {
             Log::info('images syncing error', ['error' => $e->getMessage()]);
         }

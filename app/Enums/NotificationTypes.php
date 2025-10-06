@@ -9,4 +9,14 @@ enum NotificationTypes: int
     case normal = 0;
     case verification = 1;
     case chat = 3;
+
+    public static function values()
+    {
+        return array_column(self::cases(), 'value');
+    }
+
+    public static function names()
+    {
+        return array_column(self::cases(), 'name');
+    }
 }

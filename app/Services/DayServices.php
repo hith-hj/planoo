@@ -31,6 +31,15 @@ final class DayServices
         return $day;
     }
 
+    public function find(int $id): Day
+    {
+        Required($id, 'id');
+        $day = Day::whereId($id)->first();
+        NotFound($day, 'day');
+
+        return $day;
+    }
+
     public function create(object $dayable, array $data): Day
     {
         Required($dayable, 'dayable');

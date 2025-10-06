@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Partner\Api\ActivityController;
+use App\Http\Controllers\Partner\Api\AppointmentController;
 use App\Http\Controllers\Partner\Api\AuthController;
 use App\Http\Controllers\Partner\Api\DayController;
 use App\Http\Controllers\Partner\Api\LocationsController;
@@ -19,13 +20,13 @@ Route::group(
     ],
     function (): void {
         Route::withoutMiddleware([JwtMiddleware::class])->group(function (): void {
-            Route::post('register', 'register')->name('register');
-            Route::post('verify', 'verify')->name('verify');
-            Route::post('login', 'login')->name('login');
-            Route::post('forgetPassword', 'forgetPassword')->name('forgetPassword');
-            Route::post('resetPassword', 'resetPassword')->name('resetPassword');
-            Route::post('resendCode', 'resendCode')->name('resendCode');
-            Route::get('refreshToken', 'refreshToken')->name('refreshToken');
+            Route::post('register', 'register')->name('register')->middleware(['throttle:3,1']);
+            Route::post('verify', 'verify')->name('verify')->middleware(['throttle:3,1']);
+            Route::post('login', 'login')->name('login')->middleware(['throttle:3,1']);
+            Route::post('forgetPassword', 'forgetPassword')->name('forgetPassword')->middleware(['throttle:3,1']);
+            Route::post('resetPassword', 'resetPassword')->name('resetPassword')->middleware(['throttle:3,1']);
+            Route::post('resendCode', 'resendCode')->name('resendCode')->middleware(['throttle:1,10']);
+            Route::get('refreshToken', 'refreshToken')->name('refreshToken')->middleware(['throttle:1,10']);
         });
 
         Route::post('logout', 'logout')->name('logout');
@@ -118,5 +119,17 @@ Route::group(
         Route::get('all/{owner_type}/{owner_id}', 'all')->name('all');
         Route::post('create/{owner_type}/{owner_id}', 'create')->name('create');
         Route::delete('delete/{owner_type}/{owner_id}', 'delete')->name('delete');
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'appointment',
+        'controller' => AppointmentController::class,
+        'name' => 'appointment.',
+    ],
+    function (): void {
+        Route::post('check', 'check')->name('check');
+        Route::post('create', 'create')->name('create');
     }
 );

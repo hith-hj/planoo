@@ -22,8 +22,17 @@ final class ActivityServices
 
     public function findByUser(User $user, int $id): Activity
     {
-        Required($user, 'parnter');
+        Required($user, 'user');
         $activity = $user->activities()->whereId($id)->first();
+        NotFound($activity, 'activity');
+
+        return $activity->load($this->toBeLoaded());
+    }
+
+    public function find(int $id): Activity
+    {
+        Required($id, 'id');
+        $activity = Activity::whereId($id)->first();
         NotFound($activity, 'activity');
 
         return $activity->load($this->toBeLoaded());
@@ -31,7 +40,7 @@ final class ActivityServices
 
     public function create(User $user, array $data): Activity
     {
-        Required($user, 'parnter');
+        Required($user, 'user');
         Required($data, 'activity data');
         $activity = $user->activities()->create($data);
 
@@ -40,7 +49,7 @@ final class ActivityServices
 
     public function update(User $user, Activity $activity, array $data): Activity
     {
-        Required($user, 'parnter');
+        Required($user, 'user');
         Required($data, 'activity data');
         $activity->update($data);
 

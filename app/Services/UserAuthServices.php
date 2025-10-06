@@ -73,6 +73,10 @@ final class UserAuthServices
             throw new Exception(__('unverified account'));
         }
 
+        // if (!$user->is_active) {
+        //     throw new Exception(__('inactive account,wait until activation'));
+        // }
+
         return [UserResource::make($user), JWTAuth::fromUser($user)];
     }
 

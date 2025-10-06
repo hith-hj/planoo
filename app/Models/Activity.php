@@ -55,4 +55,10 @@ final class Activity extends Model
         return $this->hasOne(Location::class, 'belongTo_id')
             ->withAttributes(['belongTo_type' => $this::class]);
     }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'appointable_id')
+            ->withAttributes(['appointable_type' => $this::class]);
+    }
 }

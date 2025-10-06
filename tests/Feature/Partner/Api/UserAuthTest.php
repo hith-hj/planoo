@@ -90,4 +90,10 @@ describe('UserAuth Controller test', function () {
         ]);
         expect($res->status())->toBe(400);
     });
+
+    it('can logout user', function () {
+        $this->user('partner', 'stadium')->api();
+        $res = $this->postJson(route('logout'));
+        $res->assertOk();
+    });
 });

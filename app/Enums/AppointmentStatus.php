@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Enums;
 
-enum CustomerStatus: int
+enum AppointmentStatus : int
 {
-    case blocked = -1;
-    case fresh = 0;
-    case normal = 1;
+    case canceled = -1;
+    case accepted = 0;
+    case completed = 1;
 
     public static function values()
     {

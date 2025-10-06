@@ -26,6 +26,6 @@ final class Day extends Model
 
     public function holder(): MorphTo
     {
-        return $this->morphTo(__FUNCTION__, 'belongTo_type', 'belongTo_id');
+        return $this->morphTo(__METHOD__, 'belongTo_type', 'belongTo_id');
     }
 }
