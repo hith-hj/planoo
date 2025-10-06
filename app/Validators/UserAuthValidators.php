@@ -19,7 +19,7 @@ final class UserAuthValidators
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'account_type' => ['required', Rule::in(UsersTypes::cases())],
             'description' => ['required', 'string', 'max:1500'],
-            'fb_token' => ['required'],
+            'firebase_token' => ['required'],
         ]);
     }
 

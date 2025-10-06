@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Kreait\Firebase\Exception\MessagingException;
 use Kreait\Firebase\Factory as FcmFactory;
 use Kreait\Firebase\Messaging\AndroidConfig;
@@ -110,6 +111,7 @@ trait NotificationsHandler
 
     private function getFCMCredentials(): string
     {
+        Truthy(!Storage::exists(storage_path('app/fcm.json')),'Missing firebase config file');
         return storage_path('app/fcm.json');
     }
 

@@ -23,7 +23,7 @@ final class UserFactory extends Factory
             'email' => fake()->unique()->email,
             'phone' => fake()->regexify("(09)[1-9]{1}\d{7}"),
             'password' => bcrypt('password'),
-            'fb_token' => Str::random(64),
+            'firebase_token' => Str::random(64),
             'verified_by' => 'phone',
             'verified_at' => now(),
             'status' => AccountStatus::fresh->value,

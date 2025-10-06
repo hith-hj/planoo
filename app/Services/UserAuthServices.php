@@ -28,7 +28,7 @@ final class UserAuthServices
             'account_type' => $data['account_type'],
             'email' => $data['email'],
             'phone' => $data['phone'],
-            'fb_token' => $data['fb_token'],
+            'firebase_token' => $data['firebase_token'],
             'description' => $data['description'],
             'password' => bcrypt($data['password']),
             'status' => AccountStatus::fresh->value,

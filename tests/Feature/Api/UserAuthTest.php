@@ -14,8 +14,8 @@ describe('UserAuth Controller test', function () {
     it('registers_a_user', function () {
         $data = User::factory()->password()->make()->toArray();
         $res = $this->postJson(route('register'), $data);
-        expect($res->status())->toBe(201);
-        expect($res->json('success'))->toBe(true);
+        expect($res->status())->toBe(201)
+        ->and($res->json('success'))->toBe(true);
     });
 
     it('fails_to_registers_a_user', function () {
