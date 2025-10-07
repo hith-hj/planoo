@@ -22,6 +22,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Schema::defaultStringLength(191);
         Model::unguard();
         Model::preventLazyLoading(! app()->environment('production'));
     }

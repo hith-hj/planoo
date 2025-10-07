@@ -42,7 +42,7 @@ final class DatabaseSeeder extends Seeder
                 'email' => 'm@m.com',
                 'phone' => '0933333333',
                 'account_type' => UsersTypes::stadium->name,
-                'password' => 'Mm12345@@'
+                'password' => bcrypt('Mm12345@@'),
             ],
         ]);
     }
