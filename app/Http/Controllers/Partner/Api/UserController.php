@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MediaResource;
 use App\Http\Resources\UserResource;
 use App\Services\UserServices;
 use App\Validators\UserValidators;
@@ -42,7 +43,7 @@ final class UserController extends Controller
         $user = $this->services->get(Auth::id());
         $res = $this->services->uploadProfileImage($user, $validator->safe()->all());
 
-        return Success(payload: ['profile_image' => $res]);
+        return Success(payload: ['profile_image' => MediaResource::make($res)]);
     }
 
     public function deleteProfileImage(Request $request)

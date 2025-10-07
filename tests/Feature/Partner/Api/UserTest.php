@@ -47,10 +47,13 @@ describe('user Controller tests', function () {
 		$this->postJson("$this->url/uploadProfileImage",[
 			'profile_image' => $media
 		]);
+		expect($this->user->medias()->count())->toBe(1);
 		$fileName = time() . '_' . $media->hashName();
 		Storage::disk('public')
 				->assertExists("uploads/images/users/{$this->user->id}/$fileName");
 		$res = $this->postJson("$this->url/deleteProfileImage");
+
+		expect($this->user->medias()->count())->toBe(0);
 		Storage::disk('public')
 				->assertMissing("uploads/images/users/{$this->user->id}/$fileName");
 	});
