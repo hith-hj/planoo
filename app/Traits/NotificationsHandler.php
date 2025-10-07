@@ -25,6 +25,8 @@ trait NotificationsHandler
 
     private array $data = [];
 
+    private string $class = '';
+
     public function notify(
         string $title = '',
         string $body = '',
@@ -34,14 +36,18 @@ trait NotificationsHandler
         $this->title = $title;
         $this->body = $body;
         $this->data = $data;
+        $this->class = class_basename($this::class).'/'.$this->id;
         if (App::environment('testing', 'local')) {
             $this->store(['result' => 'testing notification']);
+            Log::info("Local notification on $this->class ");
 
             return true;
         }
 
         $this->checkIsNotifiable();
         if ($this->is_notifiable !== true) {
+            Log::info(" $this->class is not notifiable");
+
             return true;
         }
 
@@ -56,7 +62,7 @@ trait NotificationsHandler
     public function fcm(): bool
     {
         if ($this->firebase_token === null) {
-            Log::error("No FCM token found on $this::class");
+            Log::error("No FCM token found on $this->class");
 
             return true;
         }
@@ -87,6 +93,7 @@ trait NotificationsHandler
 
     private function store(array $extra): Notification
     {
+        Truthy(!method_exists($this,'notifications'),"$this->class Missing notifications() method");
         return $this->notifications()->create([
             'title' => $this->title,
             'body' => $this->body,
@@ -118,7 +125,7 @@ trait NotificationsHandler
     private function getFCMAndroidConfig(): object
     {
         return AndroidConfig::fromArray([
-            'ttl' => '3600s',
+            'ttl' => '1800s',
             'priority' => 'high',
             'notification' => [
                 'icon' => 'stock_ticker_update',

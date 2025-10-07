@@ -131,5 +131,6 @@ Route::group(
     function (): void {
         Route::post('check', 'check')->name('check');
         Route::post('create', 'create')->name('create');
+        Route::post('cancel', 'cancel')->name('cancel');
     }
 );

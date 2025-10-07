@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AppointmentResource;
 use App\Services\ActivityServices;
 use App\Services\AppointmentServices;
 use App\Validators\AppointmentValidators;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
@@ -28,8 +30,19 @@ class AppointmentController extends Controller
         if ($this->services->checkAppointmentExists($validator->safe()->all())) {
             return Error('Appointment just got booked');
         }
-        $appointment = $this->services->create($activity,$validator->safe()->all());
+        $appointment = $this->services->create($activity, $validator->safe()->all());
 
-        return Success(payload: ['appointment' => $appointment]);
+        return Success(payload: ['appointment' => AppointmentResource::make($appointment)]);
+    }
+
+    public function cancel(Request $request)
+    {
+        $validator = AppointmentValidators::find($request->all());
+        $appointment = $this->services->find($validator->safe()->integer('appointment_id'));
+        $this->services->cancel(Auth::user(), $appointment);
+
+        return Success(payload: [
+            'appointment' => AppointmentResource::make($appointment->fresh())
+        ]);
     }
 }

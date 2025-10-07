@@ -12,6 +12,14 @@ use Carbon\Carbon;
 
 final class AppointmentServices
 {
+    public function find(int $id)
+    {
+        Required($id, 'Appointment id');
+        $appointment = Appointment::find($id);
+        NotFound($appointment, 'Appointment');
+        return $appointment;
+    }
+
     public function checkAvailableSlots(array $data): array
     {
         $duration = SessionDuration::from($data['session_duration'])->value;
@@ -74,13 +82,21 @@ final class AppointmentServices
             'time' => 'string'
         ]);
         $activity = app(ActivityServices::class)->find($data['activity_id']);
-        Truthy(!$activity || !method_exists($activity, 'appointments'),'invalid activity');
+        Truthy(!$activity || !method_exists($activity, 'appointments'), 'invalid activity');
         return $activity->appointments()->where([
             ['date', $data['date']],
             ['time', $data['time']],
             ['session_duration', $data['session_duration']],
             ['status', '!=', AppointmentStatus::canceled],
         ])->exists();
+    }
+
+    public function cancel(object $user, Appointment $appointment): bool
+    {
+        return $appointment->update([
+            'status' => AppointmentStatus::canceled,
+            'canceled_by' => class_basename($user::class),
+        ]);
     }
 
     private function checkAllowedDurations($gapStart, $gapMinutes, $duration): array

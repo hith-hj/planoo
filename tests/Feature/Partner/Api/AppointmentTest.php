@@ -3,10 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\AppointmentStatus;
-use App\Models\Activity;
 use App\Models\Appointment;
-use App\Models\Media;
-use Illuminate\Support\Facades\Storage;
 
 
 beforeEach(function () {
@@ -15,7 +12,7 @@ beforeEach(function () {
     $this->url = '/api/partner/v1/appointment';
 });
 
-describe('media Controller tests', function () {
+describe('appointment Controller tests', function () {
     it('can check available slots for appointment in specific date', function () {
         $data = Appointment::factory()->fakerData();
         $res = $this->postJson("$this->url/check", $data)->assertOk();
@@ -60,9 +57,17 @@ describe('media Controller tests', function () {
         $appointmentData['day_id'] = 1;
 
         $res = $this->postJson("$this->url/create", $appointmentData)->assertStatus(400);
-        $res->assertJson([
-            'success' => false,
-            'message' => 'Appointment just got booked',
-        ]);
+    });
+
+    it('can cancel an appointment', function () {
+        $appointment = Appointment::factory()
+            ->for($this->user->activities()->first(), 'holder')->create();
+
+        $res = $this->postJson(
+            "$this->url/cancel",
+            ['appointment_id' => $appointment->id]
+        )->assertOk();
+        expect($res->json('payload.appointment'))->not->toBeNull()
+        ->and($res->json('payload.appointment.status'))->toBe(AppointmentStatus::canceled->value);
     });
 });

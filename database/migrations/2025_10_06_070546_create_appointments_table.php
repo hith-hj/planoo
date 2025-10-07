@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('session_duration');
             $table->tinyInteger('status');
             $table->string('notes')->nullable();
+            $table->string('canceled_by')->nullable();
             $table->timestamps();
         });
     }
