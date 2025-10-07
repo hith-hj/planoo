@@ -46,14 +46,14 @@ describe('user Controller tests', function () {
 		$media = Media::factory()->fakeFile('kosa.jpeg');
 		$this->postJson("$this->url/uploadProfileImage",[
 			'profile_image' => $media
-		]);
-		expect($this->user->medias()->count())->toBe(1);
+		])->assertOk();
+		expect($this->user->fresh()->medias()->count())->toBe(1);
 		$fileName = time() . '_' . $media->hashName();
 		Storage::disk('public')
 				->assertExists("uploads/images/users/{$this->user->id}/$fileName");
-		$res = $this->postJson("$this->url/deleteProfileImage");
+		$this->postJson("$this->url/deleteProfileImage")->assertOk();
 
-		expect($this->user->medias()->count())->toBe(0);
+		expect($this->user->fresh()->medias()->count())->toBe(0);
 		Storage::disk('public')
 				->assertMissing("uploads/images/users/{$this->user->id}/$fileName");
 	});
