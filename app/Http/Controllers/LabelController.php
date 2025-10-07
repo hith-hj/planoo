@@ -19,7 +19,7 @@ final class LabelController extends Controller
 
     public function tags()
     {
-        return Success(payload: ['categories' => Tag::all()]);
+        return Success(payload: ['tags' => Tag::all()]);
     }
 
     public function usersTypes(): JsonResponse
