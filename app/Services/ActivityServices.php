@@ -44,7 +44,7 @@ final class ActivityServices
         Required($data, 'activity data');
         $activity = $user->activities()->create($data);
 
-        return $activity;
+        return $activity->load($this->toBeLoaded());
     }
 
     public function update(User $user, Activity $activity, array $data): Activity
@@ -53,7 +53,7 @@ final class ActivityServices
         Required($data, 'activity data');
         $activity->update($data);
 
-        return $activity;
+        return $activity->load($this->toBeLoaded());
     }
 
     public function delete(Activity $activity): bool
@@ -68,6 +68,6 @@ final class ActivityServices
 
     private function toBeLoaded()
     {
-        return ['days', 'location', 'tags', 'medias'];
+        return ['days', 'location', 'tags', 'medias','category'];
     }
 }

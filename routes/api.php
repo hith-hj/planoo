@@ -10,7 +10,7 @@ Route::group(
     [
         'prefix' => 'label',
         'controller' => LabelController::class,
-        'middleware' => ['throttle:5,1'],
+        'middleware' => ['throttle:10,1'],
     ],
     function (): void {
         Route::get('tags', 'tags');
