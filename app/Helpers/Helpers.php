@@ -161,7 +161,7 @@ if (! function_exists('getModel')) {
     function getModel(?string $owner_type = null, ?int $owner_id = null): Model
     {
         $id = $owner_id ?? request('owner_id');
-        $type = $owner_type ?? request('owner_type');
+        $type = ucfirst($owner_type ?? request('owner_type'));
         Truthy(is_null($type) || is_null($id), 'Failed to retrieve model');
         Truthy(! in_array($type, ActivityTypes::names()), "Invalid model type: {$type}");
         $class = "App\\Models\\{$type}";
