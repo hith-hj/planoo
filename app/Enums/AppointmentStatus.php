@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
-enum AppointmentStatus : int
+enum AppointmentStatus: int
 {
     case canceled = -1;
     case accepted = 0;

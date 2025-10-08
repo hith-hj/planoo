@@ -16,7 +16,7 @@ final class AppointmentValidators
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],
             'day_id' => ['required', 'exists:days,id'],
-            'date' => ['required', Rule::date()->afterToday(),],
+            'date' => ['required', Rule::date()->afterToday()],
             'session_duration' => ['required', new Enum(SessionDuration::class)],
         ]);
     }
@@ -26,7 +26,7 @@ final class AppointmentValidators
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],
             'day_id' => ['required', 'exists:days,id'],
-            'date' => ['required', Rule::date()->afterToday(),],
+            'date' => ['required', Rule::date()->afterToday()],
             'session_duration' => ['required', new Enum(SessionDuration::class)],
             'time' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
             'notes' => ['nullable', 'string', 'max:500'],

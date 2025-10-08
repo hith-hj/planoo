@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
@@ -10,7 +12,7 @@ use App\Validators\AppointmentValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AppointmentController extends Controller
+final class AppointmentController extends Controller
 {
     public function __construct(public AppointmentServices $services) {}
 
@@ -42,7 +44,7 @@ class AppointmentController extends Controller
         $this->services->cancel(Auth::user(), $appointment);
 
         return Success(payload: [
-            'appointment' => AppointmentResource::make($appointment->fresh())
+            'appointment' => AppointmentResource::make($appointment->fresh()),
         ]);
     }
 }

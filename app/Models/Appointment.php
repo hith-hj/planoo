@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Observers\AppointmentObserver;
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[ObservedBy([AppointmentObserver::class])]
-class Appointment extends Model
+final class Appointment extends Model
 {
     use HasFactory;
 
@@ -22,7 +24,7 @@ class Appointment extends Model
 
     public function scopeOwner(Builder $query, string $owner_class, ?int $owner_id)
     {
-        return $query->where([['appointable_type', $owner_class], ['appointable_id', $owner_id],]);
+        return $query->where([['appointable_type', $owner_class], ['appointable_id', $owner_id]]);
     }
 
     // public function customer():BelongsTo

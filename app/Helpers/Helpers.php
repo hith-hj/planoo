@@ -174,20 +174,3 @@ if (! function_exists('getModel')) {
     }
 }
 
-if (! function_exists('getWeekDays')) {
-    /**
-     * function to return days of the week
-     * */
-    function getWeekDays(): array
-    {
-        return [
-            'sunday',
-            'monday',
-            'tuesday',
-            'wednesday',
-            'thursday',
-            'friday',
-            'saturday',
-        ];
-    }
-}

@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
-use App\Models\Activity;
 use App\Models\Appointment;
 use Carbon\Carbon;
 
@@ -17,6 +16,7 @@ final class AppointmentServices
         Required($id, 'Appointment id');
         $appointment = Appointment::find($id);
         NotFound($appointment, 'Appointment');
+
         return $appointment;
     }
 
@@ -37,6 +37,7 @@ final class AppointmentServices
         $busySessions = collect($appointments)->map(function ($appt) {
             $start = Carbon::parse($appt['time']);
             $end = $start->copy()->addMinutes($appt['session_duration']);
+
             return ['start' => $start, 'end' => $end];
         })->sortBy('start')->values();
 
@@ -57,12 +58,14 @@ final class AppointmentServices
             $sessionMinutes = $sessionStart->diffInMinutes($sessionEnd);
             $slots = [...$this->checkAllowedDurations($sessionStart, $sessionMinutes, $duration)];
         }
+
         return ['day' => $day['day'], 'date' => $data['date'], 'slots' => $slots];
     }
 
     public function create(object $owner, array $data): Appointment
     {
-        Truthy(!method_exists($owner, 'appointments'), 'missing appointments() method');
+        Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
+
         return $owner->appointments()->create([
             'date' => $data['date'],
             'time' => $data['time'],
@@ -79,10 +82,11 @@ final class AppointmentServices
             'activity_id' => 'int',
             'date' => 'string',
             'session_duration' => 'int',
-            'time' => 'string'
+            'time' => 'string',
         ]);
         $activity = app(ActivityServices::class)->find($data['activity_id']);
-        Truthy(!$activity || !method_exists($activity, 'appointments'), 'invalid activity');
+        Truthy(! $activity || ! method_exists($activity, 'appointments'), 'invalid activity');
+
         return $activity->appointments()->where([
             ['date', $data['date']],
             ['time', $data['time']],
@@ -103,14 +107,15 @@ final class AppointmentServices
     {
         $slots = [];
         foreach (SessionDuration::values() as $sd) {
-            if ($sd == $duration && $gapMinutes >= $sd) {
+            if ($sd === $duration && $gapMinutes >= $sd) {
                 $slots[] = [
                     'start' => $gapStart->format('H:i'),
                     'end' => $gapStart->copy()->addMinutes($sd)->format('H:i'),
-                    'sd' => $sd
+                    'sd' => $sd,
                 ];
             }
         }
+
         return $slots;
     }
 
@@ -149,7 +154,7 @@ final class AppointmentServices
             }
             settype($data[$key], $value);
         }
-        Falsy(empty($missing), 'fields missing: ' . implode(', ', $missing));
+        Falsy(empty($missing), 'fields missing: '.implode(', ', $missing));
 
         return $data;
     }

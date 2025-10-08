@@ -93,7 +93,8 @@ trait NotificationsHandler
 
     private function store(array $extra): Notification
     {
-        Truthy(!method_exists($this,'notifications'),"$this->class Missing notifications() method");
+        Truthy(! method_exists($this, 'notifications'), "$this->class Missing notifications() method");
+
         return $this->notifications()->create([
             'title' => $this->title,
             'body' => $this->body,
@@ -118,7 +119,8 @@ trait NotificationsHandler
 
     private function getFCMCredentials(): string
     {
-        Truthy(!Storage::exists(storage_path('app/fcm.json')),'Missing firebase config file');
+        Truthy(! Storage::exists(storage_path('app/fcm.json')), 'Missing firebase config file');
+
         return storage_path('app/fcm.json');
     }
 

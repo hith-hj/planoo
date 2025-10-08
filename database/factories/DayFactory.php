@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\WeekDays;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 final class DayFactory extends Factory
@@ -35,7 +36,7 @@ final class DayFactory extends Factory
     private function getDay()
     {
         return [
-            'day' => fake()->randomElement(getWeekDays()),
+            'day' => fake()->randomElement(WeekDays::names()),
             'start' => fake()->regexify('([01]\d|2[0-3]):(00|30)'),
             'end' => fake()->regexify('([01]\d|2[0-3]):(00|30)'),
         ];

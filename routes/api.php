@@ -13,8 +13,9 @@ Route::group(
         'middleware' => ['throttle:5,1'],
     ],
     function (): void {
-        Route::get('categories', 'categories');
         Route::get('tags', 'tags');
+        Route::get('weekDays', 'weekDays');
+        Route::get('categories', 'categories');
         Route::get('usersTypes', 'usersTypes');
         Route::get('activityTypes', 'activityTypes');
         Route::get('sessionDuration', 'sessionDuration');

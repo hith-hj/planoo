@@ -46,14 +46,14 @@ trait MediaHandler
         UploadedFile $file,
     ): Media {
         $type = $this->getFileType($file);
-        $fileName = time() . '_' . $file->hashName();
+        $fileName = time().'_'.$file->hashName();
         $path = $file->storeAs(
             $this->getFolder($type),
             $fileName,
             'public'
         );
         if (! app()->environment(['local', 'testing'])) {
-            defer(fn() => $this->syncImagesToPublic());
+            defer(fn () => $this->syncImagesToPublic());
         }
 
         return $this->medias()->create([
@@ -143,10 +143,12 @@ trait MediaHandler
         @mkdir($dst, 0755, true);
 
         while (($file = readdir($dir)) !== false) {
-            if ($file === '.' || $file === '..') continue;
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
 
-            $srcPath = $src . DIRECTORY_SEPARATOR . $file;
-            $dstPath = $dst . DIRECTORY_SEPARATOR . $file;
+            $srcPath = $src.DIRECTORY_SEPARATOR.$file;
+            $dstPath = $dst.DIRECTORY_SEPARATOR.$file;
 
             if (is_dir($srcPath)) {
                 $this->recursiveCopy($srcPath, $dstPath);
@@ -163,12 +165,14 @@ trait MediaHandler
         $dir = opendir($dst);
 
         while (($file = readdir($dir)) !== false) {
-            if ($file === '.' || $file === '..') continue;
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
 
-            $srcPath = $src . DIRECTORY_SEPARATOR . $file;
-            $dstPath = $dst . DIRECTORY_SEPARATOR . $file;
+            $srcPath = $src.DIRECTORY_SEPARATOR.$file;
+            $dstPath = $dst.DIRECTORY_SEPARATOR.$file;
 
-            if (!file_exists($srcPath)) {
+            if (! file_exists($srcPath)) {
                 if (is_dir($dstPath)) {
                     $this->deleteDirectory($dstPath);
                 } else {
@@ -186,7 +190,7 @@ trait MediaHandler
     {
         $items = array_diff(scandir($dir), ['.', '..']);
         foreach ($items as $item) {
-            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            $path = $dir.DIRECTORY_SEPARATOR.$item;
             is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
         }
         rmdir($dir);

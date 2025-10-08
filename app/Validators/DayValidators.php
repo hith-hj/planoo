@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Validators;
 
+use App\Enums\WeekDays;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -19,7 +20,7 @@ final class DayValidators
     public static function create($data)
     {
         return Validator::make($data, [
-            'day' => ['required', 'string', Rule::in(getWeekDays())],
+            'day' => ['required', 'string', Rule::in(WeekDays::names())],
             'start' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
             'end' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
         ]);
@@ -29,7 +30,7 @@ final class DayValidators
     {
         return Validator::make($data, [
             'days' => ['required', 'array', 'min:1'],
-            'days.*.day' => ['required', 'string', Rule::in(getWeekDays())],
+            'days.*.day' => ['required', 'string', Rule::in(WeekDays::names())],
             'days.*.start' => ['required', 'date_format:H:i'],
             'days.*.end' => ['required', 'date_format:H:i'],
         ]);

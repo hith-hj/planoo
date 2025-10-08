@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Enums\ActivityTypes;
 use App\Enums\SessionDuration;
+use App\Enums\UsersTypes;
+use App\Enums\WeekDays;
 use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
@@ -24,25 +26,21 @@ final class LabelController extends Controller
 
     public function usersTypes(): JsonResponse
     {
-        return Success(payload: [
-            'usersTypes' => [
-                ['name' => 'stadium'],
-                ['name' => 'trainer'],
-            ],
-        ]);
+        return Success(payload: ['usersTypes' => UsersTypes::names()]);
     }
 
     public function activityTypes(): JsonResponse
     {
-        return Success(payload: [
-            'activityTypes' => ActivityTypes::names(),
-        ]);
+        return Success(payload: ['activityTypes' => ActivityTypes::names()]);
     }
 
     public function sessionDuration(): JsonResponse
     {
-        return Success(payload: [
-            'durations' => SessionDuration::values(),
-        ]);
+        return Success(payload: ['durations' => SessionDuration::values()]);
+    }
+
+    public function weekDays(): JsonResponse
+    {
+        return Success(payload: ['days' => WeekDays::names()]);
     }
 }
