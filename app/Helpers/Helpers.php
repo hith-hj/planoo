@@ -174,4 +174,3 @@ if (! function_exists('getModel')) {
         return $model;
     }
 }
-

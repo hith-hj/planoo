@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Enums\AppointmentStatus;
@@ -7,7 +9,7 @@ use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class AppointmentsCheck extends Command
+final class AppointmentsCheck extends Command
 {
     /**
      * The name and signature of the console command.
@@ -32,9 +34,9 @@ class AppointmentsCheck extends Command
         $currentDate = $now->toDateString();
         $currentHour = $now->format('H:i');
         Appointment::where([
-            ['date','<=',$currentDate],
+            ['date', '<=', $currentDate],
             ['time', '<', $currentHour],
-            ['status',AppointmentStatus::accepted],
+            ['status', AppointmentStatus::accepted],
         ])->update(['status' => AppointmentStatus::completed]);
 
         $this->info('Past accepted appointments marked as completed.');

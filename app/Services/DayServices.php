@@ -93,6 +93,10 @@ final class DayServices
     public function checkIfAvailable(array $newDay, array $oldDays, bool $updateing = false)
     {
         foreach ($oldDays as $od) {
+            // break out immediately
+            if ($od['day'] === $newDay['day']) {
+                throw new Exception("{$newDay['day']} exists");
+            }
             if ($od['day'] === $newDay['day']) {
                 if ($newDay['start'] === $od['start'] && $newDay['end'] === $od['end']) {
                     throw new Exception("Duplicated Day {$od['day']} at {$od['start']}"); // dublication
