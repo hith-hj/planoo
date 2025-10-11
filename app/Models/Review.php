@@ -14,11 +14,11 @@ final class Review extends Model
 
     public function holder()
     {
-        return $this->morphTo(__METHOD__, 'belongTo_type', 'belongTo_id');
+        return $this->morphTo(__FUNCTION__, 'belongTo_type', 'belongTo_id');
     }
 
     public function reviewer()
     {
-        return $this->morphTo(__METHOD__, 'reviewer_type', 'reviewer_id');
+        return $this->morphTo(__FUNCTION__, 'reviewer_type', 'reviewer_id');
     }
 }

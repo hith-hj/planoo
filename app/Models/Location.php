@@ -14,6 +14,6 @@ final class Location extends Model
 
     public function holder()
     {
-        return $this->morphTo(__METHOD__, 'belongTo_type', 'belongTo_id');
+        return $this->morphTo(__FUNCTION__, 'belongTo_type', 'belongTo_id');
     }
 }

@@ -26,18 +26,19 @@ final class AppointmentFactory extends Factory
             'time' => $this->toTime(),
             'price' => mt_rand(1000, 10000),
             'session_duration' => fake()->randomElement(SessionDuration::values()),
-            'status' => fake()->randomElement(AppointmentStatus::values()),
+            'status' => AppointmentStatus::accepted->value,
             'notes' => fake()->sentence,
         ];
     }
 
-    public function fakerData(array $extras = [])
+    public function fakerData($owner,array $extras = [])
     {
-        $activity = Activity::inRandomOrder()->first();
+        Truthy($owner === null,'Onwer is required for Appointment factory');
+        Truthy(!method_exists($owner,'days'),'Onwer missing days() method');
 
         return [
-            'activity_id' => $activity->id,
-            'day_id' => $activity->days->first()->id,
+            'activity_id' => $owner->id,
+            'day_id' => $owner->days()->first()->id,
             'date' => $this->toDate(),
             'session_duration' => fake()->randomElement(SessionDuration::values()),
             'notes' => fake()->word,

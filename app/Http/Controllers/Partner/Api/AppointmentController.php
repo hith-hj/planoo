@@ -16,11 +16,31 @@ final class AppointmentController extends Controller
 {
     public function __construct(public AppointmentServices $services) {}
 
+    public function all(Request $request)
+    {
+        $page = $request->filled('page') ? $request->integer('page') : 1;
+        $perPage = $request->filled('perPage') ? $request->integer('perPage') : 10;
+        $filters = $request->filled('filters') ? $request->array('filters') : [];
+        $orderBy = $request->filled('orderBy') ? $request->array('orderBy') : [];
+        $appointments = $this->services->allByObject(
+            owner:getModel(),
+            page:$page,
+            perPage:$perPage,
+            filters:$filters,
+            orderBy:$orderBy
+        );
+
+        return Success(payload: [
+            'appointments' => AppointmentResource::collection($appointments),
+        ]);
+    }
+
     public function check(Request $request)
     {
         $validator = AppointmentValidators::check($request->all());
-
-        $slots = $this->services->checkAvailableSlots($validator->safe()->all());
+        $activity = app(ActivityServices::class)
+            ->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
+        $slots = $this->services->checkAvailableSlots($activity, $validator->safe()->all());
 
         return Success(payload: ['slots' => $slots]);
     }
@@ -28,7 +48,8 @@ final class AppointmentController extends Controller
     public function create(Request $request)
     {
         $validator = AppointmentValidators::create($request->all());
-        $activity = app(ActivityServices::class)->find($validator->safe()->integer('activity_id'));
+        $activity = app(ActivityServices::class)
+            ->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
         if ($this->services->checkAppointmentExists($validator->safe()->all())) {
             return Error('Appointment just got booked');
         }

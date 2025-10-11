@@ -19,7 +19,7 @@ final class Appointment extends Model
 
     public function holder(): MorphTo
     {
-        return $this->morphTo(__METHOD__, 'appointable_type', 'appointable_id');
+        return $this->morphTo(__FUNCTION__, 'appointable_type', 'appointable_id');
     }
 
     public function scopeOwner(Builder $query, string $owner_class, ?int $owner_id)

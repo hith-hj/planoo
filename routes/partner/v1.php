@@ -129,6 +129,7 @@ Route::group(
         'name' => 'appointment.',
     ],
     function (): void {
+        Route::post('all/{owner_type}/{owner_id}', 'all')->name('all');
         Route::post('check', 'check')->name('check');
         Route::post('create', 'create')->name('create');
         Route::post('cancel', 'cancel')->name('cancel');
