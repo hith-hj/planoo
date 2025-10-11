@@ -67,11 +67,10 @@ trait NotificationsHandler
 
             return true;
         }
-        $token = $this->fb_token;
         $factory = (new FcmFactory)->withServiceAccount($this->getFCMCredentials());
         $messaging = $factory->createMessaging();
         $notification = ['title' => $this->title, 'body' => $this->body];
-        $message = CloudMessage::new()->toToken($token)
+        $message = CloudMessage::new()->toToken($this->firebase_token)
             ->withNotification(FcmNotification::fromArray($notification))
             ->withAndroidConfig($this->getFCMAndroidConfig())
             ->withData(MessageData::fromArray($this->data));
