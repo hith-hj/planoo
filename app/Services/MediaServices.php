@@ -45,6 +45,7 @@ final class MediaServices
     {
         NotFound($media, 'Media');
         Storage::disk('public')->delete($media->url);
+
         return $media->delete();
     }
 }

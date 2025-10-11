@@ -97,7 +97,8 @@ final class AppointmentServices
 
     public function cancel(object $user, Appointment $appointment): bool
     {
-        Truthy($appointment->status !== AppointmentStatus::accepted->value,'invalid appointment status');
+        Truthy($appointment->status !== AppointmentStatus::accepted->value, 'invalid appointment status');
+
         return $appointment->update([
             'status' => AppointmentStatus::canceled->value,
             'canceled_by' => class_basename($user::class),

@@ -94,7 +94,7 @@ final class DayServices
     {
         foreach ($oldDays as $od) {
             // break out immediately
-            if ($od['day'] === $newDay['day'] && !$updateing) {
+            if ($od['day'] === $newDay['day'] && ! $updateing) {
                 throw new Exception("{$newDay['day']} exists");
             }
             if ($od['day'] === $newDay['day']) {
