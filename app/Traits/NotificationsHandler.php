@@ -120,7 +120,7 @@ trait NotificationsHandler
 
     private function getFCMCredentials(): string
     {
-        Truthy(! Storage::exists(storage_path('app/fcm.json')), 'Missing firebase config file');
+        Truthy(! file_exists(storage_path('app/fcm.json')), 'Missing firebase config file');
 
         return storage_path('app/fcm.json');
     }
