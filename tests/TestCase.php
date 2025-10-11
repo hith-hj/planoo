@@ -57,4 +57,10 @@ abstract class TestCase extends BaseTestCase
         $this->withHeaders(['Authorization' => ""]);
         return $this;
     }
+
+    public function getFileName($url)
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        return basename($path);
+    }
 }

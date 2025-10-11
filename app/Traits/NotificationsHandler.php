@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
+use App\Enums\NotificationTypes;
 use App\Models\Notification;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -98,7 +99,7 @@ trait NotificationsHandler
         return $this->notifications()->create([
             'title' => $this->title,
             'body' => $this->body,
-            'type' => $this->data['type'],
+            'type' => $this->data['type'] ?? NotificationTypes::normal->value,
             'payload' => json_encode([
                 ...$this->data,
                 ...$extra,

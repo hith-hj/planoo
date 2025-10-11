@@ -70,7 +70,7 @@ final class AppointmentServices
             'date' => $data['date'],
             'time' => $data['time'],
             'session_duration' => $data['session_duration'],
-            'status' => AppointmentStatus::accepted,
+            'status' => AppointmentStatus::accepted->value,
             'price' => $owner->price,
             'notes' => $data['notes'] ?? null,
         ]);
@@ -91,14 +91,15 @@ final class AppointmentServices
             ['date', $data['date']],
             ['time', $data['time']],
             ['session_duration', $data['session_duration']],
-            ['status', '!=', AppointmentStatus::canceled],
+            ['status', '!=', AppointmentStatus::canceled->value],
         ])->exists();
     }
 
     public function cancel(object $user, Appointment $appointment): bool
     {
+        Truthy($appointment->status !== AppointmentStatus::accepted->value,'invalid appointment status');
         return $appointment->update([
-            'status' => AppointmentStatus::canceled,
+            'status' => AppointmentStatus::canceled->value,
             'canceled_by' => class_basename($user::class),
         ]);
     }

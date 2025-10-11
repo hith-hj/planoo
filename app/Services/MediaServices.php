@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Media;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 final class MediaServices
 {
@@ -42,6 +43,8 @@ final class MediaServices
 
     public function delete(Media $media): bool
     {
+        NotFound($media, 'Media');
+        Storage::disk('public')->delete($media->url);
         return $media->delete();
     }
 }

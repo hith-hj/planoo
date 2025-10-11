@@ -8,6 +8,7 @@ enum NotificationTypes: int
 {
     case normal = 0;
     case verification = 1;
+    case appointment = 2;
     case chat = 3;
 
     public static function values()

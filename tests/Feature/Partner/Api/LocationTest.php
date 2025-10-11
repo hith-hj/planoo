@@ -11,77 +11,76 @@ beforeEach(function () {
 	$this->url = '/api/partner/v1/location';
 });
 
-describe('location Controller tests', function () {
-	it('returns location for activity', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$res = $this->getJson("$this->url/get/activity/{$activity->id}")->assertOk();
-		expect($res->json('payload.location'))->not->toBeNull()
-			->and($res->json('payload.location.long'))->toBe($activity->location->long);
-	});
+describe('Location Controller Tests', function () {
+    it('returns location for a valid activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
 
-	it('fails returns location for invalid activity', function () {
-		$this->getJson("$this->url/get/activity/1000")->assertStatus(404);
-	});
+        $response = $this->getJson("{$this->url}/get/activity/{$activity->id}")
+            ->assertOk();
 
-	it('creates new location', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$activity->location()->delete();
-		$location = Location::factory()->make()->toArray();
-		$res = $this->postJson(
-			"$this->url/create/activity/{$activity->id}",
-			$location
-		);
-		$res->assertOk();
-		expect($res->json('payload.location'))->not->toBeNull();
-	});
+        expect($response->json('payload.location'))->not->toBeNull()
+            ->and($response->json('payload.location.long'))->toBe($activity->location->long);
+    });
 
-	it('cant creates location when location exists', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$location = Location::factory()->make()->toArray();
-		$this->postJson(
-			"$this->url/create/activity/{$activity->id}",
-			$location
-		)->assertStatus(400);
-	});
+    it('returns 404 for location of an invalid activity', function () {
+        $this->getJson("{$this->url}/get/activity/1000")->assertStatus(404);
+    });
 
-	it('cant creates location with invalid data', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$activity->location()->delete();
-		$this->postJson(
-			"$this->url/create/activity/{$activity->id}",
-			[]
-		)->assertStatus(422);
-	});
+    it('creates a new location for an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->location()->delete();
 
-	it('cant creates location with invalid activity', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$this->postJson(
-			"$this->url/create/activity/1000",
-			[]
-		)->assertStatus(404);
-	});
+        $locationData = Location::factory()->make()->toArray();
 
-	it('can update specific location', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$location = $activity->location;
-		$data = Location::factory()->make()->toArray();
-		$res = $this->patchJson(
-			"$this->url/update/activity/{$activity->id}",
-			['location_id' => $location->id, ...$data]
-		);
-		$res->assertOk();
-		expect($res->json('payload.location'))->not->toBeNull()
-		->and($res->json('payload.location.long'))->toBe($data['long']);
-	});
+        $response = $this->postJson("{$this->url}/create/activity/{$activity->id}", $locationData)
+            ->assertOk();
 
-	it('can delete specific location', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$location = $activity->location;
-		$res = $this->deleteJson(
-			"$this->url/delete/activity/{$activity->id}",
-			['location_id' => $location->id,]
-		);
-		$res->assertOk();
-		expect(Location::find($location->id))->toBeNull();
-	});
+        expect($response->json('payload.location'))->not->toBeNull();
+    });
+
+    it('fails to create location when one already exists', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $locationData = Location::factory()->make()->toArray();
+
+        $this->postJson("{$this->url}/create/activity/{$activity->id}", $locationData)
+            ->assertStatus(400);
+    });
+
+    it('fails to create location with invalid data', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->location()->delete();
+
+        $this->postJson("{$this->url}/create/activity/{$activity->id}", [])
+            ->assertStatus(422);
+    });
+
+    it('fails to create location for an invalid activity', function () {
+        $this->postJson("{$this->url}/create/activity/1000", [])
+            ->assertStatus(404);
+    });
+
+    it('updates a specific location', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $location = $activity->location;
+        $updateData = Location::factory()->make()->toArray();
+
+        $response = $this->patchJson("{$this->url}/update/activity/{$activity->id}", [
+            'location_id' => $location->id,
+            ...$updateData,
+        ])->assertOk();
+
+        expect($response->json('payload.location'))->not->toBeNull()
+            ->and($response->json('payload.location.long'))->toBe($updateData['long']);
+    });
+
+    it('deletes a specific location', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $location = $activity->location;
+
+        $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+            'location_id' => $location->id,
+        ])->assertOk();
+
+        expect(Location::find($location->id))->toBeNull();
+    });
 });

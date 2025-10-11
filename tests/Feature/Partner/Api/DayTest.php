@@ -6,102 +6,117 @@ use App\Models\Activity;
 use App\Models\Day;
 
 beforeEach(function () {
-	$this->seed();
-	$this->user('partner', 'stadium')->api();
-	$this->url = '/api/partner/v1/day';
+    $this->seed();
+    $this->user('partner', 'stadium')->api();
+    $this->url = '/api/partner/v1/day';
 });
 
 describe('Day Controller tests', function () {
-	it('returns all days for activity', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$res = $this->getJson("$this->url/all/activity/{$activity->id}")->assertOk();
-		expect($res->json('payload.days'))->toHaveCount($activity->days()->count());
-	});
+    it('returns all days for a given activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $response = $this->getJson("{$this->url}/all/activity/{$activity->id}")
+            ->assertOk();
 
-	it('fails returns days for invalid activity', function () {
-		$this->getJson("$this->url/all/activity/1000")->assertStatus(404);
-	});
+        expect($response->json('payload.days'))->toHaveCount($activity->days()->count());
+    });
 
-	it('finds specific day by ID', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$day = $activity->days->first();
-		$res = $this->getJson("$this->url/find/activity/{$activity->id}?day_id=$day->id")->assertOk();
-		expect($res->json('payload.day.id'))->toBe($day->id);
-	});
+    it('returns 404 for non-existent activity when fetching days', function () {
+        $this->getJson("{$this->url}/all/activity/9999")->assertStatus(404);
+    });
 
-	it('fails finds specific day by invalid ID', function () {
-		$this->getJson("$this->url/find/activity/1000?day_id=1000")->assertStatus(404);
-	});
+    it('finds a specific day by ID', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $day = $activity->days()->first();
 
-	it('creates new day', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$day = Day::factory()->day()->make()->toArray();
-		$res = $this->postJson(
-			"$this->url/create/activity/{$activity->id}",
-			$day
-		);
-		$res->assertOk();
-		expect($res->json('payload.day'))->not->toBeNull()
-			->and($res->json('payload.day.day'))->toBe($day['day'])
-			->and($res->json('payload.day.start'))->toBe($day['start'])
-			->and($res->json('payload.day.end'))->toBe($day['end']);
-	});
+        $response = $this->getJson("{$this->url}/find/activity/{$activity->id}?day_id={$day->id}")
+            ->assertOk();
 
-	it('creates many day', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$activity->days()->delete();
-		$days = Day::factory()->days()->make()->toArray();
-		$res = $this->postJson(
-			"$this->url/createMany/activity/{$activity->id}",
-			$days
-		)->assertOk();
-		expect($res->json('payload.days'))->not->toBeNull()
-			->and($res->json('payload.days'))->toHaveCount(count($days['days']));
-	});
+        expect($response->json('payload.day.id'))->toBe($day->id);
+    });
 
-	it('cant creates new day with invalid data', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$this->postJson("$this->url/create/activity/{$activity->id}", [])->assertStatus(422);
-	});
+    it('returns 404 when finding a day with invalid activity and day ID', function () {
+        $this->getJson("{$this->url}/find/activity/9999?day_id=9999")->assertStatus(404);
+    });
 
-	it('cant creates duplicate day', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$day = $activity->days()->first()->toArray();
-		$this->postJson("$this->url/create/activity/{$activity->id}", $day)->assertStatus(400);
-	});
+    it('creates a new day for an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->days()->delete();
 
-	it('can update specific day', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$day = $activity->days()->first();
-		$data = Day::factory()->day()->make()->toArray();
-		$res = $this->patchJson(
-			"$this->url/update/activity/{$activity->id}",
-			['day_id' => $day->id, ...$data]
-		);
-		$res->assertOk();
-		expect($res->json('payload.day'))->not->toBeNull();
-	});
+        $dayData = Day::factory()->day()->make()->toArray();
 
-	it('can toggle activation for specific day', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$day = $activity->days()->first();
-		$day->update(['is_active' => false]);
-		expect($day->is_active)->toBe(false);
-		$this->postJson(
-			"$this->url/toggleActivation/activity/{$activity->id}",
-			['day_id' => $day->id]
-		)->assertOk();
-		expect($day->fresh()->is_active)->toBe(true);
-	});
+        $response = $this->postJson("{$this->url}/create/activity/{$activity->id}", $dayData)
+            ->assertOk();
 
-	it('can delete specific day', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$day = $activity->days()->first();
-		$res = $this->deleteJson(
-			"$this->url/delete/activity/{$activity->id}",
-			['day_id' => $day->id,]
-		);
-		$res->assertOk();
-		expect(Day::find($day->id))->toBeNull();
-	});
+        expect($response->json('payload.day'))->not->toBeNull()
+            ->and($response->json('payload.day.day'))->toBe($dayData['day'])
+            ->and($response->json('payload.day.start'))->toBe($dayData['start'])
+            ->and($response->json('payload.day.end'))->toBe($dayData['end']);
+    });
+
+    it('creates multiple days for an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->days()->delete();
+
+        $daysState = Day::factory()->days()->make();
+        $days = $daysState['days'];
+
+        $response = $this->postJson("{$this->url}/createMany/activity/{$activity->id}", ['days' => $days])
+            ->assertOk();
+
+        expect($response->json('payload.days'))->not->toBeNull()
+            ->and($response->json('payload.days'))->toHaveCount(count($days));
+    });
+
+    it('fails to create a day with invalid data', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+
+        $this->postJson("{$this->url}/create/activity/{$activity->id}", [])
+            ->assertStatus(422);
+    });
+
+    it('fails to create a duplicate day', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $existingDay = $activity->days()->first()->toArray();
+
+        $this->postJson("{$this->url}/create/activity/{$activity->id}", $existingDay)
+            ->assertStatus(400);
+    });
+
+    it('updates a specific day', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $day = $activity->days()->first();
+        $updateData = Day::factory()->day()->make()->toArray();
+
+        $response = $this->patchJson("{$this->url}/update/activity/{$activity->id}", [
+            'day_id' => $day->id,
+            ...$updateData,
+        ])->assertOk();
+
+        expect($response->json('payload.day'))->not->toBeNull();
+    });
+
+    it('toggles activation status of a day', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $day = $activity->days()->first();
+        $day->update(['is_active' => false]);
+
+        expect($day->is_active)->toBeFalse();
+
+        $this->postJson("{$this->url}/toggleActivation/activity/{$activity->id}", [
+            'day_id' => $day->id,
+        ])->assertOk();
+
+        expect($day->fresh()->is_active)->toBeTrue();
+    });
+
+    it('deletes a specific day', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $day = $activity->days()->first();
+
+        $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+            'day_id' => $day->id,
+        ])->assertOk();
+
+        expect(Day::find($day->id))->toBeNull();
+    });
 });

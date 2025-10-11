@@ -36,8 +36,8 @@ final class AppointmentsCheck extends Command
         Appointment::where([
             ['date', '<=', $currentDate],
             ['time', '<', $currentHour],
-            ['status', AppointmentStatus::accepted],
-        ])->update(['status' => AppointmentStatus::completed]);
+            ['status', AppointmentStatus::accepted->value],
+        ])->update(['status' => AppointmentStatus::completed->value]);
 
         $this->info('Past accepted appointments marked as completed.');
     }

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Activity;
 use App\Models\Media;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
@@ -13,49 +12,53 @@ beforeEach(function () {
 	$this->url = '/api/partner/v1/user';
 });
 
-describe('user Controller tests', function () {
-	it('returns user information', function () {
-		$res = $this->getJson("$this->url/get")->assertOk();
-		expect($res->json('payload.user'))->not->toBeNull();
-	});
+describe('User Controller Tests', function () {
+    it('returns authenticated user information', function () {
+        $response = $this->getJson("{$this->url}/get")->assertOk();
+        expect($response->json('payload.user'))->not->toBeNull();
+    });
 
-	it('fails to return user info for unauthorized user', function () {
-		$res = $this->clearUser()->getJson("$this->url/get");
-		$res->assertStatus(401);
-	});
+    it('returns 401 for unauthorized user', function () {
+        $response = $this->clearUser()->getJson("{$this->url}/get");
+        $response->assertStatus(401);
+    });
 
-	it('can update user information', function () {
-		$user = User::factory()->make()->toArray();
-		$res = $this->postJson("$this->url/update",$user);
-		expect($res->json('payload.user.name'))->toBe($user['name']);
-	});
+    it('updates user information', function () {
+        $userData = User::factory()->make()->toArray();
+        $response = $this->postJson("{$this->url}/update", $userData)
+            ->assertOk();
 
-	it('upload profile image',function(){
-		Storage::fake('public');
-		$media = Media::factory()->fakeFile('kosa.jpeg');
-		$res = $this->postJson("$this->url/uploadProfileImage",[
-			'profile_image' => $media
-		]);
-		$fileName = time() . '_' . $media->hashName();
-		Storage::disk('public')
-				->assertExists("uploads/images/users/{$this->user->id}/$fileName");
-	});
+        expect($response->json('payload.user.name'))->toBe($userData['name']);
+    });
 
-	it('delete profile image',function(){
-		Storage::fake('public');
-		$media = Media::factory()->fakeFile('kosa.jpeg');
-		$this->postJson("$this->url/uploadProfileImage",[
-			'profile_image' => $media
-		])->assertOk();
-		expect($this->user->fresh()->medias()->count())->toBe(1);
-		$fileName = time() . '_' . $media->hashName();
-		Storage::disk('public')
-				->assertExists("uploads/images/users/{$this->user->id}/$fileName");
-		$this->postJson("$this->url/deleteProfileImage")->assertOk();
+    it('uploads profile image', function () {
+        Storage::fake('public');
+        $media = Media::factory()->fakeFile('kosa.jpeg');
 
-		expect($this->user->fresh()->medias()->count())->toBe(0);
-		Storage::disk('public')
-				->assertMissing("uploads/images/users/{$this->user->id}/$fileName");
-	});
+        $res = $this->postJson("{$this->url}/uploadProfileImage", [
+            'profile_image' => $media,
+        ])->assertOk();
 
+        $fileName = $this->getFileName($res->json('payload.profile_image.url'));
+        Storage::disk('public')->assertExists("uploads/images/users/{$this->user->id}/{$fileName}");
+    });
+
+    it('deletes profile image', function () {
+        Storage::fake('public');
+        $media = Media::factory()->fakeFile('kosa.jpeg');
+
+        $res = $this->postJson("{$this->url}/uploadProfileImage", [
+            'profile_image' => $media,
+        ])->assertOk();
+
+        expect($this->user->fresh()->medias()->count())->toBe(1);
+
+        $fileName = $this->getFileName($res->json('payload.profile_image.url'));
+        Storage::disk('public')->assertExists("uploads/images/users/{$this->user->id}/{$fileName}");
+
+        $this->postJson("{$this->url}/deleteProfileImage")->assertOk();
+
+        expect($this->user->fresh()->medias()->count())->toBe(0);
+        Storage::disk('public')->assertMissing("uploads/images/users/{$this->user->id}/{$fileName}");
+    });
 });

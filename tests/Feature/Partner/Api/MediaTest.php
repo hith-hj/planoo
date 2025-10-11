@@ -14,32 +14,57 @@ beforeEach(function () {
 	Storage::fake('public');
 });
 
-describe('media Controller tests', function () {
-	it('returns media for activity', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$res = $this->getJson("$this->url/all/activity/{$activity->id}");
-		$res->assertOk();
-		expect($res->json('payload.medias'))->not->toBeNull()
-			->and(count($res->json('payload.medias')))->toBe($activity->medias->count());
-	});
+describe('Media Controller Tests', function () {
+    it('returns media for a valid activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
 
-	it('fails returns tag for invalid activity', function () {
-		$this->getJson("$this->url/get/activity/1000")->assertStatus(404);
-	});
+        $response = $this->getJson("{$this->url}/all/activity/{$activity->id}")
+            ->assertOk();
 
-	test('can be uploaded images', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$media = [Media::factory()->fakeMedia(), Media::factory()->fakeMedia()];
-		$this->postJson("$this->url/create/activity/$activity->id", [
-			'type' => 'image',
-			'media' => $media,
-		])->assertOk();
+        expect($response->json('payload.medias'))->not->toBeNull()
+            ->and(count($response->json('payload.medias')))->toBe($activity->medias->count());
+    });
 
-		foreach ($media as $item) {
-			$fileName = time() . '_' . $item['file']->hashName();
-			Storage::disk('public')
-				->assertExists("uploads/images/activities/$activity->id/$fileName");
-		}
-	});
+    it('returns 404 for media of an invalid activity', function () {
+        $this->getJson("{$this->url}/get/activity/1000")->assertStatus(404);
+    });
 
+    it('uploads multiple images for an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $mediaFiles = [Media::factory()->fakeMedia(), Media::factory()->fakeMedia()];
+
+        $res = $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+            'type' => 'image',
+            'media' => $mediaFiles,
+        ])->assertOk();
+
+        foreach ($res->json('payload.media') as $file) {
+	        $fileName = $this->getFileName($file['url']);
+
+            Storage::disk('public')->assertExists("uploads/images/activities/{$activity->id}/{$fileName}");
+        }
+    });
+
+    it('deletes media for an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+		$activity->medias()->delete();
+
+		$res = $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+            'type' => 'image',
+            'media' => [Media::factory()->fakeMedia()],
+        ])->assertOk();
+        expect($activity->fresh()->medias()->count())->toBe(1);
+        foreach($res->json('payload.media') as $media){
+	        $fileName = $this->getFileName($media['url']);
+
+	        Storage::disk('public')->assertExists("uploads/images/activities/{$activity->id}/{$fileName}");
+
+	        $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+	            'media_id' => $media['id'],
+	        ])->assertOk();
+
+	        expect($activity->fresh()->medias()->count())->toBe(0);
+	        Storage::disk('public')->assertMissing("uploads/images/activities/{$activity->id}/{$fileName}");
+    	}
+    });
 });

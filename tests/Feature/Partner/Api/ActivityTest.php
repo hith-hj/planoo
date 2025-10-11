@@ -14,93 +14,92 @@ beforeEach(function () {
 	$this->url = '/api/partner/v1/activity';
 });
 
-describe('Activity Controller tests', function () {
-	it('returns all activities for the authenticated partner', function () {
-		$this->user->activities()->delete();
-		Activity::factory(2)->for($this->user, 'user')->create();
-		$res = $this->getJson("$this->url/all")->assertOk();
-		expect($res->json('payload.activities'))->toHaveCount(2);
-	});
+describe('Activity Controller Tests', function () {
+    it('returns all activities for the authenticated partner', function () {
+        $this->user->activities()->delete();
+        Activity::factory(2)->for($this->user, 'user')->create();
 
-	it('finds a specific activity for user by ID', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
+        $response = $this->getJson("{$this->url}/all")->assertOk();
 
-		$res = $this->getJson("$this->url/find?activity_id=$activity->id");
+        expect($response->json('payload.activities'))->toHaveCount(2);
+    });
 
-		$res->assertOk();
-		expect($res->json('payload.activity.id'))->toBe($activity->id);
-	});
+    it('finds a specific activity by ID', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
 
-	it('cant finds a specific activity for user by invalid ID', function () {
-		$this->getJson("$this->url/find?activity_id=422")->assertStatus(422);
-	});
+        $response = $this->getJson("{$this->url}/find?activity_id={$activity->id}")
+            ->assertOk();
 
-	it('creates a new activity', function () {
-		$activity = Activity::factory()->for($this->user, 'user')
-			->make(['user_id' => $this->user->id])->toArray();
-		$days = Day::factory()->days()->make()->toArray();
-		$location = Location::factory()->make()->toArray();
-		$media = [
-			'type' => 'image',
-			'media' => [Media::factory()->fakeMedia(), Media::factory()->fakeMedia()]
-		];
-		$tags = Tag::factory()->tags()->make()->toArray();
-		$data = array_merge($activity, $days, $location, $media, $tags);
-		$res = $this->postJson(
-			"$this->url/create",
-			$data
-		);
-		$res->assertOk();
-		expect($res->json('payload.activity'))->not->toBeNull();
-		$id = $res->json('payload.activity.id');
-		$activity = Activity::with(['tags', 'days', 'medias', 'location'])->find($id);
-		expect($activity->days()->count())->toBe(count($days['days']))
-			->and($activity->location->long)->toBe($location['long']);
-	});
+        expect($response->json('payload.activity.id'))->toBe($activity->id);
+    });
 
-	it('cant creates a new activity with invalid data', function () {
-		$this->postJson("$this->url/create", [])->assertStatus(422);
-	});
+    it('fails to find an activity with invalid ID', function () {
+        $this->getJson("{$this->url}/find?activity_id=422")->assertStatus(422);
+    });
 
-	it('updates an existing activity', function () {
-		$activity = Activity::factory()
-			->for($this->user, 'user')
-			->create();
-		$activity->update(['name' => 'tido']);
-		$data = ['activity_id' => $activity->id, ...$activity->toArray()];
-		$res = $this->patchJson("$this->url/update", $data);
-		$res->assertOk();
-		expect($res->json('payload.activity.name'))->toBe($activity->name);
-	});
+    it('creates a new activity with days, location, media, and tags', function () {
+        $activityData = Activity::factory()->for($this->user, 'user')
+            ->make(['user_id' => $this->user->id])->toArray();
 
-	it('cant updates an existing activity with invalid data', function () {
-		$this->patchJson("$this->url/update", [])->assertStatus(422);
-	});
+        $days = Day::factory()->days()->make()['days'];
+        $location = Location::factory()->make()->toArray();
+        $media = [
+            'type' => 'image',
+            'media' => [Media::factory()->fakeMedia(), Media::factory()->fakeMedia()],
+        ];
+        $tags = Tag::factory()->tags()->make()->toArray();
 
-	it('deletes an activity', function () {
-		$activity = Activity::factory()
-			->for($this->user, 'user')
-			->create();
+        $payload = array_merge($activityData, ['days' => $days], $location, $media, $tags);
 
-		$res = $this->deleteJson("$this->url/delete", [
-			'activity_id' => $activity->id,
-		]);
+        $response = $this->postJson("{$this->url}/create", $payload)->assertOk();
 
-		$res->assertOk();
-		expect(Activity::find($activity->id))->toBeNull();
-	});
+        expect($response->json('payload.activity'))->not->toBeNull();
 
-	it('toggles activation of an activity', function () {
-		$activity = Activity::factory()
-			->for($this->user, 'user')
-			->create(['is_active' => false]);
+        $createdId = $response->json('payload.activity.id');
+        $createdActivity = Activity::with(['tags', 'days', 'medias', 'location'])->find($createdId);
 
-		$res = $this->postJson("$this->url/toggleActivation", [
-			'activity_id' => $activity->id,
-		]);
+        expect($createdActivity->days()->count())->toBe(count($days))
+            ->and($createdActivity->location->long)->toBe($location['long']);
+    });
 
-		$res->assertOk();
-		$activity->refresh();
-		expect($activity->is_active)->toBeTrue();
-	});
+    it('fails to create an activity with invalid data', function () {
+        $this->postJson("{$this->url}/create", [])->assertStatus(422);
+    });
+
+    it('updates an existing activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->update(['name' => 'tido']);
+
+        $updatePayload = ['activity_id' => $activity->id, ...$activity->toArray()];
+
+        $response = $this->patchJson("{$this->url}/update", $updatePayload)->assertOk();
+
+        expect($response->json('payload.activity.name'))->toBe('tido');
+    });
+
+    it('fails to update an activity with invalid data', function () {
+        $this->patchJson("{$this->url}/update", [])->assertStatus(422);
+    });
+
+    it('deletes an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+
+        $this->deleteJson("{$this->url}/delete", [
+            'activity_id' => $activity->id,
+        ])->assertOk();
+
+        expect(Activity::find($activity->id))->toBeNull();
+    });
+
+    it('toggles the activation status of an activity', function () {
+        $activity = Activity::factory()
+            ->for($this->user, 'user')
+            ->create(['is_active' => false]);
+
+        $this->postJson("{$this->url}/toggleActivation", [
+            'activity_id' => $activity->id,
+        ])->assertOk();
+
+        expect($activity->fresh()->is_active)->toBeTrue();
+    });
 });

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\NotificationTypes;
 use App\Models\Appointment;
 use App\Models\User;
 
@@ -31,13 +32,21 @@ final class AppointmentObserver
 
     public function completed(Appointment $appointment)
     {
-        $appointment->holder->user->notify();
+        $appointment->holder->user->notify(
+            'Appointment completed',
+            'An Appointment has been completed',
+            ['type' => NotificationTypes::appointment->value, 'appointment' => $appointment->id]
+        );
     }
 
     public function canceled(Appointment $appointment)
     {
         match ($appointment->canceled_by) {
-            class_basename(User::class) => $appointment->holder->user->notify(),
+            class_basename(User::class) => $appointment->holder->user->notify(
+                'Appointment canceled',
+                'An Appointment has been canceled',
+                ['type' => NotificationTypes::appointment->value, 'appointment' => $appointment->id]
+            ),
             // class_basename(Customer::class) => $appointment->customer->notify(),
             default => true,
         };

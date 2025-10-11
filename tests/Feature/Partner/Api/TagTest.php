@@ -13,49 +13,58 @@ beforeEach(function () {
 	$this->url = '/api/partner/v1/tag';
 });
 
-describe('tag Controller tests', function () {
-	it('returns tag for activity', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$res = $this->getJson("$this->url/all/activity/$activity->id")->assertOk();
-		expect($res->json('payload.tags'))->not->toBeNull();
-	});
+describe('Tag Controller Test', function () {
+    it('returns tags for a valid activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
 
-	it('fails returns tag for invalid activity', function () {
-		$this->getJson("$this->url/get/activity/1000")->assertStatus(404);
-	});
+        $response = $this->getJson("{$this->url}/all/activity/{$activity->id}")
+            ->assertOk();
 
-	it('assign new tag', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$activity->tags()->delete();
-		$tags = Tag::inRandomOrder()->take(2)->pluck('id')->toArray();
-		$this->postJson(
-			"$this->url/create/activity/$activity->id",
-			['tags'=>$tags]
-		)->assertOk();
-		expect($activity->fresh()->tags->contains($tags))->not->toBeNull();
-	});
+        expect($response->json('payload.tags'))->not->toBeNull();
+    });
 
-	it('cant creates tag when tag exists', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$activity->tags()->detach();
-		$activity->tags()->attach(1);
-		expect($activity->fresh()->tags()->count())->toBe(1);
-		$this->postJson(
-			"$this->url/create/activity/$activity->id",
-			['tags'=>[1,2]]
-		)->assertOk();
-		expect($activity->fresh()->tags()->count())->toBe(2);
-	});
+    it('returns 404 for tags of an invalid activity', function () {
+        $this->getJson("{$this->url}/get/activity/1000")->assertStatus(404);
+    });
 
-	it('can delete tag', function () {
-		$activity = Activity::factory()->for($this->user, 'user')->create();
-		$activity->tags()->detach();
-		$activity->tags()->attach(3);
-		expect($activity->fresh()->tags()->count())->toBe(1);
-		$this->deleteJson(
-			"$this->url/delete/activity/$activity->id",
-			['tags'=>[3]]
-		)->assertOk();
-		expect($activity->fresh()->tags()->count())->toBe(0);
-	});
+    it('assigns new tags to an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->tags()->detach();
+
+        $tags = Tag::inRandomOrder()->take(2)->pluck('id')->toArray();
+
+        $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+            'tags' => $tags,
+        ])->assertOk();
+
+        expect($activity->fresh()->tags->pluck('id')->toArray())->toMatchArray($tags);
+    });
+
+    it('adds new tags without duplicating existing ones', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->tags()->detach();
+        $activity->tags()->attach(1);
+
+        expect($activity->fresh()->tags()->count())->toBe(1);
+
+        $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+            'tags' => [1, 2],
+        ])->assertOk();
+
+        expect($activity->fresh()->tags()->count())->toBe(2);
+    });
+
+    it('deletes tags from an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->tags()->detach();
+        $activity->tags()->attach(3);
+
+        expect($activity->fresh()->tags()->count())->toBe(1);
+
+        $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+            'tags' => [3],
+        ])->assertOk();
+
+        expect($activity->fresh()->tags()->count())->toBe(0);
+    });
 });
