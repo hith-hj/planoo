@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Enums\UsersTypes;
 use App\Models\Activity;
 use App\Models\Appointment;
+use App\Models\Customer;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -19,6 +20,7 @@ final class DatabaseSeeder extends Seeder
         $this->createCategories();
         $this->createTags();
         $this->createUsers();
+        $this->createCustomers();
         $this->createAppointments();
     }
 
@@ -78,5 +80,10 @@ final class DatabaseSeeder extends Seeder
         foreach ($activities as $activity) {
             Appointment::factory(5)->for($activity, 'holder')->create();
         }
+    }
+
+    private function createCustomers()
+    {
+        Customer::factory(5)->create();
     }
 }

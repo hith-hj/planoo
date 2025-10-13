@@ -45,6 +45,7 @@ final class DayServices
         Required($dayable, 'dayable');
         Required($data, 'day data');
         Truthy(! method_exists($dayable, 'days'), 'object missing days()');
+        $this->checkCanCreateDay($dayable);
         $oldDays = $dayable->days->toArray();
         $this->checkIfAvailable($data, $oldDays);
         $day = $dayable->days()->create($data);
@@ -54,17 +55,18 @@ final class DayServices
 
     public function createMany(object $dayable, array $data): Collection
     {
-        $days = [];
+        $days = Collection::empty();
         $conflicts = [];
         foreach ($data['days'] as $item) {
             try {
-                $days[$item['day']] = $this->create($dayable, $item);
+                $days->push($this->create($dayable, $item));
             } catch (Exception $e) {
                 $conflicts[$item['day']] = "Error {$e->getMessage()}";
             }
         }
+        Falsy(empty($conflicts), 'Conflict: '.implode(', ', $conflicts));
 
-        return Collection::make($days, $conflicts);
+        return $days;
     }
 
     public function update(object $dayable, Day $day, array $data): Day
@@ -121,5 +123,10 @@ final class DayServices
         }
 
         return $data;
+    }
+
+    private function checkCanCreateDay(object $dayable)
+    {
+        Truthy($dayable->days()->count() >= 7, 'Only 7 days allowed');
     }
 }

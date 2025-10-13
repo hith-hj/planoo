@@ -30,7 +30,7 @@ describe('Appointment Controller Tests', function () {
 
     it('checks available slots for a specific date', function () {
         $activity = $this->user->activities()->inRandomOrder()->first();
-        $data = Appointment::factory()->fakerData(owner:$activity);
+        $data = Appointment::factory()->fakerData(owner: $activity);
 
         $response = $this->postJson("{$this->url}/check", $data);
         $response->assertOk();
@@ -44,9 +44,16 @@ describe('Appointment Controller Tests', function () {
             ->assertStatus(422);
     });
 
-    it('creates a new appointment', function () {
+    it('creates a new appointment with user phone', function () {
         $activity = $this->user->activities()->inRandomOrder()->first();
-        $data = Appointment::factory()->fakerData($activity,['time' => '10:30']);
+        $data = Appointment::factory()
+            ->fakerData(
+                $activity,
+                [
+                    'time' => '10:30',
+                    'customer_phone' => '0987654321'
+                ]
+            );
 
         $response = $this->postJson("{$this->url}/create", $data)
             ->assertOk();
@@ -54,6 +61,26 @@ describe('Appointment Controller Tests', function () {
         expect($response->json('payload.appointment'))->not->toBeNull()
             ->and($response->json('payload.appointment.time'))->toBe($data['time'])
             ->and($response->json('payload.appointment.date'))->toBe($data['date']);
+    });
+
+    it('creates a new appointment with user id', function () {
+        $activity = $this->user->activities()->inRandomOrder()->first();
+        $data = Appointment::factory()
+            ->fakerData(
+                $activity,
+                [
+                    'time' => '10:30',
+                    'customer_id' => 1
+                ]
+            );
+
+        $response = $this->postJson("{$this->url}/create", $data);
+        $response->assertOk();
+        expect($response->json('payload.appointment'))->not->toBeNull()
+            ->and($response->json('payload.appointment.time'))->toBe($data['time'])
+            ->and($response->json('payload.appointment.date'))->toBe($data['date'])
+            ->and($response->json('payload.appointment.customer'))->not->toBeNull()
+            ->and($response->json('payload.appointment.holder'))->not->toBeNull();
     });
 
     it('fails to create appointment with invalid data', function () {
@@ -69,6 +96,7 @@ describe('Appointment Controller Tests', function () {
             'time' => '12:00',
             'session_duration' => 120,
             'notes' => 'Recusandae et quis voluptatibus.',
+            'customer_id' => '1'
         ];
 
         $activity->appointments()->create([
@@ -94,8 +122,7 @@ describe('Appointment Controller Tests', function () {
         ])->assertOk();
 
         expect($response->json('payload.appointment'))->not->toBeNull()
-            ->and($response->json('payload.appointment.status'))
-            ->toBe(AppointmentStatus::canceled->name);
+            ->and($response->json('payload.appointment.status'))->toBe(AppointmentStatus::canceled->name);
     });
 
     it('fails to cancel an already canceled appointment', function () {
@@ -112,7 +139,7 @@ describe('Appointment Controller Tests', function () {
         $appointment = Appointment::factory()
             ->for($this->user->activities()->first(), 'holder')
             ->create();
-        $appointment->update(['created_at'=>$appointment->created_at->subHours(2)]);
+        $appointment->update(['created_at' => $appointment->created_at->subHours(2)]);
         $response = $this->postJson("{$this->url}/cancel", [
             'appointment_id' => $appointment->id,
         ]);

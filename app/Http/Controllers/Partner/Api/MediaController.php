@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\MediaResource;
 use App\Services\MediaServices;
 use App\Validators\MediaValidators;
 use Illuminate\Http\Request;
@@ -19,20 +18,20 @@ final class MediaController extends Controller
         $medias = $this->services->allByObject(getModel());
 
         return Success(payload: [
-            'medias' => MediaResource::collection($medias),
+            'medias' => $medias->toResourceCollection(),
         ]);
     }
 
     public function create(Request $request)
     {
         $validator = MediaValidators::create($request->all());
-        $media = $this->services->create(
+        $medias = $this->services->create(
             getModel(),
             $validator->safe()->all()
         );
 
         return Success(payload: [
-            'media' => MediaResource::collection($media->fresh()),
+            'medias' => $medias->toResourceCollection(),
         ]);
     }
 

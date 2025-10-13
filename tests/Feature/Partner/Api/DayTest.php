@@ -56,15 +56,26 @@ describe('Day Controller tests', function () {
     it('creates multiple days for an activity', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
         $activity->days()->delete();
-
-        $daysState = Day::factory()->days()->make();
-        $days = $daysState['days'];
-
+        $days = Day::factory()->days();
         $response = $this->postJson("{$this->url}/createMany/activity/{$activity->id}", ['days' => $days])
             ->assertOk();
 
         expect($response->json('payload.days'))->not->toBeNull()
             ->and($response->json('payload.days'))->toHaveCount(count($days));
+    });
+
+    it('cant creates more that 7 days for activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->days()->delete();
+        $this->postJson(
+            "{$this->url}/createMany/activity/{$activity->id}",
+            ['days' => Day::factory()->days(7)]
+        )->assertOk();
+
+        $this->postJson(
+            "{$this->url}/createMany/activity/{$activity->id}",
+            ['days' => Day::factory()->days(1)]
+        )->assertStatus(400);
     });
 
     it('fails to create a day with invalid data', function () {

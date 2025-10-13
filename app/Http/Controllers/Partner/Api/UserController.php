@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MediaResource;
-use App\Http\Resources\UserResource;
 use App\Services\UserServices;
 use App\Validators\UserValidators;
 use Illuminate\Http\Request;
@@ -20,7 +19,7 @@ final class UserController extends Controller
     {
         $user = $this->services->get(Auth::id());
 
-        return Success(payload: ['user' => UserResource::make($user)]);
+        return Success(payload: ['user' => $user->toResource()]);
     }
 
     public function update(Request $request)
@@ -29,7 +28,7 @@ final class UserController extends Controller
         $user = $this->services->get(Auth::id());
         $this->services->update($user, $validator->safe()->all());
 
-        return Success(payload: ['user' => UserResource::make($user->fresh())]);
+        return Success(payload: ['user' => $user->fresh()->toResource()]);
     }
 
     public function delete()

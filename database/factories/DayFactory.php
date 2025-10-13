@@ -21,16 +21,14 @@ final class DayFactory extends Factory
         });
     }
 
-    public function days()
+    public function days(int $count = 2)
     {
-        return $this->state(function () {
-            $days = [];
-            for ($i = 0; $i < 2; $i++) {
-                $days[] = $this->getDay();
-            }
+        $days = [];
+        for ($i = 0; $i < $count; $i++) {
+            $days[] = $this->getDay();
+        }
 
-            return ['days' => $days];
-        });
+        return $days;
     }
 
     private function getDay()

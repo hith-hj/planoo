@@ -22,7 +22,7 @@ final class ReviewServices
     {
         Required($reviewer, 'reviewer');
         Required($data, 'data');
-        $this->checkAndCastData($data, [
+        checkAndCastData($data, [
             'belongTo_id' => 'int',
             'belongTo_type' => 'string',
             'rate' => 'int',
@@ -62,20 +62,5 @@ final class ReviewServices
         Truthy(! method_exists($model, 'reviews'), 'model missing reviews()');
 
         return $model;
-    }
-
-    private function checkAndCastData(array $data = [], $requiredFields = []): array
-    {
-        Truthy(empty($data), 'data is empty');
-        if (empty($requiredFields)) {
-            return $data;
-        }
-        $missing = array_diff(array_keys($requiredFields), array_keys($data));
-        Falsy(empty($missing), 'fields missing: '.implode(', ', $missing));
-        foreach ($requiredFields as $key => $value) {
-            settype($data[$key], $value);
-        }
-
-        return $data;
     }
 }

@@ -26,18 +26,20 @@ trait MediaHandler
         return $this->medias()->where('name', $name)->first();
     }
 
-    public function multible(array $data): Collection
+    public function multiple(array $data): Collection
     {
-        $uploads = [];
+        $uploads = Collection::empty();
         foreach ($data['media'] as $media) {
-            $uploads[] = $this->uploadMedia(
-                type: $data['type'],
-                file: $media['file'],
-                name: $media['name'] ?? null,
+            $uploads->push(
+                $this->uploadMedia(
+                    type: $data['type'],
+                    file: $media['file'],
+                    name: $media['name'] ?? null,
+                )
             );
         }
 
-        return Collection::make($uploads);
+        return $uploads;
     }
 
     public function uploadMedia(

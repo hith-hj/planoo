@@ -32,16 +32,14 @@ final class MediaFactory extends Factory
         ];
     }
 
-    public function medias(string $type = 'image')
+    public function medias(int $count = 5)
     {
-        return $this->state(function () use ($type) {
-            return [
-                'type' => $type,
-                'media' => [
-                    $this->fakeMedia(),
-                ],
-            ];
-        });
+        $medias = [];
+        for ($i = 0; $i < $count; $i++) {
+            $medias[] = $this->fakeMedia();
+        }
+
+        return $medias;
     }
 
     public function fakeMedia()

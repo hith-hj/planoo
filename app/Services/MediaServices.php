@@ -36,7 +36,8 @@ final class MediaServices
         Required($mediable, 'mediable');
         Truthy(! method_exists($mediable, 'medias'), 'object missing medias()');
         Required($data, 'media data');
-        $media = $mediable->multible($data);
+        $this->canCreateMedia($mediable);
+        $media = $mediable->multiple($data);
 
         return $media;
     }
@@ -47,5 +48,11 @@ final class MediaServices
         Storage::disk('public')->delete($media->url);
 
         return $media->delete();
+    }
+
+    private function canCreateMedia(object $mediable)
+    {
+        $count = config('app.settings.MAX_MEDIA_COUNT', 5);
+        Truthy($mediable->medias()->count() >= $count, "Limit of $count media is reached");
     }
 }

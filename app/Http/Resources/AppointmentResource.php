@@ -27,6 +27,7 @@ final class AppointmentResource extends JsonResource
             'canceled_by' => $this->canceled_by,
             'notes' => $this->notes,
             'holder' => $this->whenLoaded('holder'),
+            'customer' => CustomerResource::make($this->whenLoaded('customer')),
         ];
     }
 }

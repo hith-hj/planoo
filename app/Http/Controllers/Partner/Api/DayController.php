@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\DayResource;
 use App\Services\DayServices;
 use App\Validators\DayValidators;
 use Illuminate\Http\Request;
@@ -19,7 +18,7 @@ final class DayController extends Controller
         $days = $this->services->allByObject(getModel());
 
         return Success(payload: [
-            'days' => DayResource::collection($days),
+            'days' => $days->toResourceCollection(),
         ]);
     }
 
@@ -32,7 +31,7 @@ final class DayController extends Controller
         );
 
         return Success(payload: [
-            'day' => DayResource::make($day),
+            'day' => $day->toResource(),
         ]);
     }
 
@@ -46,7 +45,7 @@ final class DayController extends Controller
         );
 
         return Success(payload: [
-            'day' => DayResource::make($day->fresh()),
+            'day' => $day->fresh()->toResource(),
         ]);
     }
 
@@ -59,7 +58,7 @@ final class DayController extends Controller
         );
 
         return Success(payload: [
-            'days' => DayResource::collection($days),
+            'days' => $days->toResourceCollection(),
         ]);
     }
 
@@ -77,7 +76,7 @@ final class DayController extends Controller
         );
 
         return Success(payload: [
-            'day' => DayResource::make($day->fresh()),
+            'day' => $day->fresh()->toResource(),
         ]);
     }
 

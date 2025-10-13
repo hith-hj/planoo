@@ -22,7 +22,7 @@ final class LocationServices
     {
         Required($data, 'data');
         Truthy(! method_exists($locatable, 'location'), 'missing location method');
-        $data = $this->checkAndCastData($data, [
+        $data = checkAndCastData($data, [
             'long' => 'float',
             'lat' => 'float',
             'name' => 'string|name',
@@ -38,12 +38,12 @@ final class LocationServices
     public function update(object $locatable, array $data): Location
     {
         Truthy(! method_exists($locatable, 'location'), 'object missing location()');
-        $data = $this->checkAndCastData($data, [
+        $data = checkAndCastData($data, [
             'long' => 'float',
             'lat' => 'float',
             'name' => 'string|name',
         ]);
-
+        NotFound($locatable->location, 'location is not found');
         $locatable->location->update([
             'long' => round($data['long'], 8),
             'lat' => round($data['lat'], 8),
@@ -66,44 +66,5 @@ final class LocationServices
         Truthy(! method_exists($locatable, 'location'), 'missing location method');
 
         return $locatable->location !== null;
-    }
-
-    private function checkAndCastData(array $data, $requiredFields = []): array
-    {
-        Truthy(empty($data), 'data is empty');
-        if (empty($requiredFields)) {
-            return $data;
-        }
-        $missing = [];
-        foreach ($requiredFields as $key => $value) {
-            if (str_contains($value, '|')) {
-                [$type, $default] = explode('|', $value);
-                $value = $type;
-                if (! isset($data[$key])) {
-                    $data[$key] = $default;
-                }
-            }
-
-            if (str_contains($key, '.')) {
-                [$name, $sub] = explode('.', $key);
-                if (! isset($data[$name][$sub])) {
-                    $missing[] = $key;
-
-                    continue;
-                }
-                settype($data[$name][$sub], $value);
-
-                continue;
-            }
-            if (! isset($data[$key])) {
-                $missing[] = $key;
-
-                continue;
-            }
-            settype($data[$key], $value);
-        }
-        Falsy(empty($missing), 'fields missing: '.implode(', ', $missing));
-
-        return $data;
     }
 }

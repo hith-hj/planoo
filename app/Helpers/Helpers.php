@@ -174,3 +174,54 @@ if (! function_exists('getModel')) {
         return $model;
     }
 }
+
+if (! function_exists('checkAndCastData')) {
+    /**
+     * check if fields in requiredFields array exists <br>
+     *
+     * if true casts it to the provieded cast <br>
+     *
+     * if false assign default value if provided <br>
+     *
+     * if not is possible set it as missing field <br>
+     * */
+    function checkAndCastData(array $data, array $requiredFields = []): array
+    {
+        Truthy(empty($data), 'data is empty');
+        if (empty($requiredFields)) {
+            return $data;
+        }
+        $missing = [];
+        foreach ($requiredFields as $key => $value) {
+            $value = trim($value);
+            if (str_contains($value, '|')) {
+                [$type, $default] = explode('|', $value);
+                $value = $type;
+                if (! isset($data[$key])) {
+                    $data[$key] = $default;
+                }
+            }
+
+            if (str_contains($key, '.')) {
+                [$name, $sub] = explode('.', $key);
+                if (! isset($data[$name][$sub])) {
+                    $missing[] = $key;
+
+                    continue;
+                }
+                settype($data[$name][$sub], $value);
+
+                continue;
+            }
+            if (! isset($data[$key])) {
+                $missing[] = $key;
+
+                continue;
+            }
+            settype($data[$key], $value);
+        }
+        Falsy(empty($missing), 'fields missing: '.implode(', ', $missing));
+
+        return $data;
+    }
+}

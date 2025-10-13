@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TagResource;
 use App\Services\TagServices;
 use App\Validators\TagValidators;
 use Illuminate\Http\Request;
@@ -19,7 +18,7 @@ final class TagController extends Controller
         $tags = $this->services->allByObject(getModel());
 
         return Success(payload: [
-            'tags' => TagResource::collection($tags),
+            'tags' => $tags->toResourceCollection(),
         ]);
     }
 

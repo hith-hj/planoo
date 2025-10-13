@@ -13,9 +13,6 @@ final class NotificationServices
     {
         Truthy(! method_exists($user, 'notifications'), 'missing notifications()');
         $notis = $user->notifications;
-        if (method_exists($user, 'badge') && method_exists($user->badge, 'notifications')) {
-            $notis = $notis->concat($user->badge->notifications);
-        }
         NotFound($notis, 'notifications');
 
         return $notis->sortByDesc('created_at');

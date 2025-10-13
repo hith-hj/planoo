@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\AppointmentResource;
 use App\Services\ActivityServices;
 use App\Services\AppointmentServices;
 use App\Validators\AppointmentValidators;
@@ -23,15 +22,15 @@ final class AppointmentController extends Controller
         $filters = $request->filled('filters') ? $request->array('filters') : [];
         $orderBy = $request->filled('orderBy') ? $request->array('orderBy') : [];
         $appointments = $this->services->allByObject(
-            owner:getModel(),
-            page:$page,
-            perPage:$perPage,
-            filters:$filters,
-            orderBy:$orderBy
+            owner: getModel(),
+            page: $page,
+            perPage: $perPage,
+            filters: $filters,
+            orderBy: $orderBy
         );
 
         return Success(payload: [
-            'appointments' => AppointmentResource::collection($appointments),
+            'appointments' => $appointments->toResourceCollection(),
         ]);
     }
 
@@ -54,8 +53,7 @@ final class AppointmentController extends Controller
             return Error('Appointment just got booked');
         }
         $appointment = $this->services->create($activity, $validator->safe()->all());
-
-        return Success(payload: ['appointment' => AppointmentResource::make($appointment)]);
+        return Success(payload: ['appointment' => $appointment->toResource()]);
     }
 
     public function cancel(Request $request)
@@ -65,7 +63,7 @@ final class AppointmentController extends Controller
         $this->services->cancel(Auth::user(), $appointment);
 
         return Success(payload: [
-            'appointment' => AppointmentResource::make($appointment->fresh()),
+            'appointment' => $appointment->fresh()->toResource(),
         ]);
     }
 }

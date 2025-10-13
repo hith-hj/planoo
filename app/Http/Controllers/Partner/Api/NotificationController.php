@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\NotificationResource;
 use App\Services\NotificationServices;
 use App\Validators\NotificationValidators;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +19,7 @@ final class NotificationController extends Controller
     {
         $notis = $this->noti->all(Auth::user());
 
-        return Success(payload: ['notifications' => NotificationResource::collection($notis)]);
+        return Success(payload: ['notifications' => $notis->toResourceCollection()]);
     }
 
     public function find(Request $request): JsonResponse
@@ -29,7 +28,7 @@ final class NotificationController extends Controller
 
         $noti = $this->noti->find($validator->safe()->integer('notification_id'));
 
-        return Success(payload: ['notification' => $noti]);
+        return Success(payload: ['notification' => $noti->toResource()]);
     }
 
     public function view(Request $request): JsonResponse

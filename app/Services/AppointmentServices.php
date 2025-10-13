@@ -27,12 +27,16 @@ final class AppointmentServices
         $this->applyFilters(
             $appointments,
             $filters,
-            ['status' => AppointmentStatus::values(), 'session_duration' => SessionDuration::values(),]
+            [
+                'status' => AppointmentStatus::values(),
+                'session_duration' => SessionDuration::values(),
+                'date' => []
+            ]
         );
         $this->applyOrderBy(
             $appointments,
             $orderBy,
-            ['date', 'time',]
+            ['date', 'time']
         );
         $appointments->paginate(perPage: $perPage, page: $page);
         $appointments = $appointments->get();
@@ -41,22 +45,22 @@ final class AppointmentServices
         return $appointments;
     }
 
-    private function relationToLoad()
-    {
-        return [];
-    }
-
     public function find(int $id)
     {
         Required($id, 'Appointment id');
         $appointment = Appointment::find($id);
         NotFound($appointment, 'Appointment');
 
-        return $appointment;
+        return $appointment->load($this->relationToLoad());
     }
 
     public function checkAvailableSlots(object $owner, array $data): array
     {
+        checkAndCastData($data, [
+            'day_id' => 'int',
+            'session_duration' => 'int',
+            'date' => 'string',
+        ]);
         $duration = SessionDuration::from($data['session_duration'])->value;
         $day = app(DayServices::class)
             ->findByObject($owner, $data['day_id'])
@@ -96,23 +100,9 @@ final class AppointmentServices
         return ['day' => $day['day'], 'date' => $data['date'], 'slots' => $slots];
     }
 
-    public function create(object $owner, array $data): Appointment
-    {
-        Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
-
-        return $owner->appointments()->create([
-            'date' => $data['date'],
-            'time' => $data['time'],
-            'session_duration' => $data['session_duration'],
-            'status' => AppointmentStatus::accepted->value,
-            'price' => $owner->price,
-            'notes' => $data['notes'] ?? null,
-        ]);
-    }
-
     public function checkAppointmentExists(array $data): bool
     {
-        $data = $this->checkAndCastData($data, [
+        $data = checkAndCastData($data, [
             'activity_id' => 'int',
             'date' => 'string',
             'session_duration' => 'int',
@@ -129,14 +119,67 @@ final class AppointmentServices
         ])->exists();
     }
 
+    public function create(object $owner, array $data): Appointment
+    {
+        Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
+
+        $appointment = $owner->appointments()->create([
+            'date' => $data['date'],
+            'time' => $data['time'],
+            'session_duration' => $data['session_duration'],
+            'status' => AppointmentStatus::accepted->value,
+            'price' => $this->caculatePrice($data['session_duration'], $owner),
+            'notes' => $data['notes'] ?? null,
+        ]);
+
+        $this->attachRelations($appointment, $data);
+
+        return $appointment->load($this->relationToLoad());
+    }
+
     public function cancel(object $user, Appointment $appointment): bool
     {
         Truthy($appointment->status !== AppointmentStatus::accepted->value, 'invalid appointment status');
-        $this->allowedCancel($appointment);
+        $this->canCancelAppointment($appointment);
+
         return $appointment->update([
             'status' => AppointmentStatus::canceled->value,
             'canceled_by' => class_basename($user::class),
         ]);
+    }
+
+    private function relationToLoad()
+    {
+        return ['customer', 'holder'];
+    }
+
+    private function attachRelations(object $owner, array $data = []): Appointment
+    {
+        Required($owner, 'owner');
+        if (isset($data['customer_id']) || isset($data['customer_phone'])) {
+            if (isset($data['customer_id'])) {
+                $customer = app(CustomerServices::class)->find((int) $data['customer_id']);
+            }
+            if (isset($data['customer_phone'])) {
+                $customer = app(CustomerServices::class)->createIfNotExists([
+                    'phone' => $data['customer_phone'],
+                ]);
+            }
+            $owner->customer()->associate($customer)->save();
+        }
+
+        return $owner;
+    }
+
+    private function caculatePrice($session_duration, $owner): int
+    {
+        checkAndCastData($owner->toArray(), [
+            'session_duration' => 'int',
+            'price' => 'int',
+        ]);
+        $price = ($session_duration / $owner->session_duration) * $owner->price;
+
+        return (int) ceil($price);
     }
 
     private function checkAllowedDurations($gapStart, $gapMinutes, $duration): array
@@ -155,52 +198,12 @@ final class AppointmentServices
         return $slots;
     }
 
-    private function allowedCancel(Appointment $appointment, int $buffer = 60)
+    private function canCancelAppointment(Appointment $appointment, int $buffer = 60)
     {
         $now = now();
         $bookingTime = $appointment->created_at;
         $diffInMinutes = $now->diffInMinutes($bookingTime, true);
         Truthy($diffInMinutes > $buffer, 'appointment cannot be canceled after one hour');
-    }
-
-    private function checkAndCastData(array $data, $requiredFields = []): array
-    {
-        Truthy(empty($data), 'data is empty');
-        if (empty($requiredFields)) {
-            return $data;
-        }
-        $missing = [];
-        foreach ($requiredFields as $key => $value) {
-            $value = trim($value);
-            if (str_contains($value, '|')) {
-                [$type, $default] = explode('|', $value);
-                $value = $type;
-                if (! isset($data[$key])) {
-                    $data[$key] = $default;
-                }
-            }
-
-            if (str_contains($key, '.')) {
-                [$name, $sub] = explode('.', $key);
-                if (! isset($data[$name][$sub])) {
-                    $missing[] = $key;
-
-                    continue;
-                }
-                settype($data[$name][$sub], $value);
-
-                continue;
-            }
-            if (! isset($data[$key])) {
-                $missing[] = $key;
-
-                continue;
-            }
-            settype($data[$key], $value);
-        }
-        Falsy(empty($missing), 'fields missing: ' . implode(', ', $missing));
-
-        return $data;
     }
 
     private function applyFilters(object $query, array $filters = [], array $allowedFilters = []): object
@@ -215,7 +218,7 @@ final class AppointmentServices
                     if (is_numeric($value)) {
                         $value = (int) $value;
                     }
-                    if (in_array($value, $allowedFilters[$key])) {
+                    if (in_array($value, $allowedFilters[$key]) || empty($allowedFilters[$key]) ) {
                         $filter->where($key, $value);
                     }
                 }

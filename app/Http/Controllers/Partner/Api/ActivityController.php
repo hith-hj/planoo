@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ActivityResource;
 use App\Services\ActivityServices;
 use App\Validators\ActivityValidators;
 use Illuminate\Http\Request;
@@ -19,9 +18,7 @@ final class ActivityController extends Controller
     {
         $activities = $this->services->allByUser(Auth::user());
 
-        return Success(payload: [
-            'activities' => ActivityResource::collection($activities),
-        ]);
+        return Success(payload: ['activities' => $activities->fresh()->toResourceCollection(),]);
     }
 
     public function find(Request $request)
@@ -32,9 +29,7 @@ final class ActivityController extends Controller
             $validator->safe()->integer('activity_id')
         );
 
-        return Success(payload: [
-            'activity' => ActivityResource::make($activity),
-        ]);
+        return Success(payload: ['activity' => $activity->fresh()->toResource(),]);
     }
 
     public function create(Request $request)
@@ -49,13 +44,9 @@ final class ActivityController extends Controller
         app(DayController::class)->createMany($request);
         app(LocationsController::class)->create($request);
         app(TagController::class)->create($request);
-        if ($request->has('media')) {
-            app(MediaController::class)->create($request);
-        }
+        app(MediaController::class)->create($request);
 
-        return Success(payload: [
-            'activity' => ActivityResource::make($activity->fresh()),
-        ]);
+        return Success(payload: ['activity' => $activity->fresh()->toResource(),]);
     }
 
     public function update(Request $request)
@@ -72,9 +63,7 @@ final class ActivityController extends Controller
             $validator->safe()->except('activity_id')
         );
 
-        return Success(payload: [
-            'activity' => ActivityResource::make($activity->fresh()),
-        ]);
+        return Success(payload: ['activity' => $activity->fresh()->toResource(),]);
     }
 
     public function delete(Request $request)

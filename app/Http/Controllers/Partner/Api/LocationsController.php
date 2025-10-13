@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\LocationResource;
 use App\Services\LocationServices;
 use App\Validators\LocationValidators;
 use Illuminate\Http\Request;
@@ -18,7 +17,7 @@ final class LocationsController extends Controller
     {
         $location = $this->services->get(getModel());
 
-        return Success(payload: ['location' => LocationResource::make($location)]);
+        return Success(payload: ['location' => $location->toResource()]);
     }
 
     public function create(Request $request)
@@ -33,9 +32,7 @@ final class LocationsController extends Controller
             $validator->safe()->all()
         );
 
-        return Success(payload: [
-            'location' => LocationResource::make($location),
-        ]);
+        return Success(payload: ['location' => $location->toResource()]);
     }
 
     public function update(Request $request)
@@ -46,7 +43,7 @@ final class LocationsController extends Controller
             $validator->safe()->all()
         );
 
-        return Success(payload: ['location' => LocationResource::make($location)]);
+        return Success(payload: ['location' => $location->toResource()]);
     }
 
     public function delete()

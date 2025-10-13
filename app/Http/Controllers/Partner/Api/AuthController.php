@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Partner\Api;
 
-use App\Enums\CodesTypes;
 use App\Http\Controllers\Controller;
 use App\Services\UserAuthServices;
 use App\Validators\UserAuthValidators;
@@ -17,11 +16,10 @@ final class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = UserAuthValidators::register($request->all());
-        $user = $this->services->create($validator->safe()->all());
+        $this->services->create($validator->safe()->all());
 
         return Success(
             msg: __('registerd'),
-            payload: ['code' => $user->code(CodesTypes::verification->name)->code],
             code: 201
         );
     }
@@ -39,7 +37,7 @@ final class AuthController extends Controller
         $validator = UserAuthValidators::login($request->all());
         [$user, $token] = $this->services->login($validator);
 
-        return Success(payload: ['user' => $user, 'token' => $token]);
+        return Success(payload: ['user' => $user->toResource(), 'token' => $token]);
     }
 
     public function refreshToken()

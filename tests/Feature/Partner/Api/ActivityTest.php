@@ -41,11 +41,11 @@ describe('Activity Controller Tests', function () {
         $activityData = Activity::factory()->for($this->user, 'user')
             ->make(['user_id' => $this->user->id])->toArray();
 
-        $days = Day::factory()->days()->make()['days'];
+        $days = Day::factory()->days();
         $location = Location::factory()->make()->toArray();
         $media = [
             'type' => 'image',
-            'media' => [Media::factory()->fakeMedia(), Media::factory()->fakeMedia()],
+            'media' => Media::factory()->medias(2),
         ];
         $tags = Tag::factory()->tags()->make()->toArray();
 
@@ -59,7 +59,11 @@ describe('Activity Controller Tests', function () {
         $createdActivity = Activity::with(['tags', 'days', 'medias', 'location'])->find($createdId);
 
         expect($createdActivity->days()->count())->toBe(count($days))
-            ->and($createdActivity->location->long)->toBe($location['long']);
+            ->and($createdActivity->location)->not->toBeNull()
+            ->and($createdActivity->location->long)->toBe($location['long'])
+            ->and($createdActivity->tags)->not->toBeNull()
+            ->and($createdActivity->medias)->not->toBeNull()
+            ->and($createdActivity->medias->count())->toBe(2);
     });
 
     it('fails to create an activity with invalid data', function () {

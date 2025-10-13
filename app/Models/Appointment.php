@@ -27,9 +27,8 @@ final class Appointment extends Model
         return $query->where([['appointable_type', $owner_class], ['appointable_id', $owner_id]]);
     }
 
-    // public function customer():BelongsTo
-    // {
-    //     return $this->belongsTo(Customer::class);
-    // }
-
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
 }

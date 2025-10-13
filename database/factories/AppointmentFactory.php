@@ -6,7 +6,6 @@ namespace Database\Factories;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
-use App\Models\Activity;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -31,10 +30,10 @@ final class AppointmentFactory extends Factory
         ];
     }
 
-    public function fakerData($owner,array $extras = [])
+    public function fakerData($owner, array $extras = [])
     {
-        Truthy($owner === null,'Onwer is required for Appointment factory');
-        Truthy(!method_exists($owner,'days'),'Onwer missing days() method');
+        Truthy($owner === null, 'Onwer is required for Appointment factory');
+        Truthy(! method_exists($owner, 'days'), 'Onwer missing days() method');
 
         return [
             'activity_id' => $owner->id,
