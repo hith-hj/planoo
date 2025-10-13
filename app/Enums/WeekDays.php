@@ -18,4 +18,9 @@ enum WeekDays
     {
         return array_column(self::cases(), 'name');
     }
+
+    public static function values()
+    {
+        return self::names();
+    }
 }

@@ -66,7 +66,7 @@ trait CodeHandler
     {
         $number = '';
         for ($i = 0; $i < $length; $i++) {
-            $number .= mt_rand(0, 9);
+            $number .= random_int(0, 9);
         }
 
         return (int) $number;

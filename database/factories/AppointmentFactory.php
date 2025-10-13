@@ -23,7 +23,7 @@ final class AppointmentFactory extends Factory
         return [
             'date' => $this->toDate(),
             'time' => $this->toTime(),
-            'price' => mt_rand(1000, 10000),
+            'price' => random_int(1000, 10000),
             'session_duration' => fake()->randomElement(SessionDuration::values()),
             'status' => AppointmentStatus::accepted->value,
             'notes' => fake()->sentence,
@@ -47,11 +47,11 @@ final class AppointmentFactory extends Factory
 
     private function toDate()
     {
-        return today()->addDays(mt_rand(1, 5))->toDateString();
+        return today()->addDays(random_int(1, 5))->toDateString();
     }
 
     private function toTime()
     {
-        return today()->hour(9)->addHour(mt_rand(1, 8))->toTimeString();
+        return today()->hour(9)->addHour(random_int(1, 8))->toTimeString();
     }
 }

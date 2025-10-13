@@ -30,7 +30,7 @@ final class ActivityFactory extends Factory
             'category_id' => 1,
             'name' => fake()->colorName,
             'description' => fake()->paragraph(2),
-            'price' => mt_rand(500, 1000),
+            'price' => random_int(500, 1000),
             'session_duration' => fake()->randomElement([30, 60, 90, 120]),
             'is_active' => fake()->boolean(),
         ];

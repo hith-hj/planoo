@@ -59,6 +59,6 @@ final class CustomerServices
             return 'usr_'.mb_substr($data['phone'], -5);
         }
 
-        return 'usr_'.mt_rand(10000, 90000);
+        return 'usr_'.random_int(10000, 90000);
     }
 }

@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Enums\AccountStatus;
 use App\Enums\CodesTypes;
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -77,7 +76,7 @@ final class UserAuthServices
         //     throw new Exception(__('inactive account,wait until activation'));
         // }
 
-        return [UserResource::make($user), JWTAuth::fromUser($user)];
+        return [$user->toResource(), JWTAuth::fromUser($user)];
     }
 
     public function forgetPassword(Validator $validator): User
@@ -164,14 +163,14 @@ final class UserAuthServices
 
     private function username($user): string
     {
-        $username = $user.mt_rand(1000, 9999);
+        $username = $user.random_int(1000, 9999);
 
         $attemps = 0;
         while ($attemps < 5) {
             if (! User::where('username', $username)->exists()) {
                 break;
             }
-            $username = $user.mt_rand(1000, 9999);
+            $username = $user.random_int(1000, 9999);
         }
 
         return mb_strtolower($username);
