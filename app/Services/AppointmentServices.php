@@ -30,7 +30,7 @@ final class AppointmentServices
             [
                 'status' => AppointmentStatus::values(),
                 'session_duration' => SessionDuration::values(),
-                'date' => []
+                'date' => [],
             ]
         );
         $this->applyOrderBy(
@@ -218,7 +218,7 @@ final class AppointmentServices
                     if (is_numeric($value)) {
                         $value = (int) $value;
                     }
-                    if (in_array($value, $allowedFilters[$key]) || empty($allowedFilters[$key]) ) {
+                    if (in_array($value, $allowedFilters[$key]) || empty($allowedFilters[$key])) {
                         $filter->where($key, $value);
                     }
                 }

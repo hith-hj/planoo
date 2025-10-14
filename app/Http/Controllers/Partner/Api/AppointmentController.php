@@ -53,6 +53,7 @@ final class AppointmentController extends Controller
             return Error('Appointment just got booked');
         }
         $appointment = $this->services->create($activity, $validator->safe()->all());
+
         return Success(payload: ['appointment' => $appointment->toResource()]);
     }
 
