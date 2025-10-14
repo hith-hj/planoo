@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Activity;
+use App\Models\Appointment;
 use App\Models\Category;
 use App\Models\Day;
 use App\Models\Location;
@@ -48,6 +49,7 @@ final class ActivityFactory extends Factory
             Location::factory()->for($activity, 'holder')->create();
             Media::factory()->for($activity, 'holder')->create();
             Review::factory()->for($activity, 'holder')->create();
+            Appointment::factory(10)->for($activity, 'holder')->create();
         });
     }
 }

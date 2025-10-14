@@ -29,12 +29,12 @@ final class ReviewServices
             'content' => 'string',
         ]);
 
-        Truthy(!method_exists($owner, 'reviews'), 'missing reviews() method');
+        Truthy(! method_exists($owner, 'reviews'), 'missing reviews() method');
 
         $query = Review::where([
             ['belongTo_id', $owner->id],
             ['belongTo_type', $owner::class],
-            ['customer_id', $customer->id]
+            ['customer_id', $customer->id],
         ]);
         Truthy(
             ($query->exists() && date_diff(now(), $query->first()->created_at)->d < 1),
@@ -45,5 +45,4 @@ final class ReviewServices
 
         return $review;
     }
-
 }

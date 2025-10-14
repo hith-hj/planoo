@@ -17,17 +17,13 @@ final class AppointmentController extends Controller
 
     public function all(Request $request)
     {
-        $page = $request->filled('page') ? $request->integer('page') : 1;
-        $perPage = $request->filled('perPage') ? $request->integer('perPage') : 10;
-        $filters = $request->filled('filters') ? $request->array('filters') : [];
-        $orderBy = $request->filled('orderBy') ? $request->array('orderBy') : [];
-        $appointments = $this->services->allByObject(
-            owner: getModel(),
-            page: $page,
-            perPage: $perPage,
-            filters: $filters,
-            orderBy: $orderBy
-        );
+        $page = $request->integer('page', 1);
+        $perPage = $request->integer('perPage', 10);
+        $filters = $request->input('filters', []);
+        $orderBy = $request->input('orderBy', []);
+
+        $query = $this->services->getQuery(Auth::user());
+        $appointments = $this->services->allByQuery($query, $page, $perPage, $filters, $orderBy);
 
         return Success(payload: [
             'appointments' => $appointments->toResourceCollection(),

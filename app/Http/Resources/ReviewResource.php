@@ -21,7 +21,7 @@ final class ReviewResource extends JsonResource
             'rate' => $this->rate,
             'content' => $this->content,
             'created_at' => $this->created_at,
-            'customer'=> CustomerResource::make($this->whenLoaded('customer')),
+            'customer' => CustomerResource::make($this->whenLoaded('customer')),
         ];
     }
 }

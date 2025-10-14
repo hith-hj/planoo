@@ -6,41 +6,36 @@ namespace App\Services;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
+use App\Models\Activity;
 use App\Models\Appointment;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 
 final class AppointmentServices
 {
-    public function allByObject(
-        object $owner,
+    public function allByQuery(
+        $query,
         int $page = 1,
         int $perPage = 10,
         array $filters = [],
         array $orderBy = []
     ) {
-        Required($owner, 'owner');
-        Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
-        $appointments = $owner->appointments()
-            ->with($this->relationToLoad())
+        Required($query, 'query');
+        $query->with($this->relationToLoad())
             ->where('status', AppointmentStatus::accepted->value);
-        $this->applyFilters(
-            $appointments,
-            $filters,
-            [
-                'status' => AppointmentStatus::values(),
-                'session_duration' => SessionDuration::values(),
-                'date' => [],
-            ]
-        );
-        $this->applyOrderBy(
-            $appointments,
-            $orderBy,
-            ['date', 'time']
-        );
-        $appointments->paginate(perPage: $perPage, page: $page);
-        $appointments = $appointments->get();
-        NotFound($appointments, 'appointments');
+
+        $this->applyFilters($query, $filters, [
+            'status' => AppointmentStatus::values(),
+            'session_duration' => SessionDuration::values(),
+            'date' => [],
+        ]);
+
+        $this->applyOrderBy($query, $orderBy, ['date', 'time']);
+
+        $appointments = $query->paginate($perPage, ['*'], 'page', $page);
+
+        NotFound($appointments->items(), 'appointments');
 
         return $appointments;
     }
@@ -146,6 +141,26 @@ final class AppointmentServices
             'status' => AppointmentStatus::canceled->value,
             'canceled_by' => class_basename($user::class),
         ]);
+    }
+
+    public function getQuery($user, string $type = 'activity')
+    {
+        $query = '';
+        try {
+            $owner = getModel();
+            Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
+            $query = $owner->appointments();
+        } catch (Exception $e) {
+            $query = match ($type) {
+                'activity' => function () use ($user) {
+                    return Appointment::where('appointable_type', Activity::class)
+                        ->whereIn('appointable_id', $user->activities()->pluck('id'));
+                },
+                default => throw new Exception('Type is required for query'),
+            };
+        } finally {
+            return $query;
+        }
     }
 
     private function relationToLoad()

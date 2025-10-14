@@ -27,6 +27,7 @@ final class AppointmentFactory extends Factory
             'session_duration' => fake()->randomElement(SessionDuration::values()),
             'status' => AppointmentStatus::accepted->value,
             'notes' => fake()->sentence,
+            'customer_id' => 1,
         ];
     }
 
@@ -47,7 +48,7 @@ final class AppointmentFactory extends Factory
 
     private function toDate()
     {
-        return today()->addDays(random_int(1, 5))->toDateString();
+        return today()->addDays(random_int(1, 9))->toDateString();
     }
 
     private function toTime()

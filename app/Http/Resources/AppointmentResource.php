@@ -26,7 +26,8 @@ final class AppointmentResource extends JsonResource
             'session_duration' => $this->session_duration,
             'canceled_by' => $this->canceled_by,
             'notes' => $this->notes,
-            'holder' => $this->whenLoaded('holder'),
+            // 'holder' => $this->whenLoaded('holder'),
+            'holder' => ['type' => class_basename($this->appointable_type), 'id' => $this->appointable_id],
             'customer' => CustomerResource::make($this->whenLoaded('customer')),
         ];
     }
