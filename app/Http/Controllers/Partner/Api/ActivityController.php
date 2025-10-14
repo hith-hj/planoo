@@ -18,7 +18,7 @@ final class ActivityController extends Controller
     {
         $activities = $this->services->allByUser(Auth::user());
 
-        return Success(payload: ['activities' => $activities->fresh()->toResourceCollection(),]);
+        return Success(payload: ['activities' => $activities->toResourceCollection(),]);
     }
 
     public function find(Request $request)
@@ -29,7 +29,7 @@ final class ActivityController extends Controller
             $validator->safe()->integer('activity_id')
         );
 
-        return Success(payload: ['activity' => $activity->fresh()->toResource(),]);
+        return Success(payload: ['activity' => $activity->toResource(),]);
     }
 
     public function create(Request $request)
@@ -46,7 +46,7 @@ final class ActivityController extends Controller
         app(TagController::class)->create($request);
         app(MediaController::class)->create($request);
 
-        return Success(payload: ['activity' => $activity->fresh()->toResource(),]);
+        return Success(payload: ['activity' => $activity->toResource(),]);
     }
 
     public function update(Request $request)

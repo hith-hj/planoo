@@ -45,7 +45,7 @@ final class DayController extends Controller
         );
 
         return Success(payload: [
-            'day' => $day->fresh()->toResource(),
+            'day' => $day->toResource(),
         ]);
     }
 
