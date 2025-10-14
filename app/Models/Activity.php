@@ -21,6 +21,7 @@ final class Activity extends Model
 
     protected $attributes = [
         'is_active' => false,
+        'rate' => 0,
     ];
 
     protected function casts(): array

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Activity;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,9 +21,8 @@ final class ReviewFactory extends Factory
     {
         return [
             'belongTo_id' => 1,
-            'belongTo_type' => 'App\Models\V1\Producer',
-            'reviewer_id' => 1,
-            'reviewer_type' => 'App\Models\V1\Carrier',
+            'belongTo_type' => Activity::class,
+            'customer_id' => 1,
             'content' => fake()->paragraph(4),
             'rate' => fake()->numberBetween(1, 10),
         ];

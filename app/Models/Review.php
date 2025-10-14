@@ -17,8 +17,8 @@ final class Review extends Model
         return $this->morphTo(__FUNCTION__, 'belongTo_type', 'belongTo_id');
     }
 
-    public function reviewer()
+    public function customer()
     {
-        return $this->morphTo(__FUNCTION__, 'reviewer_type', 'reviewer_id');
+        return $this->belongsTo(Customer::class);
     }
 }

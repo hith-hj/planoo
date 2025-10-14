@@ -18,10 +18,10 @@ final class ReviewResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'reviewer' => ['type' => $this->reviewer::class, 'id' => $this->reviewer->id],
             'rate' => $this->rate,
             'content' => $this->content,
             'created_at' => $this->created_at,
+            'customer'=> CustomerResource::make($this->whenLoaded('customer')),
         ];
     }
 }

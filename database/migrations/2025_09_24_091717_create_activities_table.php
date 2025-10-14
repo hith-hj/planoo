@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('session_duration');
             $table->text('description');
             $table->boolean('is_active');
+            $table->integer('rate')->default(0);
             $table->timestamps();
         });
     }

@@ -11,8 +11,15 @@ final class ReviewValidators
     public static function create($data)
     {
         return Validator::make($data, [
-            'belongTo_id' => ['required', 'numeric'],
-            'belongTo_type' => ['required', 'string'],
+            'content' => ['nullable', 'string', 'max:700'],
+            'rate' => ['required', 'numeric', 'min:0', 'max:10'],
+        ]);
+    }
+
+    public static function createFromUser($data)
+    {
+        return Validator::make($data, [
+            'customer_id' => ['required', 'exists:customers,id'],
             'content' => ['nullable', 'string', 'max:700'],
             'rate' => ['required', 'numeric', 'min:0', 'max:10'],
         ]);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
+use App\Models\Customer;
 use App\Models\Review;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -15,13 +16,12 @@ trait ReviewHandler
             ->withAttributes(['belongTo_type' => $this::class]);
     }
 
-    public function createReview(object $reviewer, array $data): Review
+    public function createReview(Customer $customer, array $data): Review
     {
         throw_if(empty($data), 'missing review data');
 
         return $this->reviews()->create([
-            'reviewer_id' => $reviewer->id,
-            'reviewer_type' => $reviewer::class,
+            'customer_id' => $customer->id,
             'content' => $data['content'],
             'rate' => $data['rate'],
         ]);

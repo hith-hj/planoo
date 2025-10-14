@@ -8,6 +8,7 @@ use App\Http\Controllers\Partner\Api\AuthController;
 use App\Http\Controllers\Partner\Api\DayController;
 use App\Http\Controllers\Partner\Api\LocationsController;
 use App\Http\Controllers\Partner\Api\MediaController;
+use App\Http\Controllers\Partner\Api\ReviewController;
 use App\Http\Controllers\Partner\Api\TagController;
 use App\Http\Controllers\Partner\Api\UserController;
 use App\Http\Middleware\Auth\JwtMiddleware;
@@ -133,5 +134,17 @@ Route::group(
         Route::post('check', 'check')->name('check');
         Route::post('create', 'create')->name('create');
         Route::post('cancel', 'cancel')->name('cancel');
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'review',
+        'controller' => ReviewController::class,
+        'name' => 'review.',
+    ],
+    function (): void {
+        Route::get('all/{owner_type}/{owner_id}', 'all')->name('all');
+        Route::post('create/{owner_type}/{owner_id}', 'create')->name('create');
     }
 );

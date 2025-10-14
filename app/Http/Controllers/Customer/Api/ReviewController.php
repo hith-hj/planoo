@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\CustomerServices;
 use App\Validators\ReviewValidators;
 use App\Services\ReviewServices;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 final class ReviewController extends Controller
 {
@@ -24,10 +24,9 @@ final class ReviewController extends Controller
 
     public function create(Request $request)
     {
-        $validator = ReviewValidators::createFromUser($request->all());
+        $validator = ReviewValidators::create($request->all());
 
-        $customer = app(CustomerServices::class)->find(1); //should be removed
-        $review = $this->review->create(getModel(), $customer, $validator->safe()->all());
+        $review = $this->review->create(getModel(), Auth::user(), $validator->safe()->all());
 
         return Success(
             msg: 'review created',

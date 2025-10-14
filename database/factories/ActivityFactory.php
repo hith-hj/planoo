@@ -33,6 +33,7 @@ final class ActivityFactory extends Factory
             'price' => random_int(500, 1000),
             'session_duration' => fake()->randomElement([30, 60, 90, 120]),
             'is_active' => fake()->boolean(),
+            'rate' => 0,
         ];
     }
 
