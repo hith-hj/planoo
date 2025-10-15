@@ -22,8 +22,8 @@ final class AppointmentServices
         array $orderBy = []
     ) {
         Required($query, 'query');
-        $query->with($this->relationToLoad())
-            ->where('status', AppointmentStatus::accepted->value);
+        $query->with($this->relationToLoad());
+            // ->where('status', AppointmentStatus::accepted->value);
 
         $this->applyFilters($query, $filters, [
             'status' => AppointmentStatus::values(),
