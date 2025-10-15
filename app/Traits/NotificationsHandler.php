@@ -6,7 +6,6 @@ namespace App\Traits;
 
 use App\Enums\NotificationTypes;
 use App\Models\Notification;
-use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -36,7 +35,7 @@ trait NotificationsHandler
         $this->title = $title;
         $this->body = $body;
         $this->data = $data;
-        $this->class = class_basename($this::class) . '/' . $this->id;
+        $this->class = class_basename($this::class).'/'.$this->id;
         if (App::environment('testing', 'local')) {
             $this->store(['result' => 'testing notification']);
             Log::info("Local notification on $this->class ");
@@ -44,7 +43,7 @@ trait NotificationsHandler
             return true;
         }
 
-        if ($this->hasIsNotifiable() && !$this->isNotifiable()) {
+        if ($this->hasIsNotifiable() && ! $this->isNotifiable()) {
             Log::info(" $this->class is not notifiable");
 
             return true;
@@ -140,6 +139,7 @@ trait NotificationsHandler
         if (in_array('is_notifiable', array_keys($this->toArray()))) {
             return true;
         }
+
         return false;
     }
 

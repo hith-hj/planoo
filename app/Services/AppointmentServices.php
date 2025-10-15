@@ -56,10 +56,12 @@ final class AppointmentServices
             'session_duration' => 'int',
             'date' => 'string',
         ]);
+
         $duration = SessionDuration::from($data['session_duration'])->value;
         $day = app(DayServices::class)
             ->findByObject($owner, $data['day_id'])
             ->only(['day', 'start', 'end']);
+
         $appointments = Appointment::owner($owner::class, $owner->id)
             ->where('date', $data['date'])
             ->get(['date', 'time', 'session_duration']);
@@ -68,28 +70,36 @@ final class AppointmentServices
         $end = Carbon::parse($day['end']);
 
         $busySessions = collect($appointments)->map(function ($appt) {
-            $start = Carbon::parse($appt['time']);
-            $end = $start->copy()->addMinutes($appt['session_duration']);
+            $s = Carbon::parse($appt['time']);
+            $e = $s->copy()->addMinutes($appt['session_duration']);
 
-            return ['start' => $start, 'end' => $end];
+            return ['start' => $s, 'end' => $e];
         })->sortBy('start')->values();
 
         $slots = [];
-        $previousEnd = $start;
-        // add breack here $break = config('break_in_minute',10)
+        $previousEnd = $start->copy();
         foreach ($busySessions as $session) {
-            $sessionStart = $previousEnd;
-            $sessionEnd = $session['start'];
-            $sessionMinutes = $sessionStart->diffInMinutes($sessionEnd); // + $break;
-            $slots = [...$this->checkAllowedDurations($sessionStart, $sessionMinutes, $duration)];
-            $previousEnd = max($previousEnd, $session['end']);
+            $gapStart = $previousEnd->copy();
+            $gapEnd = $session['start']->copy();
+            $gapMinutes = $gapStart->diffInMinutes($gapEnd);
+
+            if ($gapMinutes >= $duration) {
+                $slots = [...$this->checkAllowedDurations($gapStart, $gapEnd, $duration)];
+            }
+
+            if ($session['end']->greaterThan($previousEnd)) {
+                $previousEnd = $session['end']->copy();
+            }
         }
 
         if ($previousEnd->lt($end)) {
-            $sessionStart = $previousEnd;
-            $sessionEnd = $end;
-            $sessionMinutes = $sessionStart->diffInMinutes($sessionEnd);
-            $slots = [...$this->checkAllowedDurations($sessionStart, $sessionMinutes, $duration)];
+            $gapStart = $previousEnd->copy();
+            $gapEnd = $end->copy();
+            $gapMinutes = $gapStart->diffInMinutes($gapEnd);
+
+            if ($gapMinutes >= $duration) {
+                $slots = [...$this->checkAllowedDurations($gapStart, $gapEnd, $duration)];
+            }
         }
 
         return ['day' => $day['day'], 'date' => $data['date'], 'slots' => $slots];
@@ -161,6 +171,23 @@ final class AppointmentServices
         }
     }
 
+    private function checkAllowedDurations($gapStart, $gapEnd, $duration): array
+    {
+        $slots = [];
+        $break = (int) config('break_in_minute', 0);
+        $cursor = $gapStart->copy();
+        while ($cursor->copy()->addMinutes($duration)->lessThanOrEqualTo($gapEnd)) {
+            $slots[] = [
+                'start' => $cursor->format('H:i'),
+                'end' => $cursor->copy()->addMinutes($duration)->format('H:i'),
+                'session_duration' => $duration,
+            ];
+            $cursor->addMinutes($duration + $break);
+        }
+
+        return $slots;
+    }
+
     private function relationToLoad()
     {
         return ['customer', 'holder'];
@@ -193,22 +220,6 @@ final class AppointmentServices
         $price = ($session_duration / $owner->session_duration) * $owner->price;
 
         return (int) ceil($price);
-    }
-
-    private function checkAllowedDurations($gapStart, $gapMinutes, $duration): array
-    {
-        $slots = [];
-        foreach (SessionDuration::values() as $sd) {
-            if ($sd === $duration && $gapMinutes >= $sd) {
-                $slots[] = [
-                    'start' => $gapStart->format('H:i'),
-                    'end' => $gapStart->copy()->addMinutes($sd)->format('H:i'),
-                    'session_duration' => $sd,
-                ];
-            }
-        }
-
-        return $slots;
     }
 
     private function canCancelAppointment(Appointment $appointment, int $buffer = 60)

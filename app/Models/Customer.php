@@ -12,6 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 final class Customer extends Model
 {
     use HasFactory;
-    use ReviewHandler;
     use NotificationsHandler;
+    use ReviewHandler;
 }

@@ -47,7 +47,7 @@ final class AppointmentObserver
     public function canceled(Appointment $appointment)
     {
         $toNotify = match ($appointment->canceled_by) {
-            class_basename(User::class) =>  $appointment->customer,
+            class_basename(User::class) => $appointment->customer,
             class_basename(Customer::class) => $appointment->holder->user,
             default => null,
         };
