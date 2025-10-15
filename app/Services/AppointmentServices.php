@@ -143,20 +143,18 @@ final class AppointmentServices
         ]);
     }
 
-    public function getQuery($user, string $type = 'activity')
+    public function getQuery($user, string $ownerType = 'activity')
     {
         $query = '';
         try {
             $owner = getModel();
             Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
             $query = $owner->appointments();
-        } catch (Exception $e) {
-            $query = match ($type) {
-                'activity' => function () use ($user) {
-                    return Appointment::where('appointable_type', Activity::class)
-                        ->whereIn('appointable_id', $user->activities()->pluck('id'));
-                },
-                default => throw new Exception('Type is required for query'),
+        } catch (Exception) {
+            $query = match ($ownerType) {
+                'activity' => Appointment::where('appointable_type', Activity::class)
+                    ->whereIn('appointable_id', $user->activities()->pluck('id')),
+                default => throw new Exception('ownerType is required for query'),
             };
         } finally {
             return $query;

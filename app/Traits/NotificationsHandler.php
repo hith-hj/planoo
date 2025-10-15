@@ -36,7 +36,7 @@ trait NotificationsHandler
         $this->title = $title;
         $this->body = $body;
         $this->data = $data;
-        $this->class = class_basename($this::class).'/'.$this->id;
+        $this->class = class_basename($this::class) . '/' . $this->id;
         if (App::environment('testing', 'local')) {
             $this->store(['result' => 'testing notification']);
             Log::info("Local notification on $this->class ");
@@ -44,8 +44,7 @@ trait NotificationsHandler
             return true;
         }
 
-        $this->checkIsNotifiable();
-        if ($this->is_notifiable !== true) {
+        if ($this->hasIsNotifiable() && !$this->isNotifiable()) {
             Log::info(" $this->class is not notifiable");
 
             return true;
@@ -79,7 +78,7 @@ trait NotificationsHandler
             $this->store(['result' => $res]);
 
             return true;
-        } catch (MessagingException $e) {
+        } catch (MessagingException) {
             return false;
         }
     }
@@ -136,10 +135,16 @@ trait NotificationsHandler
         ]);
     }
 
-    private function checkIsNotifiable()
+    private function hasIsNotifiable(): bool
     {
-        if (! in_array('is_notifiable', array_keys($this->toArray()))) {
-            throw new Exception(class_basename($this::class).' is not notifiable');
+        if (in_array('is_notifiable', array_keys($this->toArray()))) {
+            return true;
         }
+        return false;
+    }
+
+    private function isNotifiable(): bool
+    {
+        return (bool) $this->is_notifiable;
     }
 }

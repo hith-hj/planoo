@@ -7,6 +7,7 @@ namespace App\Observers;
 use App\Enums\AppointmentStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Appointment;
+use App\Models\Customer;
 use App\Models\User;
 
 final class AppointmentObserver
@@ -18,7 +19,11 @@ final class AppointmentObserver
 
     public function accepted(Appointment $appointment)
     {
-        // $appointment->customer->notify();
+        $appointment->customer?->notify(
+            'Appointment accepted',
+            'Your Appointment has been accepted',
+            ['type' => NotificationTypes::appointment->value, 'appointment' => $appointment->id]
+        );
     }
 
     public function updated(Appointment $appointment): void
@@ -32,7 +37,7 @@ final class AppointmentObserver
 
     public function completed(Appointment $appointment)
     {
-        $appointment->holder->user->notify(
+        $appointment->holder?->user?->notify(
             'Appointment completed',
             'An Appointment has been completed',
             ['type' => NotificationTypes::appointment->value, 'appointment' => $appointment->id]
@@ -41,14 +46,17 @@ final class AppointmentObserver
 
     public function canceled(Appointment $appointment)
     {
-        match ($appointment->canceled_by) {
-            class_basename(User::class) => $appointment->holder->user->notify(
+        $toNotify = match ($appointment->canceled_by) {
+            class_basename(User::class) =>  $appointment->customer,
+            class_basename(Customer::class) => $appointment->holder->user,
+            default => null,
+        };
+        if ($toNotify !== null) {
+            $toNotify?->notify(
                 'Appointment canceled',
                 'An Appointment has been canceled',
                 ['type' => NotificationTypes::appointment->value, 'appointment' => $appointment->id]
-            ),
-            // class_basename(Customer::class) => $appointment->customer->notify(),
-            default => true,
-        };
+            );
+        }
     }
 }

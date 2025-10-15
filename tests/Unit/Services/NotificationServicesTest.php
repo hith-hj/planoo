@@ -12,6 +12,8 @@ beforeEach(function () {
     $this->seed();
     $this->services = new NotificationServices();
     $this->user = User::factory()->create();
+    Notification::truncate();
+
 });
 
 describe('Notification Service', function () {
