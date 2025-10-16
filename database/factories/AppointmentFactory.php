@@ -6,6 +6,7 @@ namespace Database\Factories;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,7 +22,7 @@ final class AppointmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'date' => $this->toDate(),
+            'date' => fake()->randomElement($this->toDate()),
             'time' => $this->toTime(),
             'price' => random_int(1000, 10000),
             'session_duration' => fake()->randomElement(SessionDuration::values()),
@@ -35,20 +36,34 @@ final class AppointmentFactory extends Factory
     {
         Truthy($owner === null, 'Onwer is required for Appointment factory');
         Truthy(! method_exists($owner, 'days'), 'Onwer missing days() method');
+        $day = $owner->days()->first();
 
         return [
             'activity_id' => $owner->id,
-            'day_id' => $owner->days()->first()->id,
-            'date' => $this->toDate(),
+            'day_id' => $day->id,
+            'date' => fake()->randomElement($this->toDate($day['day'])),
             'session_duration' => fake()->randomElement(SessionDuration::values()),
             'notes' => fake()->word,
             ...$extras,
         ];
     }
 
-    private function toDate()
+    private function toDate(string $day = 'sunday', int $count = 3)
     {
-        return today()->addDays(random_int(1, 9))->toDateString();
+        $dates = [];
+        $start = Carbon::now();
+        $end = Carbon::now()->addDays(10);
+
+        while (count($dates) < $count) {
+            $randomTimestamp = random_int($start->timestamp, $end->timestamp);
+            $randomDate = Carbon::createFromTimestamp($randomTimestamp);
+
+            if ($randomDate->format('l') === ucfirst(mb_strtolower($day))) {
+                $dates[] = $randomDate->toDateString();
+            }
+        }
+
+        return $dates;
     }
 
     private function toTime()

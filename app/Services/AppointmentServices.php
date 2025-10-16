@@ -23,7 +23,7 @@ final class AppointmentServices
     ) {
         Required($query, 'query');
         $query->with($this->relationToLoad());
-            // ->where('status', AppointmentStatus::accepted->value);
+        // ->where('status', AppointmentStatus::accepted->value);
 
         $this->applyFilters($query, $filters, [
             'status' => AppointmentStatus::values(),
@@ -61,7 +61,8 @@ final class AppointmentServices
         $day = app(DayServices::class)
             ->findByObject($owner, $data['day_id'])
             ->only(['day', 'start', 'end']);
-
+        $dayOfSelectedDate = Carbon::parse($data['date'])->format('l');
+        Truthy($day['day'] !== mb_strtolower($dayOfSelectedDate), "Selected date don't match selected day");
         $appointments = Appointment::owner($owner::class, $owner->id)
             ->where('date', $data['date'])
             ->get(['date', 'time', 'session_duration']);
