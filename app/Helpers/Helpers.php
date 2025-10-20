@@ -67,7 +67,7 @@ if (! function_exists('NotFound')) {
      * @param  mixed  $argument
      * @param  mixed  $name
      */
-    function NotFound($argument, $name = ''):void
+    function NotFound($argument, $name = ''): void
     {
         if (
             ! $argument ||
@@ -88,7 +88,7 @@ if (! function_exists('Required')) {
      * @param  mixed  $argument
      * @param  mixed  $name
      */
-    function Required($argument, $name = ''):void
+    function Required($argument, $name = ''): void
     {
         if (
             ! $argument ||

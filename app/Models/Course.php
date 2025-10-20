@@ -7,8 +7,8 @@ namespace App\Models;
 use App\Traits\MediaHandler;
 use App\Traits\ReviewHandler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -38,7 +38,7 @@ final class Course extends Model
         return $this->belongsTo(User::class);
     }
 
-     public function category(): BelongsTo
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
@@ -69,5 +69,4 @@ final class Course extends Model
     {
         return $this->belongsToMany(Customer::class);
     }
-
 }

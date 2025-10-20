@@ -40,7 +40,7 @@ final class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) {
             Activity::factory()->for($user, 'user')->create();
-            Course::factory()->for($user,'user')->create();
+            Course::factory()->for($user, 'user')->create();
         });
     }
 

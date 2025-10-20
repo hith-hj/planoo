@@ -11,7 +11,7 @@ use App\Models\Course;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class NotifyCourseCustomer extends Command
+final class NotifyCourseCustomer extends Command
 {
     /**
      * The name and signature of the console command.
@@ -34,15 +34,15 @@ class NotifyCourseCustomer extends Command
     public function handle()
     {
         $now = Carbon::now();
-        $Day = strtolower($now->format('l'));
+        $Day = mb_strtolower($now->format('l'));
         $Date = $now->toDateString();
-        $courses = Course::with(['user','customers:id,name','days'])->get();
-        foreach($courses as $course){
-            $day = $course->days()->where('day',$Day)->first();
-            if($day === null){
+        $courses = Course::with(['user', 'customers:id,name', 'days'])->get();
+        foreach ($courses as $course) {
+            $day = $course->days()->where('day', $Day)->first();
+            if ($day === null) {
                 continue;
             }
-            $this->checkIfAppointmentExists($Date,$day,$course);
+            $this->checkIfAppointmentExists($Date, $day, $course);
             $course->appointments()->create([
                 'date' => $Date,
                 'time' => $day->start,
@@ -56,7 +56,7 @@ class NotifyCourseCustomer extends Command
                 "you have {$course->name} session today at {$day->start}",
                 ['type' => NotificationTypes::session->value, 'course' => $course->id]
             );
-            foreach($course->customers as $customer){
+            foreach ($course->customers as $customer) {
                 $customer->notify(
                     'Course session',
                     "you have {$course->name} session today at {$day->start}",
@@ -67,14 +67,14 @@ class NotifyCourseCustomer extends Command
         $this->info('Customers notified for the upcomming session');
     }
 
-    private function checkIfAppointmentExists($date,$day,$course)
+    private function checkIfAppointmentExists($date, $day, $course)
     {
         $appointment = Appointment::where([
             ['date',  $date],
             ['time', $day->start],
             ['status', AppointmentStatus::accepted->value],
         ]);
-        if(!$appointment->exists()){
+        if (! $appointment->exists()) {
             return;
         }
         $appointment = $appointment->first();

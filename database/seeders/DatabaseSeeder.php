@@ -7,7 +7,6 @@ namespace Database\Seeders;
 use App\Enums\UsersTypes;
 use App\Models\Activity;
 use App\Models\Appointment;
-use App\Models\Course;
 use App\Models\Customer;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
