@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum ActivityTypes: int
+enum SectionsTypes: int
 {
     case activity = 1;
     case course = 2;
