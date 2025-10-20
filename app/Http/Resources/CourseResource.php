@@ -12,24 +12,20 @@ final class CourseResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'is_outdoor' => $this->is_outdoor,
-            'is_main' => $this->is_main,
-            'is_active' => $this->is_active,
-            'in_public' => $this->in_public,
-            'is_multiPerson' => $this->is_multiPerson,
+            'id' => $this->id,
             'name' => $this->name,
-            'type' => $this->type,
-            'capacity' => $this->capacity,
-            'cost' => $this->cost,
-            'cancellation_cost' => $this->cancellation_cost,
             'description' => $this->description,
-            'workdays' => WorkdayResource::collection($this->whenLoaded('workdays')),
-            'activities' => ActivityResource::collection($this->whenLoaded('activities')),
+            'category' => $this->whenLoaded('category'),
+            'is_active' => $this->is_active,
+            'price' => $this->price,
+            'is_full' => $this->is_full,
+            'session_duration' => $this->session_duration,
+            'capacity' => $this->capacity,
+            'cancellation_fee' => $this->cancellation_fee,
+            'days' => DayResource::collection($this->whenLoaded('days')),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'location' => LocationResource::make($this->whenLoaded('location')),
             'medias' => MediaResource::collection($this->whenLoaded('medias')),
-            'location' => $this->in_public ?
-                LocationResource::make($this->whenLoaded('location')) :
-                CourtResource::make($this->whenLoaded('court')),
-            'is_filled' => $this->isFilled,
         ];
     }
 }

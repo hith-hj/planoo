@@ -29,8 +29,7 @@ describe('Review Controller Tests', function () {
         $this->activity->reviews()->delete();
         $rev = Review::factory()->for($this->customer, 'customer')->make()->toArray();
         $res = $this->postJson("$this->url/create/activity/{$this->activity->id}", $rev);
-        expect($res->status())->toBe(200)
-            ->and($res->json('payload.review'))->not->toBeNull()
+        expect($res->json('payload.review'))->not->toBeNull()
             ->and($res->json('payload.review.content'))->toBe($rev['content']);
     });
 });

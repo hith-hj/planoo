@@ -14,4 +14,14 @@ final class Customer extends Model
     use HasFactory;
     use NotificationsHandler;
     use ReviewHandler;
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }

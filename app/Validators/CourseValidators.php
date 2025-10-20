@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Validators;
+
+use App\Enums\SessionDuration;
+use Illuminate\Validation\Rules\Enum;
+use Illuminate\Support\Facades\Validator;
+
+
+final class CourseValidators
+{
+    public static function find($data)
+    {
+        return Validator::make($data, [
+            'course_id' => ['required', 'exists:courses,id'],
+        ]);
+    }
+
+    public static function create(array $data, bool $update = false)
+    {
+        $validator = Validator::make($data, [
+            'category_id' => ['required', 'exists:categories,id'],
+            'name' => ['required', 'string'],
+            'description' => ['required', 'string', 'max:1500'],
+            'price' => ['required', 'numeric', 'min:1'],
+            'session_duration' => ['required', 'numeric', new Enum(SessionDuration::class)],
+            'capacity' => ['required', 'numeric', 'min:1'],
+            'cancellation_fee' => ['nullable', 'numeric', 'min:1'],
+        ]);
+
+        $validator->sometimes(
+            'course_id',
+            ['required', 'exists:courses,id'],
+            function () use ($update) {
+                return $update;
+            }
+        );
+
+        return $validator;
+    }
+
+    public static function delete($data)
+    {
+        return Validator::make($data, [
+            'course_id' => ['required', 'exists:courses,id'],
+        ]);
+    }
+}
