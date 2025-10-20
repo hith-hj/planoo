@@ -9,21 +9,21 @@ use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-final class AppointmentsCheck extends Command
+final class CheckCompletedAppointments extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'appointments:check';
+    protected $signature = 'appointments:check-completed';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'check accepted appointments past thier time to set as completed';
+    protected $description = 'Mark past accepted appointment as completed';
 
     /**
      * Execute the console command.
