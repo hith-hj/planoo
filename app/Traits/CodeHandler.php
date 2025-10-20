@@ -72,10 +72,10 @@ trait CodeHandler
         return (int) $number;
     }
 
-    private function expireAt(?string $timeToExpire): ?Carbon
+    private function expireAt(?string $timeToExpire): Carbon
     {
         if ($timeToExpire === null) {
-            return $timeToExpire;
+            return now();
         }
         [$value, $unit] = explode(':', $timeToExpire);
         if (! in_array($unit, ['m', 'h', 'd'])) {

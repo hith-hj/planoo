@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\SectionsTypes;
 use App\Enums\SessionDuration;
 use App\Models\Activity;
 use App\Models\Appointment;
@@ -163,7 +164,7 @@ final class AppointmentServices
             $query = $owner->appointments();
         } catch (Exception) {
             $query = match ($ownerType) {
-                'activity' => Appointment::where('appointable_type', Activity::class)
+                SectionsTypes::activity->name => Appointment::where('appointable_type', Activity::class)
                     ->whereIn('appointable_id', $user->activities()->pluck('id')),
                 default => throw new Exception('ownerType is required for query'),
             };

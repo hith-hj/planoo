@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\ActivityTypes;
+use App\Enums\SectionsTypes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -67,9 +67,8 @@ if (! function_exists('NotFound')) {
      * @param  mixed  $argument
      * @param  mixed  $name
      */
-    function NotFound($argument, $name = '')
+    function NotFound($argument, $name = ''):void
     {
-        // return $this->empty($argument, $name, 'not found');
         if (
             ! $argument ||
             $argument === null ||
@@ -89,9 +88,8 @@ if (! function_exists('Required')) {
      * @param  mixed  $argument
      * @param  mixed  $name
      */
-    function Required($argument, $name = '')
+    function Required($argument, $name = ''):void
     {
-        // return $this->empty($argument, $name, 'is required');
         if (
             ! $argument ||
             $argument === null ||
@@ -119,7 +117,7 @@ if (! function_exists('Truthy')) {
             throw new Exception(__("$message"), ...$parameters);
         }
 
-        return $condition;
+        return (bool) $condition;
     }
 }
 
@@ -139,7 +137,7 @@ if (! function_exists('Falsy')) {
             throw new Exception(__("$message"), ...$parameters);
         }
 
-        return $condition;
+        return (bool) $condition;
     }
 }
 
@@ -163,7 +161,7 @@ if (! function_exists('getModel')) {
         $id = $owner_id ?? (int) request('owner_id');
         $type = $owner_type ?? request('owner_type');
         Truthy(is_null($type) || is_null($id), 'Failed to retrieve model');
-        Truthy(! in_array($type, ActivityTypes::names()), "Invalid model type: {$type}");
+        Truthy(! in_array($type, SectionsTypes::names()), "Invalid model type: {$type}");
         $type = ucfirst($type);
         $class = "App\\Models\\{$type}";
         Truthy(! class_exists($class), "Class does not exist: {$class}");

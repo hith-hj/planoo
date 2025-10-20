@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Enums\ActivityTypes;
+use App\Enums\SectionsTypes;
 use App\Enums\SessionDuration;
 use App\Enums\UsersTypes;
 use App\Enums\WeekDays;
@@ -31,7 +31,7 @@ final class LabelController extends Controller
 
     public function activityTypes(): JsonResponse
     {
-        return Success(payload: ['activityTypes' => ActivityTypes::names()]);
+        return Success(payload: ['activityTypes' => SectionsTypes::names()]);
     }
 
     public function sessionDuration(): JsonResponse

@@ -54,7 +54,7 @@ final class AppointmentObserver
         if ($toNotify !== null) {
             $toNotify?->notify(
                 'Appointment canceled',
-                'An Appointment has been canceled',
+                'We are sorry, but your appointment is canceled',
                 ['type' => NotificationTypes::appointment->value, 'appointment' => $appointment->id]
             );
         }
