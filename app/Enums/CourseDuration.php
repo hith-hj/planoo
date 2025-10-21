@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum CustomerStatus: int
+enum CourseDuration: int
 {
-    case blocked = -1;
-    case fresh = 0;
-    case normal = 1;
+    case short = 10;
+    case medium = 15;
+    case long = 30;
 
     public static function values()
     {

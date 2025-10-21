@@ -9,6 +9,7 @@ use App\Enums\SectionsTypes;
 use App\Enums\SessionDuration;
 use App\Models\Activity;
 use App\Models\Appointment;
+use App\Models\Customer;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -126,7 +127,7 @@ final class AppointmentServices
         ])->exists();
     }
 
-    public function create(object $owner, array $data): Appointment
+    public function create(object $owner, Customer $customer, array $data): Appointment
     {
         Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
 
@@ -139,7 +140,7 @@ final class AppointmentServices
             'notes' => $data['notes'] ?? null,
         ]);
 
-        $this->attachRelations($appointment, $data);
+        $appointment->customer()->associate($customer)->save();
 
         return $appointment->load($this->relationToLoad());
     }
@@ -173,6 +174,24 @@ final class AppointmentServices
         }
     }
 
+    public function getCustomer(array $data)
+    {
+        $customer = null;
+        if (isset($data['customer_id']) || isset($data['customer_phone'])) {
+            if (isset($data['customer_phone'])) {
+                $customer = app(CustomerServices::class)->createIfNotExists([
+                    'phone' => $data['customer_phone'],
+                ]);
+            }
+            if (isset($data['customer_id'])) {
+                $customer = app(CustomerServices::class)->find((int) $data['customer_id']);
+            }
+
+            return $customer;
+        }
+        NotFound($customer, 'customer');
+    }
+
     private function checkAllowedDurations($gapStart, $gapEnd, $duration): array
     {
         $slots = [];
@@ -193,24 +212,6 @@ final class AppointmentServices
     private function relationToLoad()
     {
         return ['customer', 'holder'];
-    }
-
-    private function attachRelations(object $owner, array $data = []): Appointment
-    {
-        Required($owner, 'owner');
-        if (isset($data['customer_id']) || isset($data['customer_phone'])) {
-            if (isset($data['customer_id'])) {
-                $customer = app(CustomerServices::class)->find((int) $data['customer_id']);
-            }
-            if (isset($data['customer_phone'])) {
-                $customer = app(CustomerServices::class)->createIfNotExists([
-                    'phone' => $data['customer_phone'],
-                ]);
-            }
-            $owner->customer()->associate($customer)->save();
-        }
-
-        return $owner;
     }
 
     private function caculatePrice($session_duration, $owner): int

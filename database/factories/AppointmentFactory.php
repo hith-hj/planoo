@@ -52,7 +52,7 @@ final class AppointmentFactory extends Factory
     {
         $dates = [];
         $start = Carbon::now();
-        $end = Carbon::now()->addDays(10);
+        $end = Carbon::tomorrow()->addDays(10);
 
         while (count($dates) < $count) {
             $randomTimestamp = random_int($start->timestamp, $end->timestamp);

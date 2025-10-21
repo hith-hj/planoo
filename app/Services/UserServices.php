@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 final class UserServices
 {
-    public function get(?int $id): Model
+    public function get(int|string|null $id): Model
     {
         Required($id, 'user id');
         $user = User::find($id);

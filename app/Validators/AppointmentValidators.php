@@ -25,19 +25,14 @@ final class AppointmentValidators
     {
         $validators = Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],
-            'customer_id' => ['sometimes', 'required', 'exists:customers,id'],
             'day_id' => ['required', 'exists:days,id'],
             'date' => ['required', Rule::date()->afterToday()],
             'session_duration' => ['required', new Enum(SessionDuration::class)],
             'time' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
             'notes' => ['nullable', 'string', 'max:500'],
-        ])->sometimes(
-            'customer_phone',
-            ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'unique:customers,phone'],
-            function ($input) {
-                return ! isset($input->customer_id) || $input->customer_id === null;
-            }
-        );
+            'customer_id' => ['sometimes', 'required', 'exists:customers,id', 'required_without:customer_phone'],
+            'customer_phone' => ['sometimes', 'regex:/^09[1-9]{1}\d{7}$/', 'unique:customers,phone', 'required_without:customer_id'],
+        ]);
 
         return $validators;
     }

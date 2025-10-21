@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -32,7 +33,8 @@ abstract class TestCase extends BaseTestCase
 
     private function customer()
     {
-        throw new \Exception("customer is not set");
+       $this->user = Customer::factory()->create();
+        return $this;
     }
 
     public function user($type = null, $sub = null)

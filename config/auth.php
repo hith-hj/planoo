@@ -48,7 +48,7 @@ return [
         ],
         'customer:api' => [
             'driver' => 'jwt',
-            'provider' => 'customer',
+            'provider' => 'customers',
         ],
     ],
 
@@ -77,7 +77,7 @@ return [
 
         'customers' => [
             'driver' => 'eloquent',
-            'model' => 'App\Models\Customer::class',
+            'model' => App\Models\Customer::class,
         ],
 
         // 'users' => [

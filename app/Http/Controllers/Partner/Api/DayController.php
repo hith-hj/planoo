@@ -83,10 +83,11 @@ final class DayController extends Controller
     public function delete(Request $request)
     {
         $validator = DayValidators::delete($request->all());
-        $day = $this->services->findByObject(
-            getModel(),
-            $validator->safe()->integer('day_id')
-        );
+        $days = $this->services->allByObject(getModel());
+        if ($days->count() === 1) {
+            return Error('last day can not be deleted');
+        }
+        $day = $days->find($validator->safe()->integer('day_id'));
         $this->services->delete($day);
 
         return Success(msg: 'day deleted');

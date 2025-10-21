@@ -38,10 +38,12 @@ final class MediaController extends Controller
     public function delete(Request $request)
     {
         $validator = MediaValidators::find($request->all());
-        $media = $this->services->findByObject(
-            getModel(),
-            $validator->safe()->integer('media_id')
-        );
+
+        $medias = $this->services->allByObject(getModel());
+        if ($medias->count() === 1) {
+            return Error('last Media can not be deleted');
+        }
+        $media = $medias->find($validator->safe()->integer('media_id'));
         $this->services->delete($media);
 
         return Success(msg: 'media deleted');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\SectionsTypes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 if (! function_exists('Success')) {
@@ -167,7 +168,7 @@ if (! function_exists('getModel')) {
         Truthy(! class_exists($class), "Class does not exist: {$class}");
         $model = $class::find($id);
         NotFound($model, "Model not found: {$type} with ID {$id}");
-        Truthy($model->user_id !== auth()->id(), 'Unauthorized access to model.');
+        Truthy((int) $model->user_id !== (int) Auth::id(), 'Unauthorized access to model.');
 
         return $model;
     }

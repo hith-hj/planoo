@@ -68,12 +68,15 @@ describe('Media Controller Tests', function () {
     it('deletes media for an activity', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
 		$activity->medias()->delete();
-
-		$res = $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+        $this->postJson("{$this->url}/create/activity/{$activity->id}", [
             'type' => 'image',
             'media' => Media::factory()->medias(1),
         ])->assertOk();
-        expect($activity->fresh()->medias()->count())->toBe(1);
+
+        $res = $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+            'type' => 'image',
+            'media' => Media::factory()->medias(2),
+        ])->assertOk();
         foreach($res->json('payload.medias') as $media){
 	        $fileName = $this->getFileName($media['url']);
 
@@ -83,8 +86,23 @@ describe('Media Controller Tests', function () {
 	            'media_id' => $media['id'],
 	        ])->assertOk();
 
-	        expect($activity->fresh()->medias()->count())->toBe(0);
 	        Storage::disk('public')->assertMissing("uploads/images/activities/{$activity->id}/{$fileName}");
     	}
+        expect($activity->fresh()->medias()->count())->toBe(1);
+    });
+    it('cant delete last media for an activity', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity->medias()->delete();
+
+        $res = $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+            'type' => 'image',
+            'media' => Media::factory()->medias(1),
+        ])->assertOk();
+        expect($activity->fresh()->medias()->count())->toBe(1);
+        foreach($res->json('payload.medias') as $media){
+            $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+                'media_id' => $media['id'],
+            ])->assertStatus(400);
+        }
     });
 });

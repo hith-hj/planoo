@@ -36,7 +36,7 @@ final class NotifyCourseCustomer extends Command
         $now = Carbon::now();
         $Day = mb_strtolower($now->format('l'));
         $Date = $now->toDateString();
-        $courses = Course::with(['user', 'customers:id,name', 'days'])->get();
+        $courses = Course::with(['user:id', 'customers:id', 'days'])->get();
         foreach ($courses as $course) {
             $day = $course->days()->where('day', $Day)->first();
             if ($day === null) {
@@ -51,17 +51,14 @@ final class NotifyCourseCustomer extends Command
                 'price' => $course->price,
                 'notes' => $data['notes'] ?? null,
             ]);
-            $course->user->notify(
+            $notification = [
                 'Course session',
                 "you have {$course->name} session today at {$day->start}",
-                ['type' => NotificationTypes::session->value, 'course' => $course->id]
-            );
+                ['type' => NotificationTypes::session->value, 'course' => $course->id],
+            ];
+            $course->user->notify(...$notification);
             foreach ($course->customers as $customer) {
-                $customer->notify(
-                    'Course session',
-                    "you have {$course->name} session today at {$day->start}",
-                    ['type' => NotificationTypes::session->value, 'course' => $course->id]
-                );
+                $customer->notify(...$notification);
             }
         }
         $this->info('Customers notified for the upcomming session');
@@ -87,6 +84,5 @@ final class NotifyCourseCustomer extends Command
             "You have Schedule conflicts, between course:'{$course->name}', activity: '{$appointment->holder->name}'",
             ['type' => NotificationTypes::normal->value]
         );
-
     }
 }

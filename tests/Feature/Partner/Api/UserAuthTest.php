@@ -13,14 +13,14 @@ describe('UserAuth Controller test', function () {
 
     it('registers_a_user', function () {
         $data = User::factory()->password()->make()->toArray();
-        $res = $this->postJson(route('register'), $data);
+        $res = $this->postJson(route('partner.register'), $data);
         expect($res->status())->toBe(201)
         ->and($res->json('success'))->toBe(true);
     });
 
     it('fails_to_registers_a_user', function () {
         $data = User::factory()->make(['acount_type'=>'kiki'])->toArray();
-        $res = $this->postJson(route('register'), $data);
+        $res = $this->postJson(route('partner.register'), $data);
         expect($res->status())->toBe(422);
         expect($res->json('success'))->toBe(false);
     });
@@ -31,7 +31,7 @@ describe('UserAuth Controller test', function () {
         $code = $user->code('verification')->code;
         expect($code)->not->toBeNull()->and($code)->toBeInt();
 
-        $res = $this->postJson(route('verify'), [
+        $res = $this->postJson(route('partner.verify'), [
             'phone' => $user->phone,
             'code' => $code,
         ]);
@@ -42,7 +42,7 @@ describe('UserAuth Controller test', function () {
     it('fails_to_verify_with_incorrect_code', function () {
         $user = User::factory()->create();
         $user->createCode('verification');
-        $res = $this->postJson(route('verify'), [
+        $res = $this->postJson(route('partner.verify'), [
             'phone' => $user->phone,
             'code' => 00000,
         ]);
@@ -52,7 +52,7 @@ describe('UserAuth Controller test', function () {
 
     it('allow_verified_user_login', function () {
         $user = User::factory()->create(['phone' => '0911112222']);
-        $res = $this->postJson(route('login'), [
+        $res = $this->postJson(route('partner.login'), [
             'phone' => $user->phone,
             'password' => 'password',
         ]);
@@ -66,7 +66,7 @@ describe('UserAuth Controller test', function () {
             'verified_at' => null,
         ]);
 
-        $res = $this->postJson(route('login'), [
+        $res = $this->postJson(route('partner.login'), [
             'phone' => $user->phone,
             'password' => 'password',
         ]);
@@ -74,7 +74,7 @@ describe('UserAuth Controller test', function () {
     });
 
     it('fails_to_login_with_invalid_credentials', function () {
-        $res = $this->postJson(route('login'), [
+        $res = $this->postJson(route('partner.login'), [
             'phone' => '0912345678',
             'password' => 'wrongpassword',
         ]);
@@ -84,7 +84,7 @@ describe('UserAuth Controller test', function () {
 
     it('fails_to_login_with_incorrect_credentials', function () {
         $user = User::factory()->create(['phone' => '0911112222']);
-        $res = $this->postJson(route('login'), [
+        $res = $this->postJson(route('partner.login'), [
             'phone' => $user->phone,
             'password' => 'wrongpassword',
         ]);
@@ -93,7 +93,7 @@ describe('UserAuth Controller test', function () {
 
     it('can logout user', function () {
         $this->user('partner', 'stadium')->api();
-        $res = $this->postJson(route('logout'));
+        $res = $this->postJson(route('partner.logout'));
         $res->assertOk();
     });
 });

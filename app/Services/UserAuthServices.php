@@ -17,7 +17,7 @@ final class UserAuthServices
 {
     public function __construct()
     {
-        $this->setGuard();
+        Auth::shouldUse('partner:api');
     }
 
     public function create(array $data): User
@@ -137,20 +137,6 @@ final class UserAuthServices
     public function logout()
     {
         return JWTAuth::invalidate(JWTAuth::getToken());
-    }
-
-    private function setGuard()
-    {
-        $guard = null;
-        if (request()->is('*api/partner/*')) {
-            $guard = 'partner:api';
-        } elseif (request()->is('*api/customer/*')) {
-            $guard = 'customer:api';
-        } else {
-            throw new Exception('Invalid route guard', 422);
-        }
-        config(['auth.defaults.guard' => $guard]);
-
     }
 
     private function getUser($validator)

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\CourseDuration;
 use App\Enums\SessionDuration;
 use App\Models\Appointment;
 use App\Models\Category;
@@ -32,6 +33,7 @@ final class CourseFactory extends Factory
             'is_full' => false,
             'price' => random_int(1000, 10000),
             'session_duration' => fake()->randomElement(SessionDuration::values()),
+            'course_duration' => fake()->randomElement(CourseDuration::values()),
             'capacity' => random_int(1, 30),
             'cancellation_fee' => fake()->optional()->numberBetween(1000, 5000),
             'rate' => 0,

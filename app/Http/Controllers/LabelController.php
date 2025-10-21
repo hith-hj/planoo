@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\CourseDuration;
 use App\Enums\SectionsTypes;
 use App\Enums\SessionDuration;
 use App\Enums\UsersTypes;
@@ -37,6 +38,11 @@ final class LabelController extends Controller
     public function sessionDuration(): JsonResponse
     {
         return Success(payload: ['durations' => SessionDuration::values()]);
+    }
+
+    public function courseDuration(): JsonResponse
+    {
+        return Success(payload: ['durations' => CourseDuration::values()]);
     }
 
     public function weekDays(): JsonResponse

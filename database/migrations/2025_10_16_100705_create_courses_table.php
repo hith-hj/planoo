@@ -27,6 +27,7 @@ return new class extends Migration
             $table->boolean('is_full');
             $table->integer('price');
             $table->integer('session_duration');
+            $table->integer('course_duration');
             $table->integer('capacity');
             $table->integer('rate')->default(0);
             $table->integer('cancellation_fee')->nullable();

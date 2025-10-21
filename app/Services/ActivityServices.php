@@ -11,6 +11,14 @@ use Illuminate\Database\Eloquent\Model;
 
 final class ActivityServices
 {
+    public function all(): Collection
+    {
+        $activities = Activity::all();
+        NotFound($activities, 'activities');
+
+        return $activities->load($this->toBeLoaded());
+    }
+
     public function allByUser(User $user): Collection|Model
     {
         Required($user, 'user');

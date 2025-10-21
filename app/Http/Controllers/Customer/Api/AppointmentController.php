@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Partner\Api;
+namespace App\Http\Controllers\Customer\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\ActivityServices;
@@ -35,7 +35,7 @@ final class AppointmentController extends Controller
     {
         $validator = AppointmentValidators::check($request->all());
         $activity = app(ActivityServices::class)
-            ->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
+            ->find($validator->safe()->integer('activity_id'));
         $slots = $this->services->checkAvailableSlots($activity, $validator->safe()->all());
 
         return Success(payload: ['slots' => $slots]);
@@ -44,13 +44,11 @@ final class AppointmentController extends Controller
     public function create(Request $request)
     {
         $validator = AppointmentValidators::create($request->all());
-        $activity = app(ActivityServices::class)
-            ->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
+        $activity = app(ActivityServices::class)->find($validator->safe()->integer('activity_id'));
         if ($this->services->checkAppointmentExists($validator->safe()->all())) {
             return Error('Appointment just got booked');
         }
-        $customer = $this->services->getCustomer($validator->safe()->all());
-        $appointment = $this->services->create($activity, $customer, $validator->safe()->all());
+        $appointment = $this->services->create($activity, Auth::user(), $validator->safe()->all());
 
         return Success(payload: ['appointment' => $appointment->toResource()]);
     }

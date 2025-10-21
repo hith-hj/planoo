@@ -19,6 +19,11 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone')->unique();
             $table->tinyInteger('status');
+            $table->text('firebase_token');
+            $table->boolean('is_active');
+            $table->boolean('is_notifiable');
+            $table->string('verified_by')->nullable();
+            $table->timestamp('verified_at')->nullable();
             $table->timestamps();
         });
     }

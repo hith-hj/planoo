@@ -122,12 +122,24 @@ describe('Day Controller tests', function () {
 
     it('deletes a specific day', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
+        Day::factory(2)->day()->for($activity,'holder')->create();
         $day = $activity->days()->first();
 
-        $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+        $res = $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
             'day_id' => $day->id,
-        ])->assertOk();
+        ]);
+        $res->assertOk();
 
         expect(Day::find($day->id))->toBeNull();
+    });
+
+    it('cant deletes the last day', function () {
+        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $day = $activity->days()->first();
+
+        $res = $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+            'day_id' => $day->id,
+        ]);
+        $res->assertStatus(400);
     });
 });

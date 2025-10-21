@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enums\CustomerStatus;
+use App\Enums\AccountStatus;
 use App\Models\Customer;
 
 final class CustomerServices
 {
+    public function get(int|string|null $id): Customer
+    {
+        Required($id, 'customer id');
+        $customer = Customer::find($id);
+        NotFound($customer, 'customer');
+
+        return $customer->load(['medias']);
+    }
+
     public function createIfNotExists(array $data): Customer
     {
         $data = checkAndCastData($data, ['phone' => 'string']);
@@ -18,6 +27,7 @@ final class CustomerServices
         }
         $data['name'] = $this->userName($data);
         $data['password'] = $data['phone'];
+        $data['firebase_token'] = 'not-set';
 
         return $this->create($data);
     }
@@ -37,13 +47,17 @@ final class CustomerServices
             'phone' => 'string',
             'name' => 'string',
             'password' => 'string',
+            'firebase_token' => 'string',
         ]);
 
         $customer = Customer::create([
             'name' => $this->userName($data),
             'phone' => $data['phone'],
             'password' => bcrypt($data['password']),
-            'status' => CustomerStatus::fresh->value,
+            'status' => AccountStatus::fresh->value,
+            'firebase_token' => $data['firebase_token'],
+            'is_active' => true,
+            'is_notifiable' => true,
         ]);
 
         return $customer;
