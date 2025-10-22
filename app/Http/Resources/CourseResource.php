@@ -20,6 +20,7 @@ final class CourseResource extends JsonResource
             'price' => $this->price,
             'is_full' => $this->is_full,
             'session_duration' => $this->session_duration,
+            'course_duration' => $this->course_duration,
             'capacity' => $this->capacity,
             'cancellation_fee' => $this->cancellation_fee,
             'days' => DayResource::collection($this->whenLoaded('days')),
