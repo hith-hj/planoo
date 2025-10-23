@@ -19,4 +19,9 @@ enum AdminsRoles: int
     {
         return array_column(self::cases(), 'name');
     }
+
+    public static function fromValue(int $value): static
+    {
+        return static::from((int)$value);
+    }
 }

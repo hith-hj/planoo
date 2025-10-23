@@ -27,7 +27,7 @@ final class AdminsTable
                     ->searchable(),
                 TextColumn::make('role')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => AdminsRoles::from($state)->name),
+                    ->formatStateUsing(fn ($state): string => AdminsRoles::from($state)->name),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

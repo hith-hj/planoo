@@ -18,7 +18,7 @@ final class AdminInfolist
                 TextEntry::make('email')
                     ->label('Email address'),
                 TextEntry::make('role')
-                    ->formatStateUsing(fn (string $state): string => AdminsRoles::from($state)->name),
+                    ->formatStateUsing(fn ($state): string => AdminsRoles::from($state)->name),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),
