@@ -174,6 +174,35 @@ if (! function_exists('getModel')) {
     }
 }
 
+if (! function_exists('getModelGlobal')) {
+    /**
+     * Retrieve an Eloquent model instance based on type and id.
+     *
+     * If type or id are not provided, they will be retrieved from the request.<br>
+     * if any of the fields is not present in the request exception will be thrown.<br>
+     * The function validates the model type, ensures the class exists,<br>
+     *
+     * @param  string|null  $type
+     * @param  int|null  $id
+     *
+     * @throws Illuminate\Validation\ValidationException
+     * @throws NotFoundHttpException
+     */
+    function getModelGlobal(?string $owner_type = null, ?int $owner_id = null): Model
+    {
+        $id = $owner_id ?? (int) request('owner_id');
+        $type = $owner_type ?? request('owner_type');
+        Truthy(is_null($type) || is_null($id), 'Failed to retrieve model');
+        $type = ucfirst($type);
+        $class = "App\\Models\\{$type}";
+        Truthy(! class_exists($class), "Class does not exist: {$class}");
+        $model = $class::find($id);
+        NotFound($model, "Model not found: {$type} with ID {$id}");
+
+        return $model;
+    }
+}
+
 if (! function_exists('checkAndCastData')) {
     /**
      * check if fields in requiredFields array exists <br>

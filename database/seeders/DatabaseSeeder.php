@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\AdminsRoles;
 use App\Enums\UsersTypes;
 use App\Models\Activity;
+use App\Models\Admin;
 use App\Models\Appointment;
 use App\Models\Customer;
 use App\Models\User;
@@ -17,6 +19,7 @@ final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->createAdmin();
         $this->createCategories();
         $this->createTags();
         $this->createUsers();
@@ -24,8 +27,18 @@ final class DatabaseSeeder extends Seeder
         $this->createAppointments();
     }
 
+    public function createAdmin()
+    {
+        Admin::factory()->create([
+            'name' => 'S_Ad',
+            'email' => 'a@a.com',
+            'role' => AdminsRoles::super->value,
+        ]);
+    }
+
     private function createUsers()
     {
+        User::factory(3)->create();
         User::factory()->createMany([
             [
                 'name' => 'a',
