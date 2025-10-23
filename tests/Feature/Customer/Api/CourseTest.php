@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Course;
+use App\Models\Customer;
 
 beforeEach(function () {
     $this->seed();
@@ -35,9 +36,23 @@ describe('Course Controller Tests', function () {
 
     it('can attend course', function () {
         $course = Course::factory()->create();
+        $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
+        $customerCourse = $this->user->courses()->wherePivot('course_id',$course->id)->first();
+        expect($this->user->courses()->count())->toBe(1)
+        ->and($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
+    });
 
-        $response = $this->postJson("{$this->url}/attend?course_id={$course->id}")
-            ->assertOk();
+    it('can not attend full course', function () {
+        $course = Course::factory()->create(['is_full'=>true]);
+        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}");
+        $res->assertStatus(400);
+    });
+
+    it('can cancel course attend', function () {
+        $course = Course::factory()->create();
+        $this->postJson("{$this->url}/attend?course_id={$course->id}");
+        $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}");
+        $res->assertOk();
     });
 
 });

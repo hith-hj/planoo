@@ -6,9 +6,9 @@ namespace App\Enums;
 
 enum CourseDuration: int
 {
-    case short = 10;
-    case medium = 15;
-    case long = 30;
+    case short = 4;
+    case medium = 8;
+    case long = 16;
 
     public static function values()
     {

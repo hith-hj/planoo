@@ -38,6 +38,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Course::class);
             $table->foreignIdFor(Customer::class);
+            $table->integer('remaining_sessions');
+            $table->boolean('is_complete')->default(0);
         });
     }
 

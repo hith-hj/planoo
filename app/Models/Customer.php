@@ -44,7 +44,8 @@ final class Customer extends Authenticatable implements JWTSubject
 
     public function courses()
     {
-        return $this->belongsToMany(Course::class);
+        return $this->belongsToMany(Course::class)
+            ->withPivot(['remaining_sessions', 'is_complete']);
     }
 
     public function appointments()

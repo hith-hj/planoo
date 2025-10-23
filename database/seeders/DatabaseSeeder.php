@@ -38,7 +38,7 @@ final class DatabaseSeeder extends Seeder
 
     private function createUsers()
     {
-        User::factory(3)->create();
+        User::factory()->create();
         User::factory()->createMany([
             [
                 'name' => 'a',

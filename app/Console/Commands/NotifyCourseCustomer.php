@@ -10,79 +10,110 @@ use App\Models\Appointment;
 use App\Models\Course;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 final class NotifyCourseCustomer extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    // protected $signature = 'app:notify-course-customer';
+    // app:notifiy-course-customer-session
     protected $signature = 'app:nccs';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Notify course customer for the upcomming session';
+    protected $description = 'Notify course customers about upcoming sessions';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): void
     {
         $now = Carbon::now();
-        $Day = mb_strtolower($now->format('l'));
-        $Date = $now->toDateString();
-        $courses = Course::with(['user:id', 'customers:id', 'days'])->get();
+        $dayName = mb_strtolower($now->format('l'));
+        $date = $now->toDateString();
+
+        $courses = Course::with([
+            'user:id',
+            'customers' => fn (BelongsToMany $query) => $query->where('is_complete', false),
+            'days',
+        ])->get();
+
         foreach ($courses as $course) {
-            $day = $course->days()->where('day', $Day)->first();
-            if ($day === null) {
+            $day = $course->days->firstWhere('day', $dayName);
+            if (! $day) {
                 continue;
             }
-            $this->checkIfAppointmentExists($Date, $day, $course);
-            $course->appointments()->create([
-                'date' => $Date,
+
+            $this->handleAppointmentConflict($date, $day->start, $course);
+
+            $appointment = $course->appointments()->create([
+                'date' => $date,
                 'time' => $day->start,
                 'session_duration' => $course->session_duration,
                 'status' => AppointmentStatus::accepted->value,
-                'price' => $course->price,
-                'notes' => $data['notes'] ?? null,
+                'price' => ceil($course->price / $course->course_duration),
+                'notes' => 'course session',
             ]);
-            $notification = [
-                'Course session',
-                "you have {$course->name} session today at {$day->start}",
-                ['type' => NotificationTypes::session->value, 'course' => $course->id],
-            ];
-            $course->user->notify(...$notification);
+
+            $course->user->notify(...$this->sessionNotification($course, $day));
+
             foreach ($course->customers as $customer) {
-                $customer->notify(...$notification);
+                $remaining = $customer->pivot->remaining_sessions;
+
+                if ($remaining === 0) {
+                    continue;
+                }
+
+                $isComplete = $remaining === 1;
+
+                $customer->pivot->update([
+                    'remaining_sessions' => $remaining - 1,
+                    'is_complete' => $isComplete,
+                ]);
+
+                $customer->notify(...$this->sessionNotification($course, $day));
+
+                if ($isComplete) {
+                    $customer->notify(...$this->finishNotification($course));
+                }
             }
         }
-        $this->info('Customers notified for the upcomming session');
+
+        $this->info('Customers notified for the upcoming session.');
     }
 
-    private function checkIfAppointmentExists($date, $day, $course)
+    private function handleAppointmentConflict(string $date, string $time, Course $course): void
     {
         $appointment = Appointment::where([
-            ['date',  $date],
-            ['time', $day->start],
+            ['date', $date],
+            ['time', $time],
             ['status', AppointmentStatus::accepted->value],
-        ]);
-        if (! $appointment->exists()) {
+        ])->first();
+
+        if (! $appointment) {
             return;
         }
-        $appointment = $appointment->first();
+
         $appointment->update([
             'status' => AppointmentStatus::canceled->value,
             'canceled_by' => class_basename($appointment->holder->user::class),
         ]);
+
         $appointment->holder->user->notify(
             'Schedule Error',
-            "You have Schedule conflicts, between course:'{$course->name}', activity: '{$appointment->holder->name}'",
+            "You have schedule conflicts between course '{$course->name}' and activity '{$appointment->holder->name}'",
             ['type' => NotificationTypes::normal->value]
         );
+    }
+
+    private function sessionNotification(Course $course, $day): array
+    {
+        return [
+            'Course Session',
+            "You have a {$course->name} session today at {$day->start}.",
+            ['type' => NotificationTypes::session->value, 'course' => $course->id],
+        ];
+    }
+
+    private function finishNotification(Course $course): array
+    {
+        return [
+            'Course Finished',
+            "Your course '{$course->name}' is now complete.",
+            ['type' => NotificationTypes::course->value, 'course' => $course->id],
+        ];
     }
 }

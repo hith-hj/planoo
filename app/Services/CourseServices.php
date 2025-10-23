@@ -85,7 +85,11 @@ final class CourseServices
         Required($customer, 'customer');
         Required($course, 'course');
         Truthy($course->is_full, 'Course is full');
-        $course->customers()->attach($customer->id);
+        $course->customers()
+            ->attach($customer->id, [
+                'remaining_sessions' => $course->course_duration,
+                'is_complete' => false,
+            ]);
         if ($course->customers()->count() === $course->capacity) {
             $course->update(['is_full' => true]);
         }
@@ -100,7 +104,8 @@ final class CourseServices
 
     public function cancel(Customer $customer, Course $course)
     {
-        Truthy($course->is_full, 'Course is full');
+        Required($customer, 'customer');
+        Required($course, 'course');
         $course->customers()->detach($customer->id);
         if ($course->customers()->count() < $course->capacity) {
             $course->update(['is_full' => false]);
@@ -112,11 +117,6 @@ final class CourseServices
         );
 
         return $course;
-    }
-
-    public function checkIfCourseIsFull(Course $course)
-    {
-        return $course->customers()->count();
     }
 
     private function toBeLoaded()

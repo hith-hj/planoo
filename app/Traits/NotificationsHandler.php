@@ -38,12 +38,13 @@ trait NotificationsHandler
         $this->class = class_basename($this::class).'/'.$this->id;
         if (App::environment('testing', 'local')) {
             $this->store(['result' => 'testing notification']);
-            Log::info("Local notification on $this->class ");
+            Log::info("Local notification on $this->class : $this->title , $this->body");
 
             return true;
         }
 
         if ($this->hasIsNotifiable() && ! $this->isNotifiable()) {
+            $this->store(['result' => 'silent notification']);
             Log::info(" $this->class is not notifiable");
 
             return true;

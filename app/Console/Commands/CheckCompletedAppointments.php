@@ -11,23 +11,11 @@ use Illuminate\Console\Command;
 
 final class CheckCompletedAppointments extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'appointments:check-completed';
+    // app:check-appointments-completed
+    protected $signature = 'app:cac';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Mark past accepted appointment as completed';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $now = Carbon::now();

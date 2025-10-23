@@ -6,6 +6,7 @@ namespace Database\Factories;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
+use App\Models\Course;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,6 +23,8 @@ final class AppointmentFactory extends Factory
     public function definition(): array
     {
         return [
+            'appointable_type' => Course::class,
+            'appointable_id' => 1,
             'date' => fake()->randomElement($this->toDate()),
             'time' => $this->toTime(),
             'price' => random_int(1000, 10000),
