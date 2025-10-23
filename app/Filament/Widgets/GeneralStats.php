@@ -45,6 +45,7 @@ final class GeneralStats extends StatsOverviewWidget
                 start: now()->startOfMonth(),
                 end: now()->endOfMonth(),
             )
+            ->dateAlias('created_at')
             ->perDay()
             ->count();
 
