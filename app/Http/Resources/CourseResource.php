@@ -27,6 +27,8 @@ final class CourseResource extends JsonResource
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'location' => LocationResource::make($this->whenLoaded('location')),
             'medias' => MediaResource::collection($this->whenLoaded('medias')),
+            'customers' => CustomerResource::collection($this->whenLoaded('customers')),
+            'details' => $this->whenLoaded('pivot')
         ];
     }
 }

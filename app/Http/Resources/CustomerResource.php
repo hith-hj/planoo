@@ -21,6 +21,7 @@ final class CustomerResource extends JsonResource
             'name' => $this->name,
             'phone' => $this->phone,
             'status' => $this->status,
+            'details' => $this->whenLoaded('pivot')
         ];
     }
 }
