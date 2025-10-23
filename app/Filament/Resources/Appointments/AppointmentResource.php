@@ -25,6 +25,8 @@ class AppointmentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendar;
 
+    protected static ?int $navigationSort = 6;
+
     public static function canAccess(): bool
     {
         $role = Auth::user()->role;

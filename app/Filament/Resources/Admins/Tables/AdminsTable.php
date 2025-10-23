@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Admins\Tables;
 
 use App\Enums\AdminsRoles;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -41,12 +42,14 @@ class AdminsTable
                     ->options(AdminsRoles::names()),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()->label(''),
+                EditAction::make()->label(''),
+                DeleteAction::make()->label('')
+                ->hidden(fn($record)=>$record->role === AdminsRoles::super->value),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    // DeleteBulkAction::make(),
                 ]),
             ]);
     }

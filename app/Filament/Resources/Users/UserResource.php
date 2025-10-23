@@ -29,6 +29,8 @@ class UserResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?int $navigationSort = 3;
+
     public static function canAccess(): bool
     {
         $role = Auth::user()->role;

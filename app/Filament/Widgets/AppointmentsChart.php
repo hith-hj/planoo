@@ -14,10 +14,21 @@ class AppointmentsChart extends ChartWidget
     protected static ?int $sort = 2;
     protected bool $isCollapsible = true;
     protected int | string | array $columnSpan = 'full';
+    public ?string $filter = 'today';
 
+    protected function getFilters(): ?array
+    {
+        return [
+            'today' => 'Today',
+            'week' => 'Last week',
+            'month' => 'Last month',
+            'year' => 'This year',
+        ];
+    }
 
     protected function getData(): array
     {
+        $activeFilter = $this->filter;
         $data = Trend::model(Appointment::class)
             ->dateColumn('date')
             ->between(
@@ -31,6 +42,8 @@ class AppointmentsChart extends ChartWidget
                 [
                     'label' => 'Appointment Counts',
                     'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
+                    'backgroundColor' => '#36A2EB',
+                    'borderColor' => '#9BD0F5',
                 ],
             ],
             'labels' => $data->map(fn(TrendValue $value) => $value->date),

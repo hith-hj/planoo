@@ -46,9 +46,6 @@ class CoursesTable
                 TextColumn::make('rate')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('cancellation_fee')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

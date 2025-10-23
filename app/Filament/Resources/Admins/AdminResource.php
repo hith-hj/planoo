@@ -26,6 +26,8 @@ class AdminResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?int $navigationSort = 1;
+
     public static function canAccess(): bool
     {
         return Auth::user()->role === AdminsRoles::super->value;

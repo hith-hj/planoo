@@ -29,6 +29,8 @@ class CustomerResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?int $navigationSort = 2;
+
     public static function canAccess(): bool
     {
         $role = Auth::user()->role;

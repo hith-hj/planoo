@@ -21,6 +21,7 @@ class AdminForm
                     ->required(),
                 TextInput::make('password')
                     ->password()
+                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
                     ->required(),
                 Select::make('role')
                     ->required()
