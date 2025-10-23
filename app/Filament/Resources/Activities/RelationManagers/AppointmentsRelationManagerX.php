@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Activities\RelationManagers;
 
 use Filament\Actions\AssociateAction;
@@ -21,7 +23,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class AppointmentsRelationManagerX extends RelationManager
+final class AppointmentsRelationManagerX extends RelationManager
 {
     protected static string $relationship = 'appointments';
 

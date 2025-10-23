@@ -32,7 +32,7 @@ final class DatabaseSeeder extends Seeder
         Admin::factory()->create([
             'name' => 'S_Ad',
             'email' => 'a@a.com',
-            'role' => AdminsRoles::super->value
+            'role' => AdminsRoles::super->value,
         ]);
     }
 

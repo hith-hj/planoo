@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Appointments\Schemas;
 
 use Filament\Forms\Components\DatePicker;
@@ -8,7 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Schemas\Schema;
 
-class AppointmentForm
+final class AppointmentForm
 {
     public static function configure(Schema $schema): Schema
     {

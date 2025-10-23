@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Admins;
 
 use App\Enums\AdminsRoles;
@@ -18,7 +20,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
-class AdminResource extends Resource
+final class AdminResource extends Resource
 {
     protected static ?string $model = Admin::class;
 

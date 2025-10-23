@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Customers;
 
 use App\Enums\AdminsRoles;
@@ -21,7 +23,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class CustomerResource extends Resource
+final class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
@@ -34,6 +36,7 @@ class CustomerResource extends Resource
     public static function canAccess(): bool
     {
         $role = Auth::user()->role;
+
         return $role === AdminsRoles::super->value || $role === AdminsRoles::manager->value;
     }
 

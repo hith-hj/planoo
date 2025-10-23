@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Activities\Tables;
 
 use App\Enums\SessionDuration;
@@ -13,7 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class ActivitiesTable
+final class ActivitiesTable
 {
     public static function configure(Table $table): Table
     {
@@ -24,21 +26,21 @@ class ActivitiesTable
             ->columns([
                 TextColumn::make('user.name')
                     ->searchable()
-                    ->url(fn($record) => UserResource::getUrl('view', ['record' => $record->user]))
+                    ->url(fn ($record) => UserResource::getUrl('view', ['record' => $record->user]))
                     ->openUrlInNewTab(),
                 TextColumn::make('category.name')
                     ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('session_duration')
-                    ->formatStateUsing(fn($state)=>SessionDuration::from($state)->name)
+                    ->formatStateUsing(fn ($state) => SessionDuration::from($state)->name)
                     ->sortable(),
                 TextColumn::make('price')
                     ->money('syp')
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->boolean(),
-                TextColumn::make('appointments_count')->counts('appointments')
+                TextColumn::make('appointments_count')->counts('appointments'),
             ])
             ->columnManager(false)
             ->filters([

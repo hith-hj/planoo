@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
-class UsersTable
+final class UsersTable
 {
     public static function configure(Table $table): Table
     {
@@ -51,8 +52,8 @@ class UsersTable
                 Action::make('toggle')
                     ->requiresConfirmation()
                     ->action(function (Model $record) {
-                        $record->update(['is_active'=>!$record->is_active]);
-                    })
+                        $record->update(['is_active' => ! $record->is_active]);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

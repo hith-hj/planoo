@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Enums\AccountStatus;
@@ -7,7 +9,7 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
-class UserInfolist
+final class UserInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -21,7 +23,7 @@ class UserInfolist
                     ->numeric(),
                 TextEntry::make('status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => AccountStatus::from($state)->name),
+                    ->formatStateUsing(fn ($state) => AccountStatus::from($state)->name),
                 IconEntry::make('is_active')
                     ->boolean(),
                 IconEntry::make('is_notifiable')

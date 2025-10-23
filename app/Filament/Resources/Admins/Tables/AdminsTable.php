@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Admins\Tables;
 
 use App\Enums\AdminsRoles;
@@ -9,11 +11,10 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 
-class AdminsTable
+final class AdminsTable
 {
     public static function configure(Table $table): Table
     {
@@ -26,7 +27,7 @@ class AdminsTable
                     ->searchable(),
                 TextColumn::make('role')
                     ->badge()
-                    ->formatStateUsing(fn(string $state): string => AdminsRoles::from($state)->name),
+                    ->formatStateUsing(fn (string $state): string => AdminsRoles::from($state)->name),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -45,7 +46,7 @@ class AdminsTable
                 ViewAction::make()->label(''),
                 EditAction::make()->label(''),
                 DeleteAction::make()->label('')
-                ->hidden(fn($record)=>$record->role === AdminsRoles::super->value),
+                    ->hidden(fn ($record) => $record->role === AdminsRoles::super->value),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

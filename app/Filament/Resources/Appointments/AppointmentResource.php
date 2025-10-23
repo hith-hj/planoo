@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Appointments;
 
 use App\Enums\AdminsRoles;
@@ -19,7 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class AppointmentResource extends Resource
+final class AppointmentResource extends Resource
 {
     protected static ?string $model = Appointment::class;
 
@@ -30,6 +32,7 @@ class AppointmentResource extends Resource
     public static function canAccess(): bool
     {
         $role = Auth::user()->role;
+
         return $role === AdminsRoles::super->value || $role === AdminsRoles::manager->value;
     }
 

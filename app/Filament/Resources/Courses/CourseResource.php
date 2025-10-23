@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Courses;
 
 use App\Enums\AdminsRoles;
@@ -20,7 +22,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class CourseResource extends Resource
+final class CourseResource extends Resource
 {
     protected static ?string $model = Course::class;
 
@@ -33,6 +35,7 @@ class CourseResource extends Resource
     public static function canAccess(): bool
     {
         $role = Auth::user()->role;
+
         return $role === AdminsRoles::super->value || $role === AdminsRoles::manager->value;
     }
 
@@ -69,7 +72,7 @@ class CourseResource extends Resource
     public static function getRelations(): array
     {
         return [
-            CustomersRelationManager::class
+            CustomersRelationManager::class,
         ];
     }
 

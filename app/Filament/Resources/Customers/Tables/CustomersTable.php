@@ -1,21 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Customers\Tables;
 
 use App\Enums\AccountStatus;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Schemas\Components\Actions;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Actions\Action;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 
-class CustomersTable
+final class CustomersTable
 {
     public static function configure(Table $table): Table
     {
@@ -27,7 +26,7 @@ class CustomersTable
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => AccountStatus::from($state)->name)
+                    ->formatStateUsing(fn ($state) => AccountStatus::from($state)->name)
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->boolean()
@@ -51,8 +50,8 @@ class CustomersTable
                 Action::make('toggle')
                     ->requiresConfirmation()
                     ->action(function (Model $record) {
-                        $record->update(['is_active'=>!$record->is_active]);
-                    })
+                        $record->update(['is_active' => ! $record->is_active]);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

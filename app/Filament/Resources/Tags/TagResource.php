@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Tags;
 
 use App\Filament\Resources\Tags\Pages\CreateTag;
@@ -17,7 +19,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class TagResource extends Resource
+final class TagResource extends Resource
 {
     protected static ?string $model = Tag::class;
 
@@ -25,7 +27,7 @@ class TagResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string | UnitEnum | null $navigationGroup = 'static';
+    protected static string|UnitEnum|null $navigationGroup = 'static';
 
     public static function form(Schema $schema): Schema
     {

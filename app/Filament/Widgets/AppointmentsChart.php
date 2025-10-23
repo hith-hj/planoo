@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Widgets;
 
 use App\Models\Appointment;
@@ -7,14 +9,17 @@ use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 
-class AppointmentsChart extends ChartWidget
+final class AppointmentsChart extends ChartWidget
 {
+    public ?string $filter = 'today';
+
     protected ?string $heading = 'Appointments charts';
 
     protected static ?int $sort = 2;
+
     protected bool $isCollapsible = true;
-    protected int | string | array $columnSpan = 'full';
-    public ?string $filter = 'today';
+
+    protected int|string|array $columnSpan = 'full';
 
     protected function getFilters(): ?array
     {
@@ -37,16 +42,17 @@ class AppointmentsChart extends ChartWidget
             )
             ->perDay()
             ->count();
+
         return [
             'datasets' => [
                 [
                     'label' => 'Appointment Counts',
-                    'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
+                    'data' => $data->map(fn (TrendValue $value) => $value->aggregate),
                     'backgroundColor' => '#36A2EB',
                     'borderColor' => '#9BD0F5',
                 ],
             ],
-            'labels' => $data->map(fn(TrendValue $value) => $value->date),
+            'labels' => $data->map(fn (TrendValue $value) => $value->date),
         ];
     }
 

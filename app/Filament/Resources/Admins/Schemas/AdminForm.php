@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Admins\Schemas;
 
 use App\Enums\AdminsRoles;
@@ -7,7 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
-class AdminForm
+final class AdminForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -25,7 +27,7 @@ class AdminForm
                     ->required(),
                 Select::make('role')
                     ->required()
-                    ->options(fn()=>AdminsRoles::names()),
+                    ->options(fn () => AdminsRoles::names()),
             ]);
     }
 }
