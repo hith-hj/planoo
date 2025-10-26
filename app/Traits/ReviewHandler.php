@@ -6,14 +6,13 @@ namespace App\Traits;
 
 use App\Models\Customer;
 use App\Models\Review;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait ReviewHandler
 {
-    public function reviews(): HasMany
+    public function reviews(): MorphMany
     {
-        return $this->hasMany(Review::class, 'belongTo_id')
-            ->withAttributes(['belongTo_type' => $this::class]);
+        return $this->morphMany(Review::class, 'belongTo');
     }
 
     public function createReview(Customer $customer, array $data): Review

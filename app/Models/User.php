@@ -9,6 +9,7 @@ use App\Traits\MediaHandler;
 use App\Traits\NotificationsHandler;
 use App\Traits\VerificationHandler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
@@ -44,12 +45,12 @@ final class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function activities()
+    public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
     }
 
-    public function courses()
+    public function courses(): HasMany
     {
         return $this->hasMany(Course::class);
     }

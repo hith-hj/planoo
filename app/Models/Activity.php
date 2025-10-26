@@ -9,8 +9,8 @@ use App\Traits\ReviewHandler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 final class Activity extends Model
@@ -51,15 +51,13 @@ final class Activity extends Model
         return $this->morphMany(Day::class, 'belongTo');
     }
 
-    public function location(): HasOne
+    public function location(): MorphOne
     {
-        return $this->hasOne(Location::class, 'belongTo_id')
-            ->withAttributes(['belongTo_type' => $this::class]);
+        return $this->morphOne(Location::class, 'belongTo');
     }
 
-    public function appointments()
+    public function appointments(): MorphMany
     {
-        return $this->hasMany(Appointment::class, 'appointable_id')
-            ->withAttributes(['appointable_type' => $this::class]);
+        return $this->morphMany(Appointment::class, 'appointable');
     }
 }

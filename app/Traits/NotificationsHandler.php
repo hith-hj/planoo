@@ -6,7 +6,7 @@ namespace App\Traits;
 
 use App\Enums\NotificationTypes;
 use App\Models\Notification;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Exception\MessagingException;
@@ -25,6 +25,11 @@ trait NotificationsHandler
     private array $data = [];
 
     private string $class = '';
+
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(Notification::class, 'belongTo');
+    }
 
     public function notify(
         string $title = '',
@@ -81,12 +86,6 @@ trait NotificationsHandler
         } catch (MessagingException) {
             return false;
         }
-    }
-
-    public function notifications(): HasMany
-    {
-        return $this->hasMany(Notification::class, 'belongTo_id')
-            ->withAttributes(['belongTo_type' => $this::class]);
     }
 
     private function store(array $extra): Notification

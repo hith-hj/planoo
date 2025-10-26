@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use App\Models\Code;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 trait CodeHandler
 {
-    public function codes(): HasMany
+    public function codes(): MorphMany
     {
-        return $this->hasMany(Code::class, 'belongTo_id')
-            ->withAttributes(['belongTo_type' => $this::class]);
+        return $this->morphMany(Code::class, 'belongTo');
     }
 
     public function code(string $type): ?Code

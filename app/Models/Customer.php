@@ -9,6 +9,8 @@ use App\Traits\NotificationsHandler;
 use App\Traits\ReviewHandler;
 use App\Traits\VerificationHandler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
@@ -42,13 +44,13 @@ final class Customer extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function courses()
+    public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class)
             ->withPivot(['remaining_sessions', 'is_complete']);
     }
 
-    public function appointments()
+    public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
     }

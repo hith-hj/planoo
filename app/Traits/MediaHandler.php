@@ -8,17 +8,16 @@ use App\Models\Media;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 trait MediaHandler
 {
-    public function medias(): HasMany
+    public function medias(): MorphMany
     {
-        return $this->hasMany(Media::class, 'belongTo_id')
-            ->withAttributes(['belongTo_type' => $this::class]);
+        return $this->morphMany(Media::class, 'belongTo');
     }
 
     public function mediaByName(?string $name = ''): ?Model
