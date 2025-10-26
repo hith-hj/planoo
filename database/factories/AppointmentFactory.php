@@ -51,7 +51,7 @@ final class AppointmentFactory extends Factory
         ];
     }
 
-    private function toDate(string $day = 'sunday', int $count = 3)
+    private function toDate(string $day = 'sunday', int $count = 5)
     {
         $dates = [];
         $start = Carbon::now();

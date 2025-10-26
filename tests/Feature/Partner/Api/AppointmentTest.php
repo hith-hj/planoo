@@ -55,8 +55,8 @@ describe('Appointment Controller Tests', function () {
                 ]
             );
 
-        $response = $this->postJson("{$this->url}/create", $data)
-            ->assertOk();
+        $response = $this->postJson("{$this->url}/create", $data);
+        $response->assertOk();
 
         expect($response->json('payload.appointment'))->not->toBeNull()
             ->and($response->json('payload.appointment.time'))->toBe($data['time'])
