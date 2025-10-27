@@ -48,7 +48,7 @@ final class CourseController extends Controller
 
         $course = $this->services->find($validator->safe()->integer('course_id'));
 
-        $this->services->attend(Auth::user(), $course);
+        $this->services->cancel(Auth::user(), $course);
 
         return Success();
     }

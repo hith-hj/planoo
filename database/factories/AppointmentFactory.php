@@ -54,7 +54,7 @@ final class AppointmentFactory extends Factory
     private function toDate(string $day = 'sunday', int $count = 5)
     {
         $dates = [];
-        $start = Carbon::now();
+        $start = Carbon::tomorrow();
         $end = Carbon::tomorrow()->addDays(10);
 
         while (count($dates) < $count) {

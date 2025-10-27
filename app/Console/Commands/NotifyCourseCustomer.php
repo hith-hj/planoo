@@ -53,7 +53,7 @@ final class NotifyCourseCustomer extends Command
             foreach ($course->customers as $customer) {
                 $remaining = $customer->pivot->remaining_sessions;
 
-                if ($remaining === 0) {
+                if ($remaining === 0 || (bool) $customer->pivot->is_complete === true) {
                     continue;
                 }
 

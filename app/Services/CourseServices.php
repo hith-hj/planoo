@@ -84,7 +84,9 @@ final class CourseServices
     {
         Required($customer, 'customer');
         Required($course, 'course');
+        Truthy($this->isAttending($customer,$course),'Already attending this course.');
         Truthy($course->is_full, 'Course is full');
+
         $course->customers()
             ->attach($customer->id, [
                 'remaining_sessions' => $course->course_duration,
@@ -106,6 +108,7 @@ final class CourseServices
     {
         Required($customer, 'customer');
         Required($course, 'course');
+        Truthy(!$this->isAttending($customer,$course),'Not attending this course.');
         $course->customers()->detach($customer->id);
         if ($course->customers()->count() < $course->capacity) {
             $course->update(['is_full' => false]);
@@ -122,5 +125,10 @@ final class CourseServices
     private function toBeLoaded()
     {
         return ['days', 'location', 'tags', 'medias', 'category', 'customers'];
+    }
+
+    private function isAttending(Customer $customer, Course $course): bool
+    {
+        return $course->customers()->where('customer_id', $customer->id)->exists();
     }
 }
