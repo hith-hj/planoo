@@ -158,21 +158,19 @@ final class AppointmentServices
 
     public function getQuery($user, string $ownerType = 'activity')
     {
-        $query = '';
         try {
             $owner = getModel();
             Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
-            $query = $owner->appointments();
+
+            return $owner->appointments();
         } catch (Exception) {
-            $query = match ($ownerType) {
+            return match ($ownerType) {
                 SectionsTypes::activity->name => Appointment::where('appointable_type', Activity::class)
                     ->whereIn('appointable_id', $user->activities()->pluck('id')),
                 SectionsTypes::course->name => Appointment::where('appointable_type', Course::class)
                     ->whereIn('appointable_id', $user->courses()->pluck('id')),
-                default => throw new Exception('ownerType is required for query'),
+                default => throw new Exception('ownerType is required'),
             };
-        } finally {
-            return $query;
         }
     }
 

@@ -84,7 +84,7 @@ final class CourseServices
     {
         Required($customer, 'customer');
         Required($course, 'course');
-        Truthy($this->isAttending($customer,$course),'Already attending this course.');
+        Truthy($this->isAttending($customer, $course), 'Already attending this course.');
         Truthy($course->is_full, 'Course is full');
 
         $course->customers()
@@ -108,7 +108,7 @@ final class CourseServices
     {
         Required($customer, 'customer');
         Required($course, 'course');
-        Truthy(!$this->isAttending($customer,$course),'Not attending this course.');
+        Truthy(! $this->isAttending($customer, $course), 'Not attending this course.');
         $course->customers()->detach($customer->id);
         if ($course->customers()->count() < $course->capacity) {
             $course->update(['is_full' => false]);
