@@ -71,6 +71,6 @@ final class AppointmentFactory extends Factory
 
     private function toTime()
     {
-        return today()->hour(9)->addHour(random_int(1, 8))->toTimeString();
+        return now()->tomorrow()->hour(9)->addHour(random_int(1, 8))->toTimeString();
     }
 }

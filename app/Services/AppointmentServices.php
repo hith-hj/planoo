@@ -9,6 +9,7 @@ use App\Enums\SectionsTypes;
 use App\Enums\SessionDuration;
 use App\Models\Activity;
 use App\Models\Appointment;
+use App\Models\Course;
 use App\Models\Customer;
 use Carbon\Carbon;
 use Exception;
@@ -25,7 +26,6 @@ final class AppointmentServices
     ) {
         Required($query, 'query');
         $query->with($this->relationToLoad());
-        // ->where('status', AppointmentStatus::accepted->value);
 
         $this->applyFilters($query, $filters, [
             'status' => AppointmentStatus::values(),
@@ -167,6 +167,8 @@ final class AppointmentServices
             $query = match ($ownerType) {
                 SectionsTypes::activity->name => Appointment::where('appointable_type', Activity::class)
                     ->whereIn('appointable_id', $user->activities()->pluck('id')),
+                SectionsTypes::course->name => Appointment::where('appointable_type', Course::class)
+                    ->whereIn('appointable_id', $user->courses()->pluck('id')),
                 default => throw new Exception('ownerType is required for query'),
             };
         } finally {
