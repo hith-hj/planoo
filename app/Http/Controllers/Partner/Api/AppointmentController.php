@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Partner\Api;
 use App\Http\Controllers\Controller;
 use App\Services\ActivityServices;
 use App\Services\AppointmentServices;
+use App\Services\CustomerServices;
 use App\Validators\AppointmentValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +49,8 @@ final class AppointmentController extends Controller
         if ($this->services->checkAppointmentExists($validator->safe()->all())) {
             return Error('Appointment just got booked');
         }
-        $customer = $this->services->getCustomer($validator->safe()->all());
+        $customer = app(CustomerServices::class)->getCustomer($validator->safe()->all());
+
         $appointment = $this->services->create($activity, $customer, $validator->safe()->all());
 
         return Success(payload: ['appointment' => $appointment->toResource()]);

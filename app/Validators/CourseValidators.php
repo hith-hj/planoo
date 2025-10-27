@@ -11,7 +11,7 @@ use Illuminate\Validation\Rules\Enum;
 
 final class CourseValidators
 {
-    public static function find($data)
+    public static function find(array $data)
     {
         return Validator::make($data, [
             'course_id' => ['required', 'exists:courses,id'],
@@ -42,10 +42,27 @@ final class CourseValidators
         return $validator;
     }
 
-    public static function delete($data)
+    public static function delete(array $data)
     {
         return Validator::make($data, [
             'course_id' => ['required', 'exists:courses,id'],
+        ]);
+    }
+
+    public static function attend(array $data)
+    {
+        return Validator::make($data,[
+            'course_id' => ['required', 'exists:courses,id'],
+            'customer_id' => ['sometimes', 'required', 'exists:customers,id', 'required_without:customer_phone'],
+            'customer_phone' => ['sometimes', 'regex:/^09[1-9]{1}\d{7}$/', 'unique:customers,phone', 'required_without:customer_id'],
+        ]);
+    }
+
+    public static function cancel(array $data)
+    {
+        return Validator::make($data,[
+            'course_id' => ['required', 'exists:courses,id'],
+            'customer_id' => ['sometimes', 'required', 'exists:customers,id'],
         ]);
     }
 }

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\CourseServices;
+use App\Services\CustomerServices;
 use App\Validators\CourseValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -86,6 +87,28 @@ final class CourseController extends Controller
             $validator->safe()->integer('course_id')
         );
         $this->services->toggleActivation($course);
+
+        return Success();
+    }
+
+    public function attend(Request $request)
+    {
+        $validator = CourseValidators::attend($request->all());
+        $course = $this->services->findByUser(Auth::user(), $validator->safe()->integer('course_id'));
+        $customer = app(CustomerServices::class)->getCustomer($validator->safe()->except('course_id'));
+
+        $this->services->attend($customer, $course);
+
+        return Success();
+    }
+
+    public function cancel(Request $request)
+    {
+        $validator = CourseValidators::cancel($request->all());
+        $course = $this->services->findByUser(Auth::user(), $validator->safe()->integer('course_id'));
+        $customer = app(CustomerServices::class)->getCustomer($validator->safe()->except('course_id'));
+
+        $this->services->cancel($customer, $course);
 
         return Success();
     }

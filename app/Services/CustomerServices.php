@@ -63,6 +63,23 @@ final class CustomerServices
         return $customer;
     }
 
+    public function getCustomer(array $data)
+    {
+        $customer = null;
+        if (isset($data['customer_id']) || isset($data['customer_phone'])) {
+            if (isset($data['customer_phone'])) {
+                $customer = $this->createIfNotExists([
+                    'phone' => $data['customer_phone'],
+                ]);
+            }
+            if (isset($data['customer_id'])) {
+                $customer = $this->find((int) $data['customer_id']);
+            }
+        }
+        NotFound($customer, 'customer');
+        return $customer;
+    }
+
     private function userName(array $data): string
     {
         if (isset($data['name'])) {

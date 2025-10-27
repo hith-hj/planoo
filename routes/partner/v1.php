@@ -144,5 +144,7 @@ Route::controller(CourseController::class)
             Route::patch('update', 'update')->name('update');
             Route::delete('delete', 'delete')->name('delete');
             Route::post('toggleActivation', 'toggleActivation')->name('toggleActivation');
+            Route::post('attend', 'attend')->name('attend');
+            Route::post('cancel', 'cancel')->name('cancel');
         }
     );

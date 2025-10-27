@@ -174,24 +174,6 @@ final class AppointmentServices
         }
     }
 
-    public function getCustomer(array $data)
-    {
-        $customer = null;
-        if (isset($data['customer_id']) || isset($data['customer_phone'])) {
-            if (isset($data['customer_phone'])) {
-                $customer = app(CustomerServices::class)->createIfNotExists([
-                    'phone' => $data['customer_phone'],
-                ]);
-            }
-            if (isset($data['customer_id'])) {
-                $customer = app(CustomerServices::class)->find((int) $data['customer_id']);
-            }
-
-            return $customer;
-        }
-        NotFound($customer, 'customer');
-    }
-
     private function checkAllowedDurations($gapStart, $gapEnd, $duration): array
     {
         $slots = [];
