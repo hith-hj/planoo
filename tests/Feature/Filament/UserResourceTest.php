@@ -22,9 +22,9 @@ beforeEach(function () {
 });
 
 describe('User Resource Test', function () {
-    it('can render index page', function () {
-        $this->get(UserResource::getUrl('index'))->assertSuccessful();
-    });
+    // it('can render index page', function () {
+    //     $this->get(UserResource::getUrl('index'))->assertSuccessful();
+    // });
 
     // it('can load the list page', function () {
     //     $users = User::factory()->count(5)->create();

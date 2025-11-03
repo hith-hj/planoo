@@ -44,7 +44,7 @@ jobs:
         run: php artisan key:generate
 
       - name: Generate jwt Key
-        run: php artisan jwt:secret
+        run: php artisan jwt:secret --force --no-ansi --no-interaction
 
       - name: Tests
         run: php artisan test -p
