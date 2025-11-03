@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum NotificationTypes: int
+enum EventStatus: int
 {
-    case normal = 0;
-    case verification = 1;
-    case activity = 2;
-    case course = 3;
-    case event = 4;
-    case appointment = 5;
-    case session = 6;
-    case chat = 10;
+    case canceled = -1;
+    case pending = 0;
+    case active = 1;
+    case completed = 2;
 
     public static function values()
     {

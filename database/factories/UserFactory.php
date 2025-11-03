@@ -8,6 +8,7 @@ use App\Enums\AccountStatus;
 use App\Enums\UsersTypes;
 use App\Models\Activity;
 use App\Models\Course;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -41,6 +42,7 @@ final class UserFactory extends Factory
         return $this->afterCreating(function (User $user) {
             Activity::factory()->for($user, 'user')->create();
             Course::factory()->for($user, 'user')->create();
+            Event::factory()->for($user, 'user')->create();
         });
     }
 

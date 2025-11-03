@@ -77,6 +77,7 @@ final class CustomerServices
             }
         }
         NotFound($customer, 'customer');
+
         return $customer;
     }
 

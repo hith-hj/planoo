@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Course;
+use App\Models\Customer;
 use App\Models\Day;
 use App\Models\Location;
 use App\Models\Media;
@@ -38,8 +39,7 @@ describe('Course Controller Tests', function () {
     });
 
     it('creates a new course with days, location, media, and tags', function () {
-        $courseData = Course::factory()->for($this->user, 'user')
-            ->make(['user_id' => $this->user->id])->toArray();
+        $courseData = Course::factory()->for($this->user, 'user')->make()->toArray();
 
         $days = Day::factory()->days();
         $location = Location::factory()->make()->toArray();
@@ -106,5 +106,36 @@ describe('Course Controller Tests', function () {
         ])->assertOk();
 
         expect($course->fresh()->is_active)->toBeTrue();
+    });
+
+    it('can attend customer by id for course', function () {
+        $course = Course::factory()->for($this->user,'user')->create();
+        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}",['customer_id'=>1]);
+        $res->assertOk();
+        $customerCourse = $course->customers()->wherePivot('customer_id',1)->first();
+        expect($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
+    });
+
+    it('can attend customer by phone for course', function () {
+        $course = Course::factory()->for($this->user,'user')->create();
+        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}",['customer_phone'=>'0987654321']);
+        $res->assertOk();
+        $customer = Customer::where('phone','0987654321')->first();
+        $customerCourse = $course->customers()->wherePivot('customer_id',$customer->id)->first();
+        expect($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
+    });
+
+    it('can not attend full course', function () {
+        $course = Course::factory()->for($this->user,'user')->create(['is_full'=>true]);
+        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}",['customer_id'=>1]);
+        $res->assertStatus(400);
+    });
+
+    it('can cancel course attend by customer id', function () {
+        $course = Course::factory()->for($this->user,'user')->create();
+        $this->postJson("{$this->url}/attend?course_id={$course->id}",['customer_id'=>1]);
+        $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}",['customer_id'=>1]);
+        $res->assertOk();
+        expect($course->customers()->wherePivot('customer_id',1)->first())->toBeNull();
     });
 });

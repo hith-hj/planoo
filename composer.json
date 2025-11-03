@@ -62,7 +62,11 @@
         ],
         "test": [
             "@php artisan config:clear --ansi",
-            "@php artisan test"
+            "@php artisan test -p"
+        ],
+        "check":[
+            "./vendor/bin/pint",
+            "composer run test:p"
         ]
     },
     "extra": {

@@ -54,4 +54,9 @@ final class Customer extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Appointment::class);
     }
+
+    public function events(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class);
+    }
 }

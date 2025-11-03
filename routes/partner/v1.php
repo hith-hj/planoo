@@ -7,6 +7,7 @@ use App\Http\Controllers\Partner\Api\AppointmentController;
 use App\Http\Controllers\Partner\Api\AuthController;
 use App\Http\Controllers\Partner\Api\CourseController;
 use App\Http\Controllers\Partner\Api\DayController;
+use App\Http\Controllers\Partner\Api\EventController;
 use App\Http\Controllers\Partner\Api\LocationsController;
 use App\Http\Controllers\Partner\Api\MediaController;
 use App\Http\Controllers\Partner\Api\ReviewController;
@@ -136,6 +137,22 @@ Route::controller(ReviewController::class)
 Route::controller(CourseController::class)
     ->prefix('course')
     ->name('course.')
+    ->group(
+        function (): void {
+            Route::get('all', 'all')->name('all');
+            Route::get('find', 'find')->name('find');
+            Route::post('create', 'create')->name('create');
+            Route::patch('update', 'update')->name('update');
+            Route::delete('delete', 'delete')->name('delete');
+            Route::post('toggleActivation', 'toggleActivation')->name('toggleActivation');
+            Route::post('attend', 'attend')->name('attend');
+            Route::post('cancel', 'cancel')->name('cancel');
+        }
+    );
+
+Route::controller(EventController::class)
+    ->prefix('event')
+    ->name('event.')
     ->group(
         function (): void {
             Route::get('all', 'all')->name('all');
