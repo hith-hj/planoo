@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use App\Enums\EventStatus;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -12,6 +13,13 @@ final class EventResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $end_date = $this->start_date;
+        if ($this->event_duration > 1) {
+            $end_date = Carbon::createFromDate($this->start_date)
+                ->addDays($this->event_duration)
+                ->toDateString();
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -23,6 +31,8 @@ final class EventResource extends JsonResource
             'admission_fee' => $this->admission_fee,
             'withdrawal_fee' => $this->withdrawal_fee,
             'event_duration' => $this->event_duration,
+            'start_date' => $this->start_date,
+            'end_date' => $end_date,
             'status' => EventStatus::from($this->status)->name,
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),

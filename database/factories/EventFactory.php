@@ -8,7 +8,6 @@ use App\Enums\EventStatus;
 use App\Models\Appointment;
 use App\Models\Category;
 use App\Models\Customer;
-use App\Models\Day;
 use App\Models\Event;
 use App\Models\Location;
 use App\Models\Media;
@@ -62,7 +61,12 @@ final class EventFactory extends Factory
             $event->category()->associate($category)->save();
             $tags = Tag::inRandomOrder()->take(2)->get();
             $event->tags()->attach($tags);
-            Day::factory()->day()->for($event, 'holder')->create();
+            $day = Carbon::createFromDate($event->start_date);
+            $event->days()->create([
+                'day' => $day->format('l'),
+                'start' => '06:00',
+                'end' => '10:00',
+            ]);
             Location::factory()->for($event, 'holder')->create();
             Media::factory()->for($event, 'holder')->create();
             Review::factory()->for($event, 'holder')->create();

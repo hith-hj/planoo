@@ -11,6 +11,7 @@ use App\Models\Activity;
 use App\Models\Appointment;
 use App\Models\Course;
 use App\Models\Customer;
+use App\Models\Event;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -169,6 +170,8 @@ final class AppointmentServices
                     ->whereIn('appointable_id', $user->activities()->pluck('id')),
                 SectionsTypes::course->name => Appointment::where('appointable_type', Course::class)
                     ->whereIn('appointable_id', $user->courses()->pluck('id')),
+                SectionsTypes::event->name => Appointment::where('appointable_type', Event::class)
+                    ->whereIn('appointable_id', $user->events()->pluck('id')),
                 default => throw new Exception('ownerType is required'),
             };
         }

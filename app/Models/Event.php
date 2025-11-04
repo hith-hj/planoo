@@ -7,6 +7,8 @@ namespace App\Models;
 use App\Enums\EventStatus;
 use App\Traits\MediaHandler;
 use App\Traits\ReviewHandler;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,6 +35,18 @@ final class Event extends Model
             'is_active' => 'bool',
             'is_full' => 'bool',
         ];
+    }
+
+    #[Scope]
+    protected function pending(Builder $query): void
+    {
+        $query->where('status', EventStatus::pending->value);
+    }
+
+    #[Scope]
+    protected function active(Builder $query): void
+    {
+        $query->where('status', EventStatus::active->value);
     }
 
     public function user(): BelongsTo

@@ -42,9 +42,7 @@ final class EventController extends Controller
         );
         $request->merge(['owner_type' => 'event', 'owner_id' => $event->id]);
         $request->offsetUnset('name');
-        if ($request->has('days')) {
-            app(DayController::class)->createMany($request);
-        }
+        app(DayController::class)->createMany($request);
         app(LocationsController::class)->create($request);
         app(TagController::class)->create($request);
         app(MediaController::class)->create($request);

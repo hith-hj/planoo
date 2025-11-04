@@ -66,7 +66,7 @@
         ],
         "check":[
             "./vendor/bin/pint",
-            "composer run test:p"
+            "composer run test"
         ]
     },
     "extra": {
