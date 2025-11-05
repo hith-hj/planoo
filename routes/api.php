@@ -21,25 +21,16 @@ Route::controller(LabelController::class)
         }
     );
 
-Route::middleware(JwtMiddleware::class)->group(function () {
+Route::middleware([JwtMiddleware::class, 'throttle:api'])->group(function () {
+    Route::prefix('partner')->name('partner.')->group(function (): void {
+        Route::prefix('v1')->group(function (): void {
+            require 'partner/v1.php';
+        });
+    });
 
-    Route::prefix('partner')->name('partner.')->group(
-        function (): void {
-            Route::prefix('v1')->group(
-                function (): void {
-                    require 'partner/v1.php';
-                }
-            );
-        }
-    );
-
-    Route::prefix('customer')->name('customer.')->group(
-        function (): void {
-            Route::prefix('v1')->group(
-                function (): void {
-                    require 'customer/v1.php';
-                }
-            );
-        }
-    );
+    Route::prefix('customer')->name('customer.')->group(function (): void {
+        Route::prefix('v1')->group(function (): void {
+            require 'customer/v1.php';
+        });
+    });
 });
