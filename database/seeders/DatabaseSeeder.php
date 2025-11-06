@@ -41,12 +41,6 @@ final class DatabaseSeeder extends Seeder
         User::factory()->create();
         User::factory()->createMany([
             [
-                'name' => 'a',
-                'email' => 'a@a.com',
-                'phone' => '0911111112',
-                'account_type' => UsersTypes::trainer->name,
-            ],
-            [
                 'name' => 's',
                 'email' => 's@s.com',
                 'phone' => '0911111111',
@@ -79,9 +73,9 @@ final class DatabaseSeeder extends Seeder
     {
         if (DB::table('tags')->count() === 0) {
             return DB::table('tags')->insert([
+                ['name' => 'AC', 'icon' => '#'],
                 ['name' => 'wifi', 'icon' => '#'],
                 ['name' => 'indoor', 'icon' => '#'],
-                ['name' => 'AC', 'icon' => '#'],
                 ['name' => 'charging', 'icon' => '#'],
             ]);
         }
@@ -91,12 +85,12 @@ final class DatabaseSeeder extends Seeder
     {
         $activities = Activity::all();
         foreach ($activities as $activity) {
-            Appointment::factory(5)->for($activity, 'holder')->create();
+            Appointment::factory()->for($activity, 'holder')->create();
         }
     }
 
     private function createCustomers()
     {
-        Customer::factory(5)->create();
+        Customer::factory()->create();
     }
 }

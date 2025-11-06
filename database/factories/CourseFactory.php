@@ -51,8 +51,8 @@ final class CourseFactory extends Factory
             Review::factory()->for($course, 'holder')->create();
             Location::factory()->for($course, 'holder')->create();
             Day::factory()->day()->for($course, 'holder')->create();
-            Appointment::factory(2)->for($course, 'holder')->create();
-            Customer::factory(2)->hasAttached(
+            Appointment::factory()->for($course, 'holder')->create();
+            Customer::factory()->hasAttached(
                 $course,
                 ['remaining_sessions' => $course->course_duration],
                 'courses'

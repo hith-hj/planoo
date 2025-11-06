@@ -49,7 +49,7 @@ final class ActivityFactory extends Factory
             Location::factory()->for($activity, 'holder')->create();
             Media::factory()->for($activity, 'holder')->create();
             Review::factory()->for($activity, 'holder')->create();
-            Appointment::factory(2)->for($activity, 'holder')->create();
+            Appointment::factory()->for($activity, 'holder')->create();
         });
     }
 }

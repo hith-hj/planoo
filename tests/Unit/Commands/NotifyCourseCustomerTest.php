@@ -18,6 +18,7 @@ describe('test NotifyCourseCustomer Command', function () {
     it('creates appointments and sends notifications', function () {
         $instructor = User::factory()->create();
         $course = Course::factory()->for($instructor, 'user')->create();
+        $course->days()->delete();
         $customer = Customer::factory()->create();
         $course->customers()->attach($customer->id, [
             'remaining_sessions' => 2,
@@ -28,6 +29,7 @@ describe('test NotifyCourseCustomer Command', function () {
             'start' => '10:00',
             'end' => '20:00',
         ]);
+        Appointment::truncate();
         artisan('app:nccs')->assertExitCode(0);
         assertDatabaseHas('appointments', [
             'appointable_id' => $course->id,
@@ -51,16 +53,15 @@ describe('test NotifyCourseCustomer Command', function () {
     });
 
     it('marks customer complete and sends finish notification', function () {
-
         $course = Course::factory()->create();
-        $customer = Customer::factory()->create();
-
+        $course->days()->delete();
         $course->days()->create([
             'day' => mb_strtolower(Carbon::now()->format('l')),
             'start' => '10:00',
             'end' => '20:00',
         ]);
 
+        $customer = Customer::factory()->create();
         $course->customers()->attach($customer->id, [
             'remaining_sessions' => 1,
             'is_complete' => false,
@@ -92,6 +93,7 @@ describe('test NotifyCourseCustomer Command', function () {
             'start' => '10:00',
             'end' => '20:00',
         ]);
+        Appointment::truncate();
         $conflict = Appointment::factory()->create([
             'date' => Carbon::now()->toDateString(),
             'time' => '10:00',

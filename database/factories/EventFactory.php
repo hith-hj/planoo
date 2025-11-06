@@ -67,11 +67,11 @@ final class EventFactory extends Factory
                 'start' => '06:00',
                 'end' => '10:00',
             ]);
-            Location::factory()->for($event, 'holder')->create();
             Media::factory()->for($event, 'holder')->create();
             Review::factory()->for($event, 'holder')->create();
-            Appointment::factory(2)->for($event, 'holder')->create();
-            Customer::factory(2)->hasAttached($event, relationship: 'events')->create();
+            Location::factory()->for($event, 'holder')->create();
+            Appointment::factory()->for($event, 'holder')->create();
+            Customer::factory()->hasAttached($event, relationship: 'events')->create();
         });
     }
 }
