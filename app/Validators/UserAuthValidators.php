@@ -8,7 +8,7 @@ use App\Enums\UsersTypes;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-final class UserAuthValidators
+final class UserAuthValidators extends Validators
 {
     public static function register(array $data)
     {

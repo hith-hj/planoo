@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class UserValidators
+final class UserValidators extends Validators
 {
     public static function update(array $data)
     {

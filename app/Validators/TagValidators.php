@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class TagValidators
+final class TagValidators extends Validators
 {
     public static function create(array $data, bool $update = false)
     {

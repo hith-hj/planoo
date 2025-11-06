@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class NotificationValidators
+final class NotificationValidators extends Validators
 {
     public static function find($data)
     {

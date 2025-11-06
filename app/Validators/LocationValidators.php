@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class LocationValidators
+final class LocationValidators extends Validators
 {
     public static function create(array $data, bool $update = false)
     {

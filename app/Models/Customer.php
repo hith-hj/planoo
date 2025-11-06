@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Interfaces\Reviewable;
 use App\Traits\CodeHandler;
 use App\Traits\NotificationsHandler;
 use App\Traits\ReviewHandler;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-final class Customer extends Authenticatable implements JWTSubject
+final class Customer extends Authenticatable implements JWTSubject, Reviewable
 {
     use CodeHandler;
     use HasFactory;

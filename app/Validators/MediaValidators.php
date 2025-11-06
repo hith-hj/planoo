@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class MediaValidators
+final class MediaValidators extends Validators
 {
     public static function find(array $data)
     {

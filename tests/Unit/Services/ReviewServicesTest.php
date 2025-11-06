@@ -31,7 +31,7 @@ describe('Review Services Class', function () {
     });
 
     it('fails to retive reviews with invalid object', function () {
-        expect(fn () => $this->services->all((object) []))->toThrow(\Exception::class);
+        expect(fn () => $this->services->all((object) []))->toThrow(\TypeError::class);
     });
 
     it('can create review for customer', function () {
@@ -51,5 +51,5 @@ describe('Review Services Class', function () {
     it('fails to create review for with invalid owner object', function () {
         $data = Review::factory()->make()->toArray();
         $this->services->create((object)[], $this->customer, $data);
-    })->throws(\Exception::class);
+    })->throws(\TypeError::class);
 });

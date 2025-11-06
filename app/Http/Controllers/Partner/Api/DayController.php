@@ -65,12 +65,13 @@ final class DayController extends Controller
     public function update(Request $request)
     {
         $validator = DayValidators::update($request->all());
+        $model = getModel();
         $day = $this->services->findByObject(
-            getModel(),
+            $model,
             $validator->safe()->integer('day_id')
         );
         $this->services->update(
-            getModel(),
+            $model,
             $day,
             $validator->safe()->except('day_id')
         );

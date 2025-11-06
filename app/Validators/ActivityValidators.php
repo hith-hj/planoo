@@ -8,7 +8,7 @@ use App\Enums\SessionDuration;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Enum;
 
-final class ActivityValidators
+final class ActivityValidators extends Validators
 {
     public static function find($data)
     {

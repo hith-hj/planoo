@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class ReviewValidators
+final class ReviewValidators extends Validators
 {
     public static function create($data)
     {

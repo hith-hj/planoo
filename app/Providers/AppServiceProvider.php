@@ -29,7 +29,7 @@ final class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
         Model::unguard();
         Model::preventLazyLoading(! app()->environment('production'));
-        RateLimiter::for('api',function(Request $request){
+        RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(100)->by($request->user()?->id ?: $request->ip());
         });
     }

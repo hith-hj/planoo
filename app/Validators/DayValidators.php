@@ -8,7 +8,7 @@ use App\Enums\WeekDays;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-final class DayValidators
+final class DayValidators extends Validators
 {
     public static function find($data)
     {

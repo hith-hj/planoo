@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class CustomerValidators
+final class CustomerValidators extends Validators
 {
     public static function find($data)
     {

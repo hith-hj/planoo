@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class CustomerAuthValidators
+final class CustomerAuthValidators extends Validators
 {
     public static function register(array $data)
     {

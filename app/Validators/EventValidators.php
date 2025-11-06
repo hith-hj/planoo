@@ -6,7 +6,7 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 
-final class EventValidators
+final class EventValidators extends Validators
 {
     public static function find(array $data)
     {

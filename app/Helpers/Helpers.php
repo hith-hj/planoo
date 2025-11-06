@@ -3,12 +3,22 @@
 declare(strict_types=1);
 
 use App\Enums\SectionsTypes;
+use App\Interfaces\Dayable;
+use App\Interfaces\Locatable;
+use App\Interfaces\Mediable;
+use App\Interfaces\Reviewable;
+use App\Interfaces\Taggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 if (! function_exists('Success')) {
+    /**
+     * Return Success JsonResponse
+     *
+     * @param  int  $coode
+     */
     function Success(
         string $msg = 'Success',
         array $payload = [],
@@ -27,6 +37,11 @@ if (! function_exists('Success')) {
 }
 
 if (! function_exists('Error')) {
+    /**
+     * Return Error JsonResponse
+     *
+     * @param  int  $coode
+     */
     function Error(
         string $msg = 'Error',
         array $payload = [],
@@ -157,7 +172,7 @@ if (! function_exists('getModel')) {
      * @throws Illuminate\Validation\ValidationException
      * @throws NotFoundHttpException
      */
-    function getModel(?string $owner_type = null, ?int $owner_id = null): Model
+    function getModel(?string $owner_type = null, ?int $owner_id = null): Taggable|Dayable|Mediable|Locatable|Reviewable|Model
     {
         $id = $owner_id ?? (int) request('owner_id');
         $type = $owner_type ?? request('owner_type');
@@ -169,35 +184,6 @@ if (! function_exists('getModel')) {
         $model = $class::find($id);
         NotFound($model, "Model not found: {$type} with ID {$id}");
         Truthy((int) $model->user_id !== (int) Auth::id(), 'Unauthorized access to model.');
-
-        return $model;
-    }
-}
-
-if (! function_exists('getModelGlobal')) {
-    /**
-     * Retrieve an Eloquent model instance based on type and id.
-     *
-     * If type or id are not provided, they will be retrieved from the request.<br>
-     * if any of the fields is not present in the request exception will be thrown.<br>
-     * The function validates the model type, ensures the class exists,<br>
-     *
-     * @param  string|null  $type
-     * @param  int|null  $id
-     *
-     * @throws Illuminate\Validation\ValidationException
-     * @throws NotFoundHttpException
-     */
-    function getModelGlobal(?string $owner_type = null, ?int $owner_id = null): Model
-    {
-        $id = $owner_id ?? (int) request('owner_id');
-        $type = $owner_type ?? request('owner_type');
-        Truthy(is_null($type) || is_null($id), 'Failed to retrieve model');
-        $type = ucfirst($type);
-        $class = "App\\Models\\{$type}";
-        Truthy(! class_exists($class), "Class does not exist: {$class}");
-        $model = $class::find($id);
-        NotFound($model, "Model not found: {$type} with ID {$id}");
 
         return $model;
     }

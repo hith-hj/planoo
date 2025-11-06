@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Interfaces\Dayable;
 use App\Models\Day;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,20 +12,16 @@ use Illuminate\Database\Eloquent\Model;
 
 final class DayServices
 {
-    public function allByObject(object $dayable): Collection|Model
+    public function allByObject(Dayable $dayable): Collection|Model
     {
-        Required($dayable, 'dayable');
-        Truthy(! method_exists($dayable, 'days'), 'object missing days()');
         $days = $dayable->days;
         NotFound($days, 'Days');
 
         return $days;
     }
 
-    public function findByObject(object $dayable, int $id): Day
+    public function findByObject(Dayable $dayable, int $id): Day
     {
-        Required($dayable, 'dayable');
-        Truthy(! method_exists($dayable, 'days'), 'object missing days()');
         $day = $dayable->days()->whereId($id)->first();
         NotFound($day, 'days');
 
@@ -40,11 +37,9 @@ final class DayServices
         return $day;
     }
 
-    public function create(object $dayable, array $data): Day
+    public function create(Dayable $dayable, array $data): Day
     {
-        Required($dayable, 'dayable');
         Required($data, 'day data');
-        Truthy(! method_exists($dayable, 'days'), 'object missing days()');
         $this->checkCanCreateDay($dayable);
         $oldDays = $dayable->days->toArray();
         $this->checkIfAvailable($data, $oldDays);
@@ -53,7 +48,7 @@ final class DayServices
         return $day;
     }
 
-    public function createMany(object $dayable, array $data): Collection
+    public function createMany(Dayable $dayable, array $data): Collection
     {
         $days = Collection::empty();
         $conflicts = [];
@@ -69,11 +64,9 @@ final class DayServices
         return $days;
     }
 
-    public function update(object $dayable, Day $day, array $data): Day
+    public function update(Dayable $dayable, Day $day, array $data): Day
     {
-        Required($dayable, 'dayable');
         Required($data, 'day data');
-        Truthy(! method_exists($dayable, 'days'), 'object missing days()');
         $oldDays = $dayable->days->toArray();
         $data = $this->formatData($data, $day);
         $this->checkIfAvailable($data, $oldDays, true);
@@ -125,7 +118,7 @@ final class DayServices
         return $data;
     }
 
-    private function checkCanCreateDay(object $dayable)
+    private function checkCanCreateDay(Dayable $dayable)
     {
         Truthy($dayable->days()->count() >= 7, 'Only 7 days allowed');
     }

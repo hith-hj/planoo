@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\EventStatus;
+use App\Interfaces\Dayable;
+use App\Interfaces\Locatable;
+use App\Interfaces\Mediable;
+use App\Interfaces\Reviewable;
+use App\Interfaces\Taggable;
 use App\Traits\MediaHandler;
 use App\Traits\ReviewHandler;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -16,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-final class Event extends Model
+final class Event extends Model implements Dayable, Locatable, Mediable, Reviewable, Taggable
 {
     use HasFactory;
     use MediaHandler;

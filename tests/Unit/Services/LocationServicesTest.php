@@ -30,7 +30,7 @@ describe('Location Service', function () {
 
     it('fails to create location when missing location method', function () {
         $this->locationServices->create((object) [], $this->data);
-    })->throws(Exception::class);
+    })->throws(TypeError::class);
 
     it('can update location', function () {
         expect($this->owner->location)->not->toBeNull();
@@ -42,6 +42,6 @@ describe('Location Service', function () {
 
     it('fails to update location when badge missing location method', function () {
         $this->locationServices->update((object) [], $this->data);
-    })->throws(Exception::class);
+    })->throws(TypeError::class);
 
 });

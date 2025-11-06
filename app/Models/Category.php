@@ -24,4 +24,9 @@ final class Category extends Model
     {
         return $this->hasMany(Course::class);
     }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
 }

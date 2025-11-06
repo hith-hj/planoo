@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Interfaces\Locatable;
 use App\Models\Location;
 
 final class LocationServices
 {
-    public function get(object $locatable)
+    public function get(Locatable $locatable)
     {
-        Required($locatable, 'locatable');
-        Truthy(! method_exists($locatable, 'location'), 'missing location method');
         $location = $locatable->location;
         NotFound($location, 'location');
 
         return $location;
     }
 
-    public function create(object $locatable, array $data): Location
+    public function create(Locatable $locatable, array $data): Location
     {
         Required($data, 'data');
-        Truthy(! method_exists($locatable, 'location'), 'missing location method');
         $data = checkAndCastData($data, [
             'long' => 'float',
             'lat' => 'float',
@@ -35,9 +33,8 @@ final class LocationServices
         ]);
     }
 
-    public function update(object $locatable, array $data): Location
+    public function update(Locatable $locatable, array $data): Location
     {
-        Truthy(! method_exists($locatable, 'location'), 'object missing location()');
         $data = checkAndCastData($data, [
             'long' => 'float',
             'lat' => 'float',
@@ -53,18 +50,15 @@ final class LocationServices
         return $locatable->location;
     }
 
-    public function delete(object $locatable): int
+    public function delete(Locatable $locatable): int
     {
-        Truthy(! method_exists($locatable, 'location'), 'missing location method');
         Truthy($locatable->location === null, 'location not set');
 
         return $locatable->location()->delete();
     }
 
-    public function checkLocationExists(object $locatable): bool
+    public function checkLocationExists(Locatable $locatable): bool
     {
-        Truthy(! method_exists($locatable, 'location'), 'missing location method');
-
         return $locatable->location !== null;
     }
 }

@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Auth;
 
 final class ReviewController extends Controller
 {
-    public function __construct(public ReviewServices $review) {}
+    public function __construct(public ReviewServices $service) {}
 
     public function all(): JsonResponse
     {
-        $reviews = $this->review->all(getModel());
+        $reviews = $this->service->all(getModel());
 
         return Success(payload: ['reviews' => $reviews->toResourceCollection()]);
     }
@@ -26,7 +26,7 @@ final class ReviewController extends Controller
     {
         $validator = ReviewValidators::create($request->all());
 
-        $review = $this->review->create(getModel(), Auth::user(), $validator->safe()->all());
+        $review = $this->service->create(getModel(), Auth::user(), $validator->safe()->all());
 
         return Success(
             msg: 'review created',
