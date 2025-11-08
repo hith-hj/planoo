@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Events;
 
 use App\Enums\AdminsRoles;
@@ -19,7 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class EventResource extends Resource
+final class EventResource extends Resource
 {
     protected static ?string $model = Event::class;
 
