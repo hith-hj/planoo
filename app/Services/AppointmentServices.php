@@ -12,12 +12,15 @@ use App\Models\Appointment;
 use App\Models\Course;
 use App\Models\Customer;
 use App\Models\Event;
+use App\Models\User;
+use App\Traits\Filters;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 
 final class AppointmentServices
 {
+    use Filters;
+
     public function allByQuery(
         $query,
         int $page = 1,
@@ -26,7 +29,7 @@ final class AppointmentServices
         array $orderBy = []
     ) {
         Required($query, 'query');
-        $query->with($this->relationToLoad());
+        $query->with($this->ToBeLoaded());
 
         $this->applyFilters($query, $filters, [
             'status' => AppointmentStatus::values(),
@@ -49,12 +52,12 @@ final class AppointmentServices
         $appointment = Appointment::find($id);
         NotFound($appointment, 'Appointment');
 
-        return $appointment->load($this->relationToLoad());
+        return $appointment->load($this->ToBeLoaded());
     }
 
     public function checkAvailableSlots(object $owner, array $data): array
     {
-        checkAndCastData($data, [
+        $data = checkAndCastData($data, [
             'day_id' => 'int',
             'session_duration' => 'int',
             'date' => 'string',
@@ -143,7 +146,7 @@ final class AppointmentServices
 
         $appointment->customer()->associate($customer)->save();
 
-        return $appointment->load($this->relationToLoad());
+        return $appointment->load($this->ToBeLoaded());
     }
 
     public function cancel(object $user, Appointment $appointment): bool
@@ -157,7 +160,7 @@ final class AppointmentServices
         ]);
     }
 
-    public function getQuery($user, string $ownerType = 'activity')
+    public function getUserQuery(User $user, string $ownerType = 'activity')
     {
         try {
             $owner = getModel();
@@ -177,6 +180,18 @@ final class AppointmentServices
         }
     }
 
+    public function getCustomerQuery(Customer $customer, string $ownerType = 'activity')
+    {
+        return match ($ownerType) {
+            SectionsTypes::activity->name => $customer->appointments(),
+            SectionsTypes::course->name => Appointment::where('appointable_type', Course::class)
+                ->whereIn('appointable_id', $customer->courses()->pluck('id')),
+            SectionsTypes::event->name => Appointment::where('appointable_type', Event::class)
+                ->whereIn('appointable_id', $customer->events()->pluck('id')),
+            default => throw new Exception('ownerType is required'),
+        };
+    }
+
     private function checkAllowedDurations($gapStart, $gapEnd, $duration): array
     {
         $slots = [];
@@ -194,7 +209,7 @@ final class AppointmentServices
         return $slots;
     }
 
-    private function relationToLoad()
+    private function ToBeLoaded()
     {
         return ['customer', 'holder'];
     }
@@ -216,39 +231,5 @@ final class AppointmentServices
         $bookingTime = $appointment->created_at;
         $diffInMinutes = $now->diffInMinutes($bookingTime, true);
         Truthy($diffInMinutes > $buffer, 'appointment cannot be canceled after one hour');
-    }
-
-    private function applyFilters(object $query, array $filters = [], array $allowedFilters = []): object
-    {
-        return $query->when(
-            ! empty($filters),
-            function (Builder $filter) use ($filters, $allowedFilters) {
-                foreach ($filters as $key => $value) {
-                    if (! in_array($key, array_keys($allowedFilters))) {
-                        return;
-                    }
-                    if (is_numeric($value)) {
-                        $value = (int) $value;
-                    }
-                    if (in_array($value, $allowedFilters[$key]) || empty($allowedFilters[$key])) {
-                        $filter->where($key, $value);
-                    }
-                }
-            }
-        );
-    }
-
-    private function applyOrderBy(object $query, array $orderBy = [], array $allowedOrderBy = []): object
-    {
-        return $query->when(
-            ! empty($orderBy) && count($orderBy) === 1,
-            function (Builder $query) use ($orderBy, $allowedOrderBy) {
-                $key = array_key_first($orderBy);
-                $value = array_pop($orderBy);
-                if (in_array($key, $allowedOrderBy) && in_array($value, ['asc', 'desc'])) {
-                    $query->orderBy($key, $value);
-                }
-            }
-        );
     }
 }

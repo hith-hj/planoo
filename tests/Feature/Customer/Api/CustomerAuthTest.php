@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\CodesTypes;
 use App\Models\Customer;
 
 beforeEach(function () {
@@ -28,8 +29,8 @@ describe('CustomerAuth Controller test', function () {
 
     it('verifies_customer_successfully', function () {
         $customer = Customer::factory()->create(['phone' => '0912345678']);
-        $customer->createCode('verification');
-        $code = $customer->code('verification')->code;
+        $customer->createCode(CodesTypes::verification->name);
+        $code = $customer->code(CodesTypes::verification->name)->code;
         expect($code)->not->toBeNull()->and($code)->toBeInt();
 
         $res = $this->postJson(route('customer.verify'), [
@@ -42,7 +43,7 @@ describe('CustomerAuth Controller test', function () {
 
     it('fails_to_verify_with_incorrect_code', function () {
         $customer = Customer::factory()->create();
-        $customer->createCode('verification');
+        $customer->createCode(CodesTypes::verification->name);
         $res = $this->postJson(route('customer.verify'), [
             'phone' => $customer->phone,
             'code' => 00000,

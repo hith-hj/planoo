@@ -4,15 +4,46 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\CourseDuration;
 use App\Enums\NotificationTypes;
+use App\Enums\SessionDuration;
 use App\Models\Course;
 use App\Models\Customer;
 use App\Models\User;
+use App\Traits\Filters;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 final class CourseServices
 {
+    use Filters;
+
+    public function allByFilter(
+        int $page = 1,
+        int $perPage = 10,
+        array $filters = [],
+        array $orderBy = []
+    ) {
+        $query = Course::query();
+        $query->with($this->toBeLoaded());
+
+        $this->applyFilters($query, $filters, [
+            'is_active' => [true, false],
+            'is_full' => [true, false],
+            'session_duration' => SessionDuration::values(),
+            'course_duration' => CourseDuration::values(),
+            'category_id' => [],
+        ]);
+
+        $this->applyOrderBy($query, $orderBy, ['rate', 'price']);
+
+        $appointments = $query->paginate($perPage, ['*'], 'page', $page);
+
+        NotFound($appointments->items(), 'appointments');
+
+        return $appointments;
+    }
+
     public function all(): Collection
     {
         $courses = Course::all();

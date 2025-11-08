@@ -42,7 +42,7 @@ final class ActivityController extends Controller
         $request->merge(['owner_type' => 'activity', 'owner_id' => $activity->id]);
         $request->offsetUnset('name');
         app(DayController::class)->createMany($request);
-        app(LocationsController::class)->create($request);
+        app(LocationController::class)->create($request);
         app(TagController::class)->create($request);
         app(MediaController::class)->create($request);
 

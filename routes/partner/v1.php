@@ -8,7 +8,7 @@ use App\Http\Controllers\Partner\Api\AuthController;
 use App\Http\Controllers\Partner\Api\CourseController;
 use App\Http\Controllers\Partner\Api\DayController;
 use App\Http\Controllers\Partner\Api\EventController;
-use App\Http\Controllers\Partner\Api\LocationsController;
+use App\Http\Controllers\Partner\Api\LocationController;
 use App\Http\Controllers\Partner\Api\MediaController;
 use App\Http\Controllers\Partner\Api\ReviewController;
 use App\Http\Controllers\Partner\Api\TagController;
@@ -77,7 +77,7 @@ Route::controller(DayController::class)
         }
     );
 
-Route::controller(LocationsController::class)
+Route::controller(LocationController::class)
     ->prefix('location')
     ->name('location.')
     ->group(

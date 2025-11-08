@@ -8,12 +8,40 @@ use App\Enums\NotificationTypes;
 use App\Models\Customer;
 use App\Models\Event;
 use App\Models\User;
+use App\Traits\Filters;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 final class EventServices
 {
+    use Filters;
+
+    public function allByFilter(
+        int $page = 1,
+        int $perPage = 10,
+        array $filters = [],
+        array $orderBy = []
+    ) {
+        $query = Event::query();
+        $query->with($this->toBeLoaded());
+
+        $this->applyFilters($query, $filters, [
+            'is_active' => [true, false],
+            'is_full' => [true, false],
+            'start_date' => [],
+            'category_id' => [],
+        ]);
+
+        $this->applyOrderBy($query, $orderBy, ['rate', 'admission_fee', 'event_duration']);
+
+        $appointments = $query->paginate($perPage, ['*'], 'page', $page);
+
+        NotFound($appointments->items(), 'appointments');
+
+        return $appointments;
+    }
+
     public function all(): Collection
     {
         $events = Event::all();

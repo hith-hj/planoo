@@ -13,11 +13,24 @@ final class ActivityController extends Controller
 {
     public function __construct(public ActivityServices $services) {}
 
-    public function all()
+    public function all(Request $request)
     {
-        $activities = $this->services->all();
+        $page = $request->integer('page', 1);
+        $perPage = $request->integer('perPage', 10);
+        $filters = $request->input('filters', []);
+        $orderBy = $request->input('orderBy', []);
+        $activities = $this->services->allByFilter(
+            $page,
+            $perPage,
+            $filters,
+            $orderBy
+        );
 
-        return Success(payload: ['activities' => $activities->toResourceCollection()]);
+        return Success(payload: [
+            'page' => $page,
+            'perPage' => $perPage,
+            'activities' => $activities->toResourceCollection(),
+        ]);
     }
 
     public function find(Request $request)

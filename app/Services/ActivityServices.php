@@ -4,19 +4,39 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\SessionDuration;
 use App\Models\Activity;
 use App\Models\User;
+use App\Traits\Filters;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 final class ActivityServices
 {
-    public function all(): Collection
-    {
-        $activities = Activity::all();
-        NotFound($activities, 'activities');
+    use Filters;
 
-        return $activities->load($this->toBeLoaded());
+    public function allByFilter(
+        int $page = 1,
+        int $perPage = 10,
+        array $filters = [],
+        array $orderBy = []
+    ) {
+        $query = Activity::query();
+        $query->with($this->toBeLoaded());
+
+        $this->applyFilters($query, $filters, [
+            'is_active' => [true, false],
+            'session_duration' => SessionDuration::values(),
+            'category_id' => [],
+        ]);
+
+        $this->applyOrderBy($query, $orderBy, ['rate', 'price']);
+
+        $appointments = $query->paginate($perPage, ['*'], 'page', $page);
+
+        NotFound($appointments->items(), 'appointments');
+
+        return $appointments;
     }
 
     public function allByUser(User $user): Collection|Model

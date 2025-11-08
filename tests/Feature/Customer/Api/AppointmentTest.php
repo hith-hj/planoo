@@ -14,6 +14,16 @@ beforeEach(function () {
 });
 
 describe('Appointment Controller Tests', function () {
+    it('returns paginated appointments ', function () {
+        Appointment::truncate();
+        Appointment::factory(2)->for($this->user,'customer')->create();
+        $res = $this->postJson("{$this->url}/all/activity?page=1&perPage=1");
+        $res->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['page','perPage','appointments']);
+        expect($res->json('payload.appointments'))->toHaveCount(1)
+        ->and($res->json('payload.page'))->toBe(1)
+        ->and($res->json('payload.perPage'))->toBe(1);
+    });
 
     it('checks available slots for a specific date', function () {
         $activity = Activity::inRandomOrder()->first();

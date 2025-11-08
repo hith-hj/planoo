@@ -14,7 +14,7 @@ trait VerificationHandler
     {
         $this->checkFields();
         $this->checkMethods();
-        $this->createCode(type: CodesTypes::verification->name, timeToExpire: '45:m')
+        $this->createCode(type: CodesTypes::verification->name, timeToExpire: '15:m')
             ->update([
                 'verified_at' => null,
                 'verified_by' => $by,

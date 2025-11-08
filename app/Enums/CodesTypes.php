@@ -6,6 +6,7 @@ namespace App\Enums;
 
 enum CodesTypes
 {
+    case test;
     case verification;
     case appointment;
     case fee;

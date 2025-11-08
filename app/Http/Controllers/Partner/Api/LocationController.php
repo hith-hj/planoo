@@ -9,7 +9,7 @@ use App\Services\LocationServices;
 use App\Validators\LocationValidators;
 use Illuminate\Http\Request;
 
-final class LocationsController extends Controller
+final class LocationController extends Controller
 {
     public function __construct(public LocationServices $services) {}
 

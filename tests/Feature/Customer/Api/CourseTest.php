@@ -16,9 +16,20 @@ describe('Course Controller Tests', function () {
         Course::truncate();
         Course::factory(2)->create();
 
-        $response = $this->getJson("{$this->url}/all")->assertOk();
+        $response = $this->postJson("{$this->url}/all")->assertOk();
 
         expect($response->json('payload.courses'))->toHaveCount(2);
+    });
+
+    it('returns paginated courses ', function () {
+        Course::truncate();
+        Course::factory(2)->create();
+        $res = $this->postJson("{$this->url}/all?page=1&perPage=1");
+        $res->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['page','perPage','courses']);
+        expect($res->json('payload.courses'))->toHaveCount(1)
+        ->and($res->json('payload.page'))->toBe(1)
+        ->and($res->json('payload.perPage'))->toBe(1);
     });
 
     it('finds a specific course by ID', function () {

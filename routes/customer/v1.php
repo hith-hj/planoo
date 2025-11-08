@@ -6,6 +6,9 @@ use App\Http\Controllers\Customer\Api\ActivityController;
 use App\Http\Controllers\Customer\Api\AppointmentController;
 use App\Http\Controllers\Customer\Api\AuthController;
 use App\Http\Controllers\Customer\Api\CourseController;
+use App\Http\Controllers\Customer\Api\EventController;
+use App\Http\Controllers\Customer\Api\HomeController;
+use App\Http\Controllers\Customer\Api\LocationController;
 use App\Http\Controllers\Customer\Api\ReviewController;
 use App\Http\Middleware\Auth\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -28,13 +31,24 @@ Route::controller(AuthController::class)
             Route::post('changePassword', 'changePassword')->name('changePassword');
         }
     );
+Route::controller(LocationController::class)
+    ->prefix('location')
+    ->name('location.')
+    ->group(
+        function (): void {
+            Route::get('get', 'get')->name('get');
+            Route::post('create', 'create')->name('create');
+            Route::patch('update', 'update')->name('update');
+            Route::delete('delete', 'delete')->name('delete');
+        }
+    );
 
 Route::controller(ActivityController::class)
     ->prefix('activity')
     ->name('activity.')
     ->group(
         function (): void {
-            Route::get('all', 'all')->name('all');
+            Route::post('all', 'all')->name('all');
             Route::get('find', 'find')->name('find');
         }
     );
@@ -66,9 +80,31 @@ Route::controller(CourseController::class)
     ->name('course.')
     ->group(
         function (): void {
-            Route::get('all', 'all')->name('all');
+            Route::post('all', 'all')->name('all');
             Route::get('find', 'find')->name('find');
             Route::post('attend', 'attend')->name('attend');
             Route::post('cancel', 'cancel')->name('cancel');
+        }
+    );
+
+Route::controller(EventController::class)
+    ->prefix('event')
+    ->name('event.')
+    ->group(
+        function (): void {
+            Route::post('all', 'all')->name('all');
+            Route::get('find', 'find')->name('find');
+            Route::post('attend', 'attend')->name('attend');
+            Route::post('cancel', 'cancel')->name('cancel');
+        }
+    );
+
+Route::controller(HomeController::class)
+    ->prefix('home')
+    ->name('home.')
+    ->group(
+        function (): void {
+            Route::get('feeds', 'feeds')->name('feeds');
+            Route::get('recommended', 'recommended')->name('recommended');
         }
     );

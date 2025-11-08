@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
+use App\Enums\CodesTypes;
 use App\Models\Code;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
@@ -23,8 +24,11 @@ trait CodeHandler
         return $code;
     }
 
-    public function createCode(string $type, int $length = 5, ?string $timeToExpire = '1:h'): static
-    {
+    public function createCode(
+        string $type = CodesTypes::test->name,
+        int $length = 5,
+        ?string $timeToExpire = '15:m'
+    ): static {
         $this->deleteCode($type);
         $code = $this->generate($type, $length);
         $this->codes()->create([
@@ -81,6 +85,6 @@ trait CodeHandler
             return now();
         }
 
-        return now()->add($unit, (int) $value);
+        return now()->add((string) $unit, (int) $value);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Interfaces\Locatable;
 use App\Interfaces\Reviewable;
 use App\Traits\CodeHandler;
 use App\Traits\NotificationsHandler;
@@ -12,10 +13,11 @@ use App\Traits\VerificationHandler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-final class Customer extends Authenticatable implements JWTSubject, Reviewable
+final class Customer extends Authenticatable implements JWTSubject, Locatable, Reviewable
 {
     use CodeHandler;
     use HasFactory;
@@ -43,6 +45,11 @@ final class Customer extends Authenticatable implements JWTSubject, Reviewable
     public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    public function location(): MorphOne
+    {
+        return $this->morphOne(Location::class, 'belongTo');
     }
 
     public function courses(): BelongsToMany

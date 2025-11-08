@@ -14,11 +14,24 @@ final class CourseController extends Controller
 {
     public function __construct(public CourseServices $services) {}
 
-    public function all()
+    public function all(Request $request)
     {
-        $courses = $this->services->all();
+        $page = $request->integer('page', 1);
+        $perPage = $request->integer('perPage', 10);
+        $filters = $request->input('filters', []);
+        $orderBy = $request->input('orderBy', []);
+        $courses = $this->services->allByFilter(
+            $page,
+            $perPage,
+            $filters,
+            $orderBy
+        );
 
-        return Success(payload: ['courses' => $courses->toResourceCollection()]);
+        return Success(payload: [
+            'page' => $page,
+            'perPage' => $perPage,
+            'courses' => $courses->toResourceCollection(),
+        ]);
     }
 
     public function find(Request $request)

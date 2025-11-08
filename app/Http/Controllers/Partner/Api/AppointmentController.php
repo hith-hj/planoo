@@ -23,7 +23,7 @@ final class AppointmentController extends Controller
         $filters = $request->input('filters', []);
         $orderBy = $request->input('orderBy', []);
         $ownerType = request('owner_type', 'activity');
-        $query = $this->services->getQuery(Auth::user(), $ownerType);
+        $query = $this->services->getUserQuery(Auth::user(), $ownerType);
         $appointments = $this->services->allByQuery($query, $page, $perPage, $filters, $orderBy);
 
         return Success(payload: [
