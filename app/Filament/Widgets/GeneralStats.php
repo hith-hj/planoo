@@ -9,11 +9,13 @@ use App\Filament\Resources\Activities\ActivityResource;
 use App\Filament\Resources\Appointments\AppointmentResource;
 use App\Filament\Resources\Courses\CourseResource;
 use App\Filament\Resources\Customers\CustomerResource;
+use App\Filament\Resources\Events\EventResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Activity;
 use App\Models\Appointment;
 use App\Models\Course;
 use App\Models\Customer;
+use App\Models\Event;
 use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -75,6 +77,9 @@ final class GeneralStats extends StatsOverviewWidget
             Stat::make('Courses', Course::count())
                 ->color('success')
                 ->url(CourseResource::getUrl()),
+            Stat::make('Events', Event::count())
+                ->color('success')
+                ->url(EventResource::getUrl()),
         ];
     }
 }
