@@ -19,10 +19,7 @@ beforeEach(function () {
 describe('Notification Service', function () {
 
     it('retrive all Notifications for user', function () {
-        Notification::factory()->create([
-            'belongTo_type' => $this->user::class,
-            'belongTo_id' => $this->user->id,
-        ]);
+        Notification::factory()->for($this->user,'holder')->create();
         $res = $this->services->all($this->user);
         expect($res)->toBeInstanceOf(Collection::class)->toHaveCount(1);
         $this->assertDatabaseCount('notifications', 1);
@@ -34,7 +31,7 @@ describe('Notification Service', function () {
 
     it('fails to retrive Notifications with invalid badeg', function () {
         $this->services->all((object) []);
-    })->throws(Exception::class);
+    })->throws(TypeError::class);
 
     it('can find a notification by id', function () {
         $notification = Notification::factory()->create();
@@ -43,9 +40,9 @@ describe('Notification Service', function () {
     });
 
     it('can mark a notifications as viewed', function () {
-        $notification = Notification::factory()->create(['status' => 0]);
+        $notification = Notification::factory()->create(['is_viewed' => 0]);
         expect($this->services->view([$notification->id]))->toBeNumeric();
-        expect($notification->refresh()->status)->toBe(1);
+        expect($notification->refresh()->is_viewed)->toBeTrue();
     });
 
     it('fails to mark a notifications as viewed with empty array', function () {
@@ -57,7 +54,7 @@ describe('Notification Service', function () {
     });
 
     it('can delete a notifications', function () {
-        $notification = Notification::factory()->create(['status' => 0]);
+        $notification = Notification::factory()->create(['is_viewed' => 0]);
         expect($this->services->delete($notification))->toBeTrue();
         expect($notification->fresh())->toBeNull();
     });
@@ -67,7 +64,7 @@ describe('Notification Service', function () {
     });
 
     it('clear notification for user', function () {
-        Notification::factory(5)->for($this->user, 'belongTo')->create(['status' => 0]);
+        Notification::factory(5)->for($this->user, 'holder')->create(['is_viewed' => 0]);
         expect($this->user->notifications()->count())->toBe(5);
         expect($this->services->clear($this->user))->toBeTrue()
             ->and($this->user->notifications()->count())->toBe(0);

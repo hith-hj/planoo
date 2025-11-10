@@ -57,13 +57,10 @@ final class EventFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Event $event) {
-            $category = Category::inRandomOrder()->first();
-            $event->category()->associate($category)->save();
-            $tags = Tag::inRandomOrder()->take(2)->get();
-            $event->tags()->attach($tags);
-            $day = Carbon::createFromDate($event->start_date);
+            $event->category()->associate(Category::inRandomOrder()->first())->save();
+            $event->tags()->attach(Tag::inRandomOrder()->take(2)->get());
             $event->days()->create([
-                'day' => $day->format('l'),
+                'day' => Carbon::createFromDate($event->start_date)->format('l'),
                 'start' => '06:00',
                 'end' => '10:00',
             ]);

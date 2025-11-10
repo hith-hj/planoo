@@ -10,6 +10,7 @@ use App\Http\Controllers\Partner\Api\DayController;
 use App\Http\Controllers\Partner\Api\EventController;
 use App\Http\Controllers\Partner\Api\LocationController;
 use App\Http\Controllers\Partner\Api\MediaController;
+use App\Http\Controllers\Partner\Api\NotificationController;
 use App\Http\Controllers\Partner\Api\ReviewController;
 use App\Http\Controllers\Partner\Api\TagController;
 use App\Http\Controllers\Partner\Api\UserController;
@@ -162,5 +163,18 @@ Route::controller(EventController::class)
             Route::post('toggleActivation', 'toggleActivation')->name('toggleActivation');
             Route::post('attend', 'attend')->name('attend');
             Route::post('cancel', 'cancel')->name('cancel');
+        }
+    );
+
+Route::controller(NotificationController::class)
+    ->prefix('notification')
+    ->name('notification.')
+    ->group(
+        function (): void {
+            Route::get('all', 'all')->name('all');
+            Route::get('find', 'find')->name('find');
+            Route::post('view', 'view')->name('view');
+            Route::post('clear', 'clear')->name('clear');
+            Route::delete('delete', 'delete')->name('delete');
         }
     );

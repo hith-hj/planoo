@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->morphs('belongTo');
-            $table->smallInteger('status');
+            $table->boolean('is_viewed');
             $table->smallInteger('type');
             $table->string('title');
             $table->string('body');

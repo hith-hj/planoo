@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Interfaces\Locatable;
+use App\Interfaces\Notifiable;
 use App\Traits\CodeHandler;
 use App\Traits\NotificationsHandler;
 use App\Traits\VerificationHandler;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-final class Customer extends Authenticatable implements JWTSubject, Locatable
+final class Customer extends Authenticatable implements JWTSubject, Locatable, Notifiable
 {
     use CodeHandler;
     use HasFactory;

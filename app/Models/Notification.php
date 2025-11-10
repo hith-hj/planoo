@@ -15,12 +15,25 @@ final class Notification extends Model
     protected function casts(): array
     {
         return [
+            'is_viewed' => 'bool',
             'payload' => 'json',
         ];
     }
 
-    public function belongTo(): MorphTo
+    public function holder(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'belongTo_type', 'belongTo_id');
+    }
+
+    public function isBelongTo($holder)
+    {
+        if (
+            $this->belongTo_id === $holder->id &&
+            $this->belongTo_type === $holder::class
+        ) {
+            return true;
+        }
+
+        return false;
     }
 }

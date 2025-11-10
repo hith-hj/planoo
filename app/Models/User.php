@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Interfaces\Notifiable;
 use App\Traits\CodeHandler;
 use App\Traits\MediaHandler;
 use App\Traits\NotificationsHandler;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-final class User extends Authenticatable implements JWTSubject
+final class User extends Authenticatable implements JWTSubject, Notifiable
 {
     use CodeHandler;
     use HasFactory;

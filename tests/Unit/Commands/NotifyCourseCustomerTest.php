@@ -47,7 +47,7 @@ describe('test NotifyCourseCustomer Command', function () {
         assertDatabaseHas('notifications', [
             'belongTo_id' => $customer->id,
             'belongTo_type' => $customer::class,
-            'status' => 0,
+            'is_viewed' => 0,
             'type' => NotificationTypes::session->value,
         ]);
     });
@@ -79,7 +79,7 @@ describe('test NotifyCourseCustomer Command', function () {
         assertDatabaseHas('notifications', [
             'belongTo_id' => $customer->id,
             'belongTo_type' => $customer::class,
-            'status' => 0,
+            'is_viewed' => 0,
             'type' => NotificationTypes::course->value,
         ]);
     });

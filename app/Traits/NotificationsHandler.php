@@ -100,7 +100,7 @@ trait NotificationsHandler
                 ...$this->data,
                 ...$extra,
             ]),
-            'status' => 0,
+            'is_viewed' => false,
         ]);
     }
 

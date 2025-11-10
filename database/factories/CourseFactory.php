@@ -43,10 +43,8 @@ final class CourseFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Course $course) {
-            $category = Category::inRandomOrder()->first();
-            $course->category()->associate($category)->save();
-            $tags = Tag::inRandomOrder()->take(2)->get();
-            $course->tags()->attach($tags);
+            $course->category()->associate(Category::inRandomOrder()->first())->save();
+            $course->tags()->attach(Tag::inRandomOrder()->take(2)->get());
             Media::factory()->for($course, 'holder')->create();
             Review::factory()->for($course, 'holder')->create();
             Location::factory()->for($course, 'holder')->create();

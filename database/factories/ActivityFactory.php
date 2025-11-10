@@ -41,10 +41,8 @@ final class ActivityFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Activity $activity) {
-            $category = Category::inRandomOrder()->first();
-            $activity->category()->associate($category)->save();
-            $tags = Tag::inRandomOrder()->take(2)->get();
-            $activity->tags()->attach($tags);
+            $activity->category()->associate(Category::inRandomOrder()->first())->save();
+            $activity->tags()->attach(Tag::inRandomOrder()->take(2)->get());
             Day::factory()->day()->for($activity, 'holder')->create();
             Location::factory()->for($activity, 'holder')->create();
             Media::factory()->for($activity, 'holder')->create();

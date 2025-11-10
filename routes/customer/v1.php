@@ -9,6 +9,7 @@ use App\Http\Controllers\Customer\Api\CourseController;
 use App\Http\Controllers\Customer\Api\EventController;
 use App\Http\Controllers\Customer\Api\HomeController;
 use App\Http\Controllers\Customer\Api\LocationController;
+use App\Http\Controllers\Customer\Api\NotificationController;
 use App\Http\Controllers\Customer\Api\ReviewController;
 use App\Http\Middleware\Auth\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -106,5 +107,18 @@ Route::controller(HomeController::class)
         function (): void {
             Route::get('feeds', 'feeds')->name('feeds');
             Route::get('recommended', 'recommended')->name('recommended');
+        }
+    );
+
+Route::controller(NotificationController::class)
+    ->prefix('notification')
+    ->name('notification.')
+    ->group(
+        function (): void {
+            Route::get('all', 'all')->name('all');
+            Route::get('find', 'find')->name('find');
+            Route::post('view', 'view')->name('view');
+            Route::post('clear', 'clear')->name('clear');
+            Route::delete('delete', 'delete')->name('delete');
         }
     );
