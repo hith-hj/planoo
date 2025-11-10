@@ -14,20 +14,30 @@ beforeEach(function () {
     $this->seed();
     $this->services = new ReviewServices();
     $this->customer = Customer::factory()->create();
+    $this->activity = Activity::factory()->create();
+    $this->activity->reviews()->delete();
 });
 
 describe('Review Services Class', function () {
 
-    it('get all reviews for customer', function () {
-        Review::factory(2)->for($this->customer, 'holder')->create();
-        expect($this->customer->reviews)->toHaveCount(2);
-        expect($this->services->all($this->customer))
+    it('get all reviews for activity by customer', function () {
+        Review::factory(2)->for($this->activity, 'holder')->create();
+        expect($this->activity->reviews)->toHaveCount(2);
+        expect($this->services->all($this->activity))
             ->toBeInstanceOf(Collection::class)
             ->toHaveCount(2);
     });
 
-    it('fail to get all reviews for customer when not found', function () {
-        expect(fn () => $this->services->all($this->customer))->toThrow(NotFoundHttpException::class);
+    it('get all reviews for customer', function () {
+        Review::factory(2)->for($this->customer, 'customer')->create();
+        expect($this->customer->reviews)->toHaveCount(2);
+        expect($this->services->allByCustomer($this->customer))
+            ->toBeInstanceOf(Collection::class)
+            ->toHaveCount(2);
+    });
+
+    it('fail to get all reviews for activity by customer when not found', function () {
+        expect(fn () => $this->services->all($this->activity))->toThrow(NotFoundHttpException::class);
     });
 
     it('fails to retive reviews with invalid object', function () {

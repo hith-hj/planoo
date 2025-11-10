@@ -11,9 +11,16 @@ use Illuminate\Support\Collection;
 
 final class ReviewServices
 {
+    public function allByCustomer(Customer $customer): Collection
+    {
+        $reviews = $customer->reviews;
+        NotFound($reviews, 'reviews');
+
+        return $reviews->sortByDesc('created_at');
+    }
+
     public function all(Reviewable $reviewable): Collection
     {
-        Truthy(! method_exists($reviewable, 'reviews'), 'missing reviews()');
         $reviews = $reviewable->reviews;
         NotFound($reviews, 'reviews');
 
@@ -22,7 +29,6 @@ final class ReviewServices
 
     public function create(Reviewable $reviewable, Customer $customer, array $data): Review
     {
-        Required($reviewable, 'reviewable');
         Required($customer, 'customer');
         Required($data, 'data');
         checkAndCastData($data, [
@@ -30,13 +36,7 @@ final class ReviewServices
             'content' => 'string',
         ]);
 
-        Truthy(! method_exists($reviewable, 'reviews'), 'missing reviews() method');
-
-        $query = Review::where([
-            ['belongTo_id', $reviewable->id],
-            ['belongTo_type', $reviewable::class],
-            ['customer_id', $customer->id],
-        ]);
+        $query = $reviewable->reviews()->where('customer_id', $customer->id);
         Truthy(
             ($query->exists() && date_diff(now(), $query->first()->created_at)->d < 1),
             'reviews not allowed until 24 hours is passed',

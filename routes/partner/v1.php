@@ -130,7 +130,6 @@ Route::controller(ReviewController::class)
     ->group(
         function (): void {
             Route::get('all/{owner_type}/{owner_id}', 'all')->name('all');
-            Route::post('create/{owner_type}/{owner_id}', 'create')->name('create');
         }
     );
 

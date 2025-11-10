@@ -134,6 +134,7 @@ final class EventServices
         Required($customer, 'customer');
         Required($event, 'event');
         Truthy(! $this->isAttending($customer, $event), 'Not attending this event.');
+        Truthy(! $this->canCancel($customer, $event), 'Can\'t cancel this event.');
         $event->customers()->detach($customer->id);
         if ($event->customers()->count() < $event->capacity) {
             $event->update(['is_full' => false]);
@@ -149,12 +150,27 @@ final class EventServices
 
     private function toBeLoaded()
     {
-        return ['days', 'location', 'tags', 'medias', 'category', 'customers'];
+        return ['days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers'];
     }
 
     private function isAttending(Customer $customer, Event $event): bool
     {
         return $event->customers()->where('customer_id', $customer->id)->exists();
+    }
+
+    private function canCancel(Customer $customer, Event $event): bool
+    {
+        $eventCustomer = $event
+            ->customers()
+            ->where('customer_id', $customer->id)
+            ->first();
+        $diff = now()
+            ->diffInSeconds($eventCustomer->pivot->created_at) / 3600;
+        if (abs($diff) > config('app.settings.event_cancelation_period', 24)) {
+            return false;
+        }
+
+        return true;
     }
 
     private function prepEventData(array $data): array

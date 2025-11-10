@@ -22,11 +22,12 @@ final class ReviewController extends Controller
         return Success(payload: ['reviews' => $reviews->toResourceCollection()]);
     }
 
+    // should be removed
     public function create(Request $request)
     {
         $validator = ReviewValidators::createFromUser($request->all());
 
-        $customer = app(CustomerServices::class)->find(1); // should be removed
+        $customer = app(CustomerServices::class)->find(1);
         $review = $this->review->create(getModel(), $customer, $validator->safe()->all());
 
         return Success(

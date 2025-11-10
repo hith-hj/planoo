@@ -8,6 +8,7 @@ use App\Enums\EventStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 final class EventResource extends JsonResource
 {
@@ -38,8 +39,16 @@ final class EventResource extends JsonResource
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'location' => LocationResource::make($this->whenLoaded('location')),
             'medias' => MediaResource::collection($this->whenLoaded('medias')),
-            'customers' => CustomerResource::collection($this->whenLoaded('customers')),
-            'details' => $this->whenLoaded('pivot'),
+            ...$this->exrtas(),
+        ];
+    }
+
+    private function exrtas(): array
+    {
+        $isOwner = Auth::id() === $this->user_id;
+
+        return [
+            'customers' => $this->when($isOwner, CustomerResource::collection($this->whenLoaded('customers'))),
         ];
     }
 }

@@ -6,6 +6,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 final class ActivityResource extends JsonResource
 {
@@ -28,6 +29,16 @@ final class ActivityResource extends JsonResource
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'location' => LocationResource::make($this->whenLoaded('location')),
             'medias' => MediaResource::collection($this->whenLoaded('medias')),
+            ...$this->exrtas(),
+        ];
+    }
+
+    private function exrtas(): array
+    {
+        $isOwner = Auth::id() === $this->user_id;
+
+        return [
+            'details' => $this->when($isOwner, $this->whenLoaded('pivot')),
         ];
     }
 }

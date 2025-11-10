@@ -40,6 +40,7 @@ return new class extends Migration
             $table->foreignIdFor(Customer::class);
             $table->integer('remaining_sessions');
             $table->boolean('is_complete')->default(0);
+            $table->timestamps();
         });
     }
 

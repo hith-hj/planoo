@@ -96,6 +96,6 @@ final class ActivityServices
 
     private function toBeLoaded()
     {
-        return ['days', 'location', 'tags', 'medias', 'category'];
+        return ['days', 'location', 'tags', 'medias', 'category', 'reviews'];
     }
 }

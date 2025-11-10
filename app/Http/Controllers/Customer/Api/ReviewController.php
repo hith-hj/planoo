@@ -17,7 +17,7 @@ final class ReviewController extends Controller
 
     public function all(): JsonResponse
     {
-        $reviews = $this->service->all(getModel());
+        $reviews = $this->service->all(getModelGlobal());
 
         return Success(payload: ['reviews' => $reviews->toResourceCollection()]);
     }
@@ -26,7 +26,7 @@ final class ReviewController extends Controller
     {
         $validator = ReviewValidators::create($request->all());
 
-        $review = $this->service->create(getModel(), Auth::user(), $validator->safe()->all());
+        $review = $this->service->create(getModelGlobal(), Auth::user(), $validator->safe()->all());
 
         return Success(
             msg: 'review created',

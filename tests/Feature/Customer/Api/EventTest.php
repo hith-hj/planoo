@@ -64,4 +64,13 @@ describe('Event Controller Tests', function () {
         $res->assertOk();
     });
 
+    it('can not cancel event after specific time', function () {
+        $event = Event::factory()->create();
+        $this->postJson("{$this->url}/attend?event_id={$event->id}");
+        $customer = $event->customers()->where('customer_id',$this->user->id)->first();
+        $customer->pivot->update(['created_at'=>now()->subDays(2)]);
+        $res = $this->postJson("{$this->url}/cancel?event_id={$event->id}");
+        $res->assertStatus(400);
+    });
+
 });

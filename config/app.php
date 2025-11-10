@@ -125,4 +125,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'settings' => [
+        // number(minutes) is used in calculating slots between appointments
+        'break_in_minute' => 0,
+        // number(hours)
+        'appointment_cancelation_period' => 1,
+        // number(hours)
+        'course_cancelation_period' => 24,
+        // number(hours)
+        'event_cancelation_period' => 24,
+        // max allowd number for media upload
+        'max_media_count' => 5,
+    ],
+
 ];

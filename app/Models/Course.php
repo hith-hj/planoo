@@ -71,6 +71,7 @@ final class Course extends Model implements Dayable, Locatable, Mediable, Review
     public function customers()
     {
         return $this->belongsToMany(Customer::class)
-            ->withPivot(['remaining_sessions', 'is_complete']);
+            ->withPivot(['remaining_sessions', 'is_complete'])
+            ->withTimestamps();
     }
 }

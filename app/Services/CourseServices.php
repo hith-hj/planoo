@@ -140,6 +140,7 @@ final class CourseServices
         Required($customer, 'customer');
         Required($course, 'course');
         Truthy(! $this->isAttending($customer, $course), 'Not attending this course.');
+        Truthy(! $this->canCancel($customer, $course), 'You can\'t cancel now');
         $course->customers()->detach($customer->id);
         if ($course->customers()->count() < $course->capacity) {
             $course->update(['is_full' => false]);
@@ -155,11 +156,26 @@ final class CourseServices
 
     private function toBeLoaded()
     {
-        return ['days', 'location', 'tags', 'medias', 'category', 'customers'];
+        return ['days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers'];
     }
 
     private function isAttending(Customer $customer, Course $course): bool
     {
         return $course->customers()->where('customer_id', $customer->id)->exists();
+    }
+
+    private function canCancel(Customer $customer, Course $course): bool
+    {
+        $customerCourse = $course
+            ->customers()
+            ->where([['customer_id', $customer->id], ['is_complete', false]])
+            ->first();
+        $diff = now()
+            ->diffInSeconds($customerCourse->pivot->created_at) / 3600;
+        if (abs($diff) > config('app.settings.course_cancelation_period', 24)) {
+            return false;
+        }
+
+        return true;
     }
 }

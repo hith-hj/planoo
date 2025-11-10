@@ -17,7 +17,7 @@ trait ReviewHandler
 
     public function createReview(Customer $customer, array $data): Review
     {
-        throw_if(empty($data), 'missing review data');
+        Truthy(empty($data), 'missing review data');
 
         return $this->reviews()->create([
             'customer_id' => $customer->id,

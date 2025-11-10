@@ -152,7 +152,7 @@ final class AppointmentServices
     public function cancel(object $user, Appointment $appointment): bool
     {
         Truthy($appointment->status !== AppointmentStatus::accepted->value, 'invalid appointment status');
-        $this->canCancelAppointment($appointment);
+        Truthy(! $this->canCancel($appointment), 'You can\'t cancel now');
 
         return $appointment->update([
             'status' => AppointmentStatus::canceled->value,
@@ -195,7 +195,7 @@ final class AppointmentServices
     private function checkAllowedDurations($gapStart, $gapEnd, $duration): array
     {
         $slots = [];
-        $break = (int) config('break_in_minute', 0);
+        $break = (int) config('app.settings.break_in_minute', 0);
         $cursor = $gapStart->copy();
         while ($cursor->copy()->addMinutes($duration)->lessThanOrEqualTo($gapEnd)) {
             $slots[] = [
@@ -225,11 +225,14 @@ final class AppointmentServices
         return (int) ceil($price);
     }
 
-    private function canCancelAppointment(Appointment $appointment, int $buffer = 60)
+    private function canCancel(Appointment $appointment): bool
     {
-        $now = now();
-        $bookingTime = $appointment->created_at;
-        $diffInMinutes = $now->diffInMinutes($bookingTime, true);
-        Truthy($diffInMinutes > $buffer, 'appointment cannot be canceled after one hour');
+        $diff = now()
+            ->diffInSeconds($appointment->created_at) / 3600;
+        if (abs($diff) > config('app.settings.appointment_cancelation_period', 1)) {
+            return false;
+        }
+
+        return true;
     }
 }

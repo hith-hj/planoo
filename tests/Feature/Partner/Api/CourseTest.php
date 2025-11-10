@@ -138,4 +138,13 @@ describe('Course Controller Tests', function () {
         $res->assertOk();
         expect($course->customers()->wherePivot('customer_id',1)->first())->toBeNull();
     });
+
+    it('can not cancel course after specific time', function () {
+        $course = Course::factory()->for($this->user,'user')->create();
+        $this->postJson("{$this->url}/attend?course_id={$course->id}",['customer_id'=>1]);
+        $customer = $course->customers()->where('customer_id',1)->first();
+        $customer->pivot->update(['created_at'=>now()->subDays(2)]);
+        $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}",['customer_id'=>1]);
+        $res->assertStatus(400);
+    });
 });

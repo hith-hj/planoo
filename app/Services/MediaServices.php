@@ -47,7 +47,7 @@ final class MediaServices
 
     private function canCreateMedia(object $mediable)
     {
-        $count = config('app.settings.MAX_MEDIA_COUNT', 5);
+        $count = config('app.settings.max_media_count', 5);
         Truthy($mediable->medias()->count() >= $count, "Limit of $count media is reached");
     }
 }
