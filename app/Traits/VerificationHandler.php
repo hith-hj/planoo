@@ -23,8 +23,8 @@ trait VerificationHandler
         $code = $this->code(CodesTypes::verification->name);
         $this->notify(
             title: 'verification code',
-            body: "Your code: $code->code, expire at {$code->expire_at->diffForHumans()}",
-            data: ['type' => NotificationTypes::verification->value, 'code' => $code],
+            body: "Your code: $code->code, expire at {$code->expire_at->format('Y-m-d H:i')}",
+            data: ['type' => NotificationTypes::verification->value, 'code' => $code->code],
             provider: $by
         );
 
