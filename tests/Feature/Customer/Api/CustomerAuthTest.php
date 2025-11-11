@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\CodesTypes;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {
     $this->seed();
@@ -97,5 +98,98 @@ describe('CustomerAuth Controller test', function () {
         $this->user('customer')->api();
         $res = $this->postJson(route('customer.logout'));
         $res->assertOk();
+    });
+
+    it('can resend verification code if customer if not verified', function () {
+        $customer = Customer::factory()->create(['verified_at' => null, 'verified_by' => null]);
+        expect($customer->codes()->count())->toBe(0);
+        $this->postJson(route('customer.resendCode'), ['phone' => $customer->phone])->assertOk();
+        expect($customer->verified_at)->toBeNull()
+            ->and($customer->codes()->count())->toBe(1)
+            ->and($customer->code(CodesTypes::verification->name))->not->ToBeNull();
+    });
+
+    it('can\'t resend verification code if customer if verified', function () {
+        $customer = Customer::factory()->create();
+        $res = $this->postJson(route('customer.resendCode'), ['phone' => $customer->phone]);
+        $res->assertStatus(400);
+        expect($customer->fresh()->verified_at)->not->toBeNull()
+            ->and($customer->codes()->count())->toBe(0);
+    });
+
+    it('can forget password ', function () {
+        $customer = Customer::factory()->create();
+        expect($customer->codes()->count())->toBe(0);
+        $this->postJson(route('customer.forgetPassword'), [
+            'phone' => $customer->phone,
+            'firebase_token' => $customer->firebase_token,
+        ])->assertOk();
+        expect($customer->fresh()->verified_at)->toBeNull()
+            ->and($customer->codes()->count())->toBe(1)
+            ->and($customer->code(CodesTypes::password->name))->not->ToBeNull();
+    });
+
+    it('can reset password ', function () {
+        $customer = Customer::factory()->create();
+        expect($customer->codes()->count())->toBe(0);
+        $this->postJson(route('customer.forgetPassword'), [
+            'phone' => $customer->phone,
+            'firebase_token' => $customer->firebase_token,
+        ])->assertOk();
+        expect($customer->fresh()->verified_at)->toBeNull();
+        $code = $customer->code(CodesTypes::password->name);
+        $this->postJson(route('customer.resetPassword'), [
+            'phone' => $customer->phone,
+            'firebase_token' => $customer->firebase_token,
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'code' => $code->code
+        ])->assertOk();
+        expect($customer->fresh()->verified_at)->not->toBeNull()
+        ->and(Hash::check('password',$customer->fresh()->password))->toBeTrue()
+        ->and($customer->codes()->count())->toBe(0);
+    });
+
+    it('cant reset password with invlid code ', function () {
+        $customer = Customer::factory()->create();
+        expect($customer->codes()->count())->toBe(0);
+        $this->postJson(route('customer.forgetPassword'), [
+            'phone' => $customer->phone,
+            'firebase_token' => $customer->firebase_token,
+        ])->assertOk();
+        $this->postJson(route('customer.resetPassword'), [
+            'phone' => $customer->phone,
+            'firebase_token' => $customer->firebase_token,
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'code' => 'invalid_code'
+        ])->assertStatus(422);
+    });
+
+    it('cant reset password with invlid data ', function () {
+        $customer = Customer::factory()->create();
+        expect($customer->codes()->count())->toBe(0);
+        $this->postJson(route('customer.forgetPassword'), [
+            'phone' => $customer->phone,
+            'firebase_token' => $customer->firebase_token,
+        ])->assertOk();
+        $this->postJson(route('customer.resetPassword'), [
+            'phone' => $customer->phone,
+            'firebase_token' => 'invalid_token',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'code' => 'invalid_code'
+        ])->assertStatus(422);
+    });
+
+    it('can change password ', function () {
+        $customer = Customer::factory()->create();
+        $res = $this->replaceUser($customer)->postJson(route('customer.changePassword'), [
+            'old_password' => 'password',
+            'new_password' => 'new_password',
+            'new_password_confirmation' => 'new_password',
+        ]);
+        $res->assertOk();
+        expect(Hash::check('new_password',$customer->fresh()->password))->toBeTrue();
     });
 });

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Enums\CodesTypes;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 beforeEach(function(){
     $this->seed();
@@ -96,4 +98,99 @@ describe('UserAuth Controller test', function () {
         $res = $this->postJson(route('partner.logout'));
         $res->assertOk();
     });
+
+
+    it('can resend verification code if user if not verified', function () {
+        $user = User::factory()->create(['verified_at' => null, 'verified_by' => null]);
+        expect($user->codes()->count())->toBe(0);
+        $this->postJson(route('partner.resendCode'), ['phone' => $user->phone])->assertOk();
+        expect($user->verified_at)->toBeNull()
+            ->and($user->codes()->count())->toBe(1)
+            ->and($user->code(CodesTypes::verification->name))->not->ToBeNull();
+    });
+
+    it('can\'t resend verification code if user if verified', function () {
+        $user = User::factory()->create();
+        $res = $this->postJson(route('partner.resendCode'), ['phone' => $user->phone]);
+        $res->assertStatus(400);
+        expect($user->fresh()->verified_at)->not->toBeNull()
+            ->and($user->codes()->count())->toBe(0);
+    });
+
+    it('can forget password ', function () {
+        $user = User::factory()->create();
+        expect($user->codes()->count())->toBe(0);
+        $this->postJson(route('partner.forgetPassword'), [
+            'phone' => $user->phone,
+            'firebase_token' => $user->firebase_token,
+        ])->assertOk();
+        expect($user->fresh()->verified_at)->toBeNull()
+            ->and($user->codes()->count())->toBe(1)
+            ->and($user->code(CodesTypes::password->name))->not->ToBeNull();
+    });
+
+    it('can reset password ', function () {
+        $user = User::factory()->create();
+        expect($user->codes()->count())->toBe(0);
+        $this->postJson(route('partner.forgetPassword'), [
+            'phone' => $user->phone,
+            'firebase_token' => $user->firebase_token,
+        ])->assertOk();
+        expect($user->fresh()->verified_at)->toBeNull();
+        $code = $user->code(CodesTypes::password->name);
+        $this->postJson(route('partner.resetPassword'), [
+            'phone' => $user->phone,
+            'firebase_token' => $user->firebase_token,
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'code' => $code->code
+        ])->assertOk();
+        expect($user->fresh()->verified_at)->not->toBeNull()
+        ->and(Hash::check('password',$user->fresh()->password))->toBeTrue()
+        ->and($user->codes()->count())->toBe(0);
+    });
+
+    it('cant reset password with invlid code ', function () {
+        $user = User::factory()->create();
+        expect($user->codes()->count())->toBe(0);
+        $this->postJson(route('partner.forgetPassword'), [
+            'phone' => $user->phone,
+            'firebase_token' => $user->firebase_token,
+        ])->assertOk();
+        $this->postJson(route('partner.resetPassword'), [
+            'phone' => $user->phone,
+            'firebase_token' => $user->firebase_token,
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'code' => 'invalid_code'
+        ])->assertStatus(422);
+    });
+
+    it('cant reset password with invlid data ', function () {
+        $user = User::factory()->create();
+        expect($user->codes()->count())->toBe(0);
+        $this->postJson(route('partner.forgetPassword'), [
+            'phone' => $user->phone,
+            'firebase_token' => $user->firebase_token,
+        ])->assertOk();
+        $this->postJson(route('partner.resetPassword'), [
+            'phone' => $user->phone,
+            'firebase_token' => 'invalid_token',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'code' => 'invalid_code'
+        ])->assertStatus(422);
+    });
+
+    it('can change password ', function () {
+        $user = User::factory()->create();
+        $res = $this->replaceUser($user)->postJson(route('partner.changePassword'), [
+            'old_password' => 'password',
+            'new_password' => 'new_password',
+            'new_password_confirmation' => 'new_password',
+        ]);
+        $res->assertOk();
+        expect(Hash::check('new_password',$user->fresh()->password))->toBeTrue();
+    });
+
 });

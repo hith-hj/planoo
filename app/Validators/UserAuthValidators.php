@@ -43,6 +43,7 @@ final class UserAuthValidators extends Validators
     {
         return Validator::make($data, [
             'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'exists:users'],
+            'firebase_token' => ['required'],
         ]);
     }
 
@@ -51,6 +52,8 @@ final class UserAuthValidators extends Validators
         return Validator::make($data, [
             'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'exists:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'code' => ['required', 'numeric', 'exists:codes,code'],
+            'firebase_token' => ['required'],
         ]);
     }
 
@@ -61,7 +64,7 @@ final class UserAuthValidators extends Validators
         ]);
     }
 
-    public static function changePAssword(array $data)
+    public static function changePassword(array $data)
     {
         return Validator::make($data, [
             'old_password' => ['required', 'string', 'min:8'],

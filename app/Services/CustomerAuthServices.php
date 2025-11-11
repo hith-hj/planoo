@@ -32,7 +32,7 @@ final class CustomerAuthServices
             'is_notifiable' => true,
         ]);
 
-        $customer->fresh()->verify($data['by'] ?? 'fcm');
+        $customer->fresh()->verify(by: $data['by'] ?? 'fcm');
 
         return $customer;
     }
@@ -41,13 +41,8 @@ final class CustomerAuthServices
     {
         $customer = $this->getCustomer($validator);
         $code = $customer->code(CodesTypes::verification->name);
-        if ($code === null || $code->code !== $validator->safe()->integer('code')) {
-            throw new Exception(__('invalid code'));
-        }
-
-        if ($code->expire_at !== null && $code->expire_at->lt(now())) {
-            throw new Exception(__('code expired'));
-        }
+        Truthy($code->code !== $validator->safe()->integer('code'), __('invalid code'));
+        Truthy($code->expire_at !== null && $code->expire_at->lt(now()), __('code expired'));
         $customer->verified();
 
         return $customer;
@@ -79,7 +74,8 @@ final class CustomerAuthServices
     public function forgetPassword(Validator $validator): Customer
     {
         $customer = $this->getCustomer($validator);
-        $customer->verify();
+        Truthy($customer->firebase_token !== $validator->safe()->input('firebase_token'), 'invalid operation');
+        $customer->verify(CodesTypes::password->name);
 
         return $customer;
     }
@@ -87,12 +83,15 @@ final class CustomerAuthServices
     public function resetPassword(Validator $validator): Customer
     {
         $customer = $this->getCustomer($validator);
+        Truthy($customer->firebase_token !== $validator->safe()->input('firebase_token'), 'invalid operation');
+        Truthy($customer->verified_at !== null, __('verify account'));
 
-        if (is_null($customer->verified_at)) {
-            throw new Exception(__('verify account'), code: 401);
-        }
+        $code = $customer->code(CodesTypes::password->name);
+        Truthy($code->code !== $validator->safe()->integer('code'), __('invalid code'));
+        Truthy($code->expire_at !== null && $code->expire_at->lt(now()), __('code expired'));
 
-        $customer->update(['password' => Hash::make($validator->safe()->input('password'))]);
+        $customer->verified(CodesTypes::password->name)
+            ->update(['password' => Hash::make($validator->safe()->input('password'))]);
 
         return $customer;
     }
@@ -100,10 +99,7 @@ final class CustomerAuthServices
     public function resendCode(Validator $validator): Customer
     {
         $customer = $this->getCustomer($validator);
-
-        if ($customer->verified_at !== null) {
-            throw new Exception(__('invalid operation'), code: 403);
-        }
+        Truthy($customer->verified_at !== null, __('invalid operation'));
 
         $customer->verify();
 
@@ -112,7 +108,11 @@ final class CustomerAuthServices
 
     public function changePassword(Validator $validator): Customer
     {
-        $customer = Auth::customer();
+        $customer = Auth::user();
+        if ($customer->verified_at === null) {
+            throw new Exception(__('verify your account'));
+        }
+
         if (! Hash::check($validator->safe()->input('old_password'), $customer->password)) {
             throw new Exception(__('invalid password'));
         }
@@ -136,7 +136,7 @@ final class CustomerAuthServices
         return JWTAuth::invalidate(JWTAuth::getToken());
     }
 
-    private function getCustomer($validator)
+    private function getCustomer($validator): Customer
     {
         $customer = Customer::where('phone', $validator->safe()->input('phone'))->first();
         NotFound($customer);

@@ -8,6 +8,7 @@ enum CodesTypes
 {
     case test;
     case verification;
+    case password;
     case appointment;
     case fee;
 
