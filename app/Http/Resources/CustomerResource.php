@@ -24,6 +24,7 @@ final class CustomerResource extends JsonResource
             'is_verified' => $this->verified_at,
             'is_notifiable' => $this->is_notifiable,
             'is_active' => $this->is_active,
+            'profile_image' => MediaResource::make($this->mediaByName('profile_image')),
         ];
     }
 }

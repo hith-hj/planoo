@@ -6,6 +6,7 @@ use App\Http\Controllers\Customer\Api\ActivityController;
 use App\Http\Controllers\Customer\Api\AppointmentController;
 use App\Http\Controllers\Customer\Api\AuthController;
 use App\Http\Controllers\Customer\Api\CourseController;
+use App\Http\Controllers\Customer\Api\CustomerController;
 use App\Http\Controllers\Customer\Api\EventController;
 use App\Http\Controllers\Customer\Api\HomeController;
 use App\Http\Controllers\Customer\Api\LocationController;
@@ -32,6 +33,20 @@ Route::controller(AuthController::class)
             Route::post('changePassword', 'changePassword')->name('changePassword');
         }
     );
+
+Route::controller(CustomerController::class)
+    ->prefix('customer')
+    ->name('customer.')
+    ->group(
+        function (): void {
+            Route::get('get', 'get')->name('get');
+            Route::post('update', 'update')->name('update');
+            Route::post('uploadProfileImage', 'uploadProfileImage')->name('uploadProfileImage');
+            Route::post('deleteProfileImage', 'deleteProfileImage')->name('deleteProfileImage');
+            Route::delete('delete', 'delete')->name('delete');
+        }
+    );
+
 Route::controller(LocationController::class)
     ->prefix('location')
     ->name('location.')

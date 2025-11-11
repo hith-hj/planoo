@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Enums\AccountStatus;
 use App\Models\Customer;
+use App\Models\Media;
+use Illuminate\Support\Facades\Storage;
 
 final class CustomerServices
 {
@@ -79,6 +81,36 @@ final class CustomerServices
         NotFound($customer, 'customer');
 
         return $customer;
+    }
+
+    public function update(Customer $customer, array $data): bool
+    {
+        Required($data, 'data');
+
+        return $customer->update($data);
+    }
+
+    public function delete(Customer $customer, array $data): bool
+    {
+        return false;
+    }
+
+    public function uploadProfileImage(Customer $customer, array $data)
+    {
+        $oldMedia = $customer->mediaByName('profile_image');
+        if ($oldMedia !== null) {
+            $this->deleteProfileImage($oldMedia);
+        }
+
+        return $customer->uploadMedia('image', 'profile_image', $data['profile_image']);
+    }
+
+    public function deleteProfileImage(Media $media)
+    {
+        NotFound($media, 'Media');
+        Storage::disk('public')->delete($media->url);
+
+        return $media->delete();
     }
 
     private function userName(array $data): string

@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Interfaces\Locatable;
 use App\Interfaces\Notifiable;
 use App\Traits\CodeHandler;
+use App\Traits\MediaHandler;
 use App\Traits\NotificationsHandler;
 use App\Traits\VerificationHandler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +21,7 @@ final class Customer extends Authenticatable implements JWTSubject, Locatable, N
 {
     use CodeHandler;
     use HasFactory;
+    use MediaHandler;
     use NotificationsHandler;
     use VerificationHandler;
 
