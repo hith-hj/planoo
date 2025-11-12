@@ -136,6 +136,7 @@ final class AppointmentServices
         Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
 
         $appointment = $owner->appointments()->create([
+            'customer_id' => $customer->id,
             'date' => $data['date'],
             'time' => $data['time'],
             'session_duration' => $data['session_duration'],
@@ -143,8 +144,6 @@ final class AppointmentServices
             'price' => $this->caculatePrice($data['session_duration'], $owner),
             'notes' => $data['notes'] ?? null,
         ]);
-
-        $appointment->customer()->associate($customer)->save();
 
         return $appointment->load($this->ToBeLoaded());
     }
