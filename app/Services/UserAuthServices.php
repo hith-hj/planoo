@@ -22,6 +22,7 @@ final class UserAuthServices
 
     public function create(array $data): User
     {
+        /** @var User $user */
         $user = User::create([
             'name' => $data['name'],
             'account_type' => $data['account_type'],
@@ -58,6 +59,7 @@ final class UserAuthServices
             throw new Exception(__('invalid credentials'));
         }
 
+        /** @var User $user */
         $user = Auth::user();
         if (! Hash::check($validator->safe()->input('password'), $user->password)) {
             throw new Exception(__('incorrect password'));
@@ -111,6 +113,7 @@ final class UserAuthServices
 
     public function changePassword(Validator $validator): User
     {
+        /** @var User $user */
         $user = Auth::user();
 
         if ($user->verified_at === null) {

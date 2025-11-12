@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\NotificationServices;
 use App\Validators\NotificationValidators;
 use Illuminate\Http\JsonResponse;
@@ -17,7 +18,7 @@ final class NotificationController extends Controller
 
     public function all(Request $request): JsonResponse
     {
-        $notis = $this->services->all(Auth::user());
+        $notis = $this->services->all($this->getUser());
 
         return Success(payload: ['notifications' => $notis->toResourceCollection()]);
     }
@@ -27,7 +28,7 @@ final class NotificationController extends Controller
         $validator = NotificationValidators::find($request->all());
 
         $noti = $this->services->findByNotifiable(
-            Auth::user(),
+            $this->getUser(),
             $validator->safe()->integer('notification_id')
         );
 
@@ -48,10 +49,10 @@ final class NotificationController extends Controller
         $validator = NotificationValidators::delete($request->all());
 
         $notification = $this->services->findByNotifiable(
-            Auth::user(),
+            $this->getUser(),
             $validator->safe()->integer('notification_id')
         );
-        if ($notification->isBelongTo(Auth::user())) {
+        if ($notification->isBelongTo($this->getUser())) {
             $this->services->delete($notification);
 
             return Success();
@@ -62,8 +63,14 @@ final class NotificationController extends Controller
 
     public function clear()
     {
-        $this->services->clear(Auth::user());
+        $this->services->clear($this->getUser());
 
         return Success();
+    }
+
+    private function getUser():User
+    {
+        /** @return User */
+        return Auth::user();
     }
 }

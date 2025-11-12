@@ -22,6 +22,7 @@ final class CustomerAuthServices
 
     public function create(array $data): Customer
     {
+        /** @var Customer $customer */
         $customer = Customer::create([
             'name' => $data['name'],
             'phone' => $data['phone'],
@@ -54,7 +55,7 @@ final class CustomerAuthServices
         if (! Auth::attempt($credentials)) {
             throw new Exception(__('invalid credentials'));
         }
-
+        /** @var Customer $customer */
         $customer = Auth::user();
         if (! Hash::check($validator->safe()->input('password'), $customer->password)) {
             throw new Exception(__('incorrect password'));
@@ -108,6 +109,7 @@ final class CustomerAuthServices
 
     public function changePassword(Validator $validator): Customer
     {
+        /** @var Customer $customer */
         $customer = Auth::user();
         if ($customer->verified_at === null) {
             throw new Exception(__('verify your account'));

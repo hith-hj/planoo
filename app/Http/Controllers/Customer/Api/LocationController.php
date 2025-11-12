@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Customer\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Services\LocationServices;
 use App\Validators\LocationValidators;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ final class LocationController extends Controller
 
     public function get()
     {
-        $location = $this->services->get(Auth::user());
+        $location = $this->services->get($this->getCustomer());
 
         return Success(payload: ['location' => $location->toResource()]);
     }
@@ -24,12 +25,12 @@ final class LocationController extends Controller
     public function create(Request $request)
     {
         $validator = LocationValidators::create($request->all());
-        if ($this->services->checkLocationExists(Auth::user())) {
+        if ($this->services->checkLocationExists($this->getCustomer())) {
             return Error(msg: 'location exists');
         }
 
         $location = $this->services->create(
-            Auth::user(),
+            $this->getCustomer(),
             $validator->safe()->all()
         );
 
@@ -40,7 +41,7 @@ final class LocationController extends Controller
     {
         $validator = LocationValidators::create($request->all(), true);
         $location = $this->services->update(
-            Auth::user(),
+            $this->getCustomer(),
             $validator->safe()->all()
         );
 
@@ -49,8 +50,14 @@ final class LocationController extends Controller
 
     public function delete()
     {
-        $this->services->delete(Auth::user());
+        $this->services->delete($this->getCustomer());
 
         return Success();
+    }
+
+    private function getCustomer():Customer
+    {
+        /** @return Customer */
+        return Auth::user();
     }
 }
