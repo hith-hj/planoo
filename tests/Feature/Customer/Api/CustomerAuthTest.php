@@ -58,6 +58,7 @@ describe('CustomerAuth Controller test', function () {
         $res = $this->postJson(route('customer.login'), [
             'phone' => $customer->phone,
             'password' => 'password',
+            'firebase_token' => $customer->firebase_token,
         ]);
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['customer', 'token']);
@@ -72,6 +73,7 @@ describe('CustomerAuth Controller test', function () {
         $res = $this->postJson(route('customer.login'), [
             'phone' => $customer->phone,
             'password' => 'password',
+            'firebase_token' => $customer->firebase_token,
         ]);
         expect($res->status())->toBe(400);
     });
@@ -90,6 +92,7 @@ describe('CustomerAuth Controller test', function () {
         $res = $this->postJson(route('customer.login'), [
             'phone' => $customer->phone,
             'password' => 'wrongpassword',
+            'firebase_token' => $customer->firebase_token,
         ]);
         expect($res->status())->toBe(400);
     });

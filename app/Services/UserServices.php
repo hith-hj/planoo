@@ -6,12 +6,11 @@ namespace App\Services;
 
 use App\Models\Media;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 final class UserServices
 {
-    public function get(int|string|null $id): Model
+    public function get(int|string|null $id): User
     {
         Required($id, 'user id');
         $user = User::find($id);
@@ -32,7 +31,7 @@ final class UserServices
         return false;
     }
 
-    public function uploadProfileImage(User $user, array $data)
+    public function uploadProfileImage(User $user, array $data): Media
     {
         $oldMedia = $user->mediaByName('profile_image');
         if ($oldMedia !== null) {
@@ -42,7 +41,7 @@ final class UserServices
         return $user->uploadMedia('image', 'profile_image', $data['profile_image']);
     }
 
-    public function deleteProfileImage(Media $media)
+    public function deleteProfileImage(Media $media): ?bool
     {
         NotFound($media, 'Media');
         Storage::disk('public')->delete($media->url);

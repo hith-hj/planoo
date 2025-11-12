@@ -52,6 +52,7 @@ final class CustomerServices
             'firebase_token' => 'string',
         ]);
 
+        /** @var Customer $customer */
         $customer = Customer::create([
             'name' => $this->userName($data),
             'phone' => $data['phone'],
@@ -61,6 +62,8 @@ final class CustomerServices
             'is_active' => true,
             'is_notifiable' => true,
         ]);
+
+        $customer->fresh()->verify(by: $data['by'] ?? 'fcm');
 
         return $customer;
     }

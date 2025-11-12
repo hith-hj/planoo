@@ -68,7 +68,7 @@ final class NotificationController extends Controller
         return Success();
     }
 
-    private function getUser():User
+    private function getUser(): User
     {
         /** @return User */
         return Auth::user();

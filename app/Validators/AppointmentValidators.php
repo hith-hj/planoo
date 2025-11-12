@@ -31,7 +31,7 @@ final class AppointmentValidators extends Validators
             'time' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
             'notes' => ['nullable', 'string', 'max:500'],
             'customer_id' => ['sometimes', 'required', 'exists:customers,id', 'required_without:customer_phone'],
-            'customer_phone' => ['sometimes', 'regex:/^09[1-9]{1}\d{7}$/', 'unique:customers,phone', 'required_without:customer_id'],
+            'customer_phone' => ['sometimes', 'regex:/^09[1-9]{1}\d{7}$/', 'required_without:customer_id'],
         ]);
 
         return $validators;

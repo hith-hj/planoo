@@ -65,6 +65,10 @@ final class CustomerAuthServices
             throw new Exception(__('unverified account'));
         }
 
+        if ($customer->firebase_token === 'not-set') {
+            $customer->update(['firebase_token' => $validator->safe()->input('firebase_token')]);
+        }
+
         // if (!$customer->is_active) {
         //     throw new Exception(__('inactive account,wait until activation'));
         // }

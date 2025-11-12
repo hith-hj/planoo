@@ -31,6 +31,7 @@ final class CustomerAuthValidators extends Validators
         return Validator::make($data, [
             'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'exists:customers'],
             'password' => ['required', 'string', 'min:8'],
+            'firebase_token' => ['required'],
         ]);
     }
 
