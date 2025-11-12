@@ -24,7 +24,7 @@ trait NotificationsHandler
 
     private array $data = [];
 
-    private string $class = '';
+    private string $className = '';
 
     public function notifications(): MorphMany
     {
@@ -40,17 +40,17 @@ trait NotificationsHandler
         $this->title = $title;
         $this->body = $body;
         $this->data = $data;
-        $this->class = class_basename($this::class).'/'.$this->id;
-        if (App::environment('testing', 'local')) {
+        $this->className = class_basename($this::class).'/'.$this->id;
+        if (app()->environment(['testing', 'local'])) {
             $this->store(['result' => 'testing notification']);
-            Log::info("Local notification on $this->class : $this->title , $this->body");
+            Log::info("Local notification on {$this->className} : {$this->title} , {$this->body}");
 
             return true;
         }
 
         if ($this->hasIsNotifiable() && ! $this->isNotifiable()) {
             $this->store(['result' => 'silent notification']);
-            Log::info(" $this->class is not notifiable");
+            Log::info(" {$this->className} is not notifiable");
 
             return true;
         }
@@ -66,7 +66,7 @@ trait NotificationsHandler
     public function fcm(): bool
     {
         if ($this->firebase_token === null) {
-            Log::error("No FCM token found on $this->class");
+            Log::error("No FCM token found on {$this->className}");
 
             return true;
         }
@@ -90,7 +90,7 @@ trait NotificationsHandler
 
     private function store(array $extra): Notification
     {
-        Truthy(! method_exists($this, 'notifications'), "$this->class Missing notifications() method");
+        Truthy(! method_exists($this, 'notifications'), "{$this->className} Missing notifications() method");
 
         return $this->notifications()->create([
             'title' => $this->title,
