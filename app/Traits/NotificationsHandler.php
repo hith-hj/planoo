@@ -40,10 +40,10 @@ trait NotificationsHandler
         $this->title = $title;
         $this->body = $body;
         $this->data = $data;
-        $this->className = class_basename($this::class).'/'.$this->id;
+        $this->className = class_basename($this::class)."[{$this->id}]";
         if (app()->environment(['testing', 'local'])) {
             $this->store(['result' => 'testing notification']);
-            Log::info("Local notification on {$this->className} : {$this->title} , {$this->body}");
+            Log::info("Notification {$this->className} : {$this->body}");
 
             return true;
         }
@@ -66,7 +66,7 @@ trait NotificationsHandler
     public function fcm(): bool
     {
         if ($this->firebase_token === null) {
-            Log::error("No FCM token found on {$this->className}");
+            Log::error("No FCM token on {$this->className}");
 
             return true;
         }

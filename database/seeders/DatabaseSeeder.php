@@ -22,9 +22,8 @@ final class DatabaseSeeder extends Seeder
         $this->createAdmin();
         $this->createCategories();
         $this->createTags();
-        $this->createUsers();
         $this->createCustomers();
-        $this->createAppointments();
+        $this->createUsers();
     }
 
     public function createAdmin()
