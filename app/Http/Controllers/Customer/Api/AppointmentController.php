@@ -50,7 +50,7 @@ final class AppointmentController extends Controller
         if ($this->services->checkAppointmentExists($validator->safe()->all())) {
             return Error('Appointment just got booked');
         }
-        $appointment = $this->services->create($activity, Auth::user(), $validator->safe()->all());
+        $appointment = $this->services->create($activity, $validator->safe()->all(), Auth::user());
 
         return Success(payload: ['appointment' => $appointment->toResource()]);
     }

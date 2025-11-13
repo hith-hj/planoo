@@ -90,6 +90,7 @@ describe('Appointment Controller Tests', function () {
             'date' => now()->tomorrow()->toDateString(),
             'time' => '12:00',
             'session_duration' => 120,
+            'end_at' => '14:00',
             'notes' => 'Recusandae et quis voluptatibus.',
             'customer_id' => '1'
         ];

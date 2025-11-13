@@ -8,6 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Appointment;
 use App\Models\Course;
+use App\Services\AppointmentServices;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -38,15 +39,14 @@ final class NotifyCourseCustomer extends Command
             }
 
             $this->handleAppointmentConflict($date, $day->start, $course);
-
-            $appointment = $course->appointments()->create([
+            $data = [
                 'date' => $date,
                 'time' => $day->start,
                 'session_duration' => $course->session_duration,
-                'status' => AppointmentStatus::accepted->value,
                 'price' => ceil($course->price / $course->course_duration),
                 'notes' => 'course session',
-            ]);
+            ];
+            app(AppointmentServices::class)->create(owner: $course, data: $data);
 
             $course->user->notify(...$this->sessionNotification($course, $day));
 

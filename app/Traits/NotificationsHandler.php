@@ -7,7 +7,6 @@ namespace App\Traits;
 use App\Enums\NotificationTypes;
 use App\Models\Notification;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Exception\MessagingException;
 use Kreait\Firebase\Factory as FcmFactory;

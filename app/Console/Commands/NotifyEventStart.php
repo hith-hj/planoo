@@ -9,6 +9,7 @@ use App\Enums\EventStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Appointment;
 use App\Models\Event;
+use App\Services\AppointmentServices;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -52,15 +53,14 @@ final class NotifyEventStart extends Command
             return;
         }
         $this->handleAppointmentConflict($dateString, $day->start, $event);
-
-        $event->appointments()->create([
+        $data = [
             'date' => $dateString,
             'time' => $day->start,
             'session_duration' => $this->sessionDurationInMinutes($day),
-            'status' => AppointmentStatus::accepted->value,
             'price' => $event->admission_fee,
             'notes' => 'event start',
-        ]);
+        ];
+        app(AppointmentServices::class)->create(owner: $event, data: $data);
 
         $event->update(['status' => EventStatus::active->value]);
 

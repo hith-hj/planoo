@@ -22,13 +22,17 @@ final class AppointmentFactory extends Factory
      */
     public function definition(): array
     {
+        $time = $this->toTime();
+        $session_duration = fake()->randomElement(SessionDuration::values());
+
         return [
             'appointable_type' => Course::class,
             'appointable_id' => 1,
             'date' => fake()->randomElement($this->toDate()),
-            'time' => $this->toTime(),
+            'time' => $time->toTimeString(),
             'price' => random_int(1000, 10000),
-            'session_duration' => fake()->randomElement(SessionDuration::values()),
+            'session_duration' => $session_duration,
+            'end_at' => (clone $time)->addMinutes($session_duration)->toTimeString(),
             'status' => AppointmentStatus::accepted->value,
             'notes' => fake()->sentence,
             'customer_id' => 1,
@@ -40,12 +44,16 @@ final class AppointmentFactory extends Factory
         Truthy($owner === null, 'Onwer is required for Appointment factory');
         Truthy(! method_exists($owner, 'days'), 'Onwer missing days() method');
         $day = $owner->days()->first();
+        $time = $this->toTime();
+        $session_duration = fake()->randomElement(SessionDuration::values());
 
         return [
             'activity_id' => $owner->id,
             'day_id' => $day->id,
             'date' => fake()->randomElement($this->toDate($day['day'])),
-            'session_duration' => fake()->randomElement(SessionDuration::values()),
+            'time' => $time->toTimeString(),
+            'session_duration' => $session_duration,
+            'end_at' => (clone $time)->addMinutes($session_duration)->toTimeString(),
             'notes' => fake()->word,
             ...$extras,
         ];
@@ -71,6 +79,6 @@ final class AppointmentFactory extends Factory
 
     private function toTime()
     {
-        return now()->tomorrow()->hour(9)->addHour(random_int(1, 8))->toTimeString();
+        return now()->tomorrow()->hour(9)->addHour(random_int(1, 8));
     }
 }

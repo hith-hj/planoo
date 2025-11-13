@@ -122,26 +122,31 @@ final class AppointmentServices
         ]);
         $activity = app(ActivityServices::class)->find($data['activity_id']);
         Truthy(! $activity || ! method_exists($activity, 'appointments'), 'invalid activity');
+        $start_time = Carbon::parse($data['time']);
+        $end_time = (clone $start_time)->addMinutes($data['session_duration']);
 
         return $activity->appointments()->where([
-            ['date', $data['date']],
-            ['time', $data['time']],
-            ['session_duration', $data['session_duration']],
             ['status', '!=', AppointmentStatus::canceled->value],
+            ['date', $data['date']],
+            ['time', '<', $end_time->toTimeString('minute')],
+            ['end_at', '>', $start_time->toTimeString('minute')],
         ])->exists();
     }
 
-    public function create(object $owner, Customer $customer, array $data): Appointment
+    public function create(object $owner, array $data, ?Customer $customer = null): Appointment
     {
         Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
-
+        $date = Carbon::parse($data['date']);
+        $start_time = Carbon::createFromTimeString($data['time']);
+        $end_at = (clone $start_time)->addMinutes($data['session_duration']);
         $appointment = $owner->appointments()->create([
-            'customer_id' => $customer->id,
-            'date' => $data['date'],
-            'time' => $data['time'],
+            'customer_id' => $customer->id ?? null,
+            'date' => $date->toDateString(),
+            'time' => $start_time->toTimeString('minute'),
+            'end_at' => $end_at->toTimeString('minute'),
             'session_duration' => $data['session_duration'],
+            'price' => $data['price'] ?? $this->caculatePrice($data['session_duration'], $owner),
             'status' => AppointmentStatus::accepted->value,
-            'price' => $this->caculatePrice($data['session_duration'], $owner),
             'notes' => $data['notes'] ?? null,
         ]);
 

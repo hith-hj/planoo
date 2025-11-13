@@ -51,7 +51,7 @@ final class AppointmentController extends Controller
         }
         $customer = app(CustomerServices::class)->getCustomer($validator->safe()->all());
 
-        $appointment = $this->services->create($activity, $customer, $validator->safe()->all());
+        $appointment = $this->services->create($activity, $validator->safe()->all(), $customer);
 
         return Success(payload: ['appointment' => $appointment->toResource()]);
     }

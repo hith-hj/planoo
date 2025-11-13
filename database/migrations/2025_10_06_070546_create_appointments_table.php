@@ -20,8 +20,9 @@ return new class extends Migration
             $table->foreignIdFor(Customer::class)->nullable();
             $table->date('date');
             $table->time('time');
-            $table->integer('price');
+            $table->time('end_at');
             $table->integer('session_duration');
+            $table->integer('price');
             $table->tinyInteger('status');
             $table->string('notes')->nullable();
             $table->string('canceled_by')->nullable();
