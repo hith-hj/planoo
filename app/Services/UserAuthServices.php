@@ -46,7 +46,7 @@ final class UserAuthServices
         $user = $this->getUser($validator);
         $code = $user->code(CodesTypes::verification->name);
         Truthy($code->code !== $validator->safe()->integer('code'), __('invalid code'));
-        Truthy($code->expire_at !== null && $code->expire_at->lt(now()), __('code expired'));
+        Truthy($code->expire_at !== null && ! $code->isValid(), __('code expired'));
         $user->verified();
 
         return $user;
@@ -93,7 +93,7 @@ final class UserAuthServices
 
         $code = $user->code(CodesTypes::password->name);
         Truthy($code->code !== $validator->safe()->integer('code'), __('invalid code'));
-        Truthy($code->expire_at !== null && $code->expire_at->lt(now()), __('code expired'));
+        Truthy($code->expire_at !== null && ! $code->isValid(), __('code expired'));
 
         $user->verified(CodesTypes::password->name)
             ->update(['password' => Hash::make($validator->safe()->input('password'))]);

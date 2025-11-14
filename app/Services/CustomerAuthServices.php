@@ -43,7 +43,7 @@ final class CustomerAuthServices
         $customer = $this->getCustomer($validator);
         $code = $customer->code(CodesTypes::verification->name);
         Truthy($code->code !== $validator->safe()->integer('code'), __('invalid code'));
-        Truthy($code->expire_at !== null && $code->expire_at->lt(now()), __('code expired'));
+        Truthy($code->expire_at !== null && ! $code->isValid(), __('code expired'));
         $customer->verified();
 
         return $customer;
@@ -93,7 +93,7 @@ final class CustomerAuthServices
 
         $code = $customer->code(CodesTypes::password->name);
         Truthy($code->code !== $validator->safe()->integer('code'), __('invalid code'));
-        Truthy($code->expire_at !== null && $code->expire_at->lt(now()), __('code expired'));
+        Truthy($code->expire_at !== null && ! $code->isValid(), __('code expired'));
 
         $customer->verified(CodesTypes::password->name)
             ->update(['password' => Hash::make($validator->safe()->input('password'))]);

@@ -22,7 +22,7 @@ final class Code extends Model
 
     public function isValid(): bool
     {
-        return $this->expire_at > now();
+        return $this->expire_at->gt(now());
     }
 
     public function holder(): MorphTo

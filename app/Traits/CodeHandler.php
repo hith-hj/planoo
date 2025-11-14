@@ -5,14 +5,21 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use App\Models\Code;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 trait CodeHandler
 {
-    public function codes(): MorphMany
+    public function codes(): MorphMany|Builder
     {
-        return $this->morphMany(Code::class, 'belongTo');
+        if ($this instanceof Model) {
+            return $this->morphMany(Code::class, 'belongTo');
+        }
+
+        return Code::query();
+
     }
 
     public function code(string $type): ?Code
@@ -23,16 +30,29 @@ trait CodeHandler
         return $code;
     }
 
+    public function codeById(int $id): ?Code
+    {
+        $code = $this->codes()->find($id);
+        Truthy($code === null, "Code[{$id}] not Found");
+
+        return $code;
+    }
+
     public function createCode(
         string $type = 'test',
         int $length = 5,
         ?string $timeToExpire = '15:m'
     ): static {
+
         $this->deleteCode($type);
-        $code = $this->generate($type, $length);
-        $this->codes()->create([
+
+        $query = $this instanceof Builder ?
+            $this->codes()->withAttributes(['belongTo_id' => $this->number(), 'belongTo_type' => $type]) :
+            $this->codes();
+
+        $query->create([
             'type' => $type,
-            'code' => $code,
+            'code' => $this->generate($type, $length),
             'expire_at' => $this->expireAt($timeToExpire),
         ]);
 
@@ -50,12 +70,12 @@ trait CodeHandler
 
     private function generate(string $type, int $length): int
     {
-        $codes = $this->codes();
+        $query = $this->codes();
         for ($i = 0; $i < 10; $i++) {
             $code = $this->number($length);
             if (
                 mb_strlen((string) $code) === $length &&
-                ! $codes->where([['type', $type], ['code', $code]])->exists()
+                ! $query->where([['type', $type], ['code', $code]])->exists()
             ) {
                 break;
             }
@@ -70,7 +90,6 @@ trait CodeHandler
         for ($i = 0; $i < $length; $i++) {
             $number .= random_int(0, 9);
         }
-
         return (int) $number;
     }
 
@@ -80,10 +99,12 @@ trait CodeHandler
             return now();
         }
         [$value, $unit] = explode(':', $timeToExpire);
-        if (! in_array($unit, ['m', 'h', 'd'])) {
+        if (! in_array($unit, ['s', 'm', 'h', 'd'])) {
             return now();
         }
 
-        return now()->add((string) $unit, (int) $value);
+        $units = ['s' => 'second', 'm' => 'minute', 'h' => 'hour', 'd' => 'day'];
+
+        return now()->add((string) $units[$unit], (int) $value);
     }
 }
