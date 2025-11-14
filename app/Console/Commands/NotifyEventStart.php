@@ -8,6 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\EventStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Appointment;
+use App\Models\Day;
 use App\Models\Event;
 use App\Services\AppointmentServices;
 use Carbon\Carbon;
@@ -27,7 +28,7 @@ final class NotifyEventStart extends Command
             'user:id',
             'customers',
             'days',
-        ])->get();
+        ])->lazy();
 
         foreach ($events as $event) {
             $eventDate = Carbon::createFromDate($event->start_date);
@@ -52,7 +53,7 @@ final class NotifyEventStart extends Command
 
             return;
         }
-        $this->handleAppointmentConflict($dateString, $day->start, $event);
+        $this->handleAppointmentConflict($dateString, $day, $event);
         $data = [
             'date' => $dateString,
             'time' => $day->start,
@@ -83,13 +84,14 @@ final class NotifyEventStart extends Command
         }
     }
 
-    private function handleAppointmentConflict(string $date, string $time, Event $event): void
+    private function handleAppointmentConflict(string $date, Day $day, Event $event): void
     {
-        $appointment = Appointment::where([
-            ['date', $date],
-            ['time', $time],
-            ['status', AppointmentStatus::accepted->value],
-        ])->first();
+        $appointment = app(AppointmentServices::class)
+            ->getAppointmentIfExists([
+                'date' => $date,
+                'session_duration' => $this->sessionDurationInMinutes($day),
+                'time' => $day->start,
+            ]);
 
         if (! $appointment) {
             return;
@@ -100,11 +102,7 @@ final class NotifyEventStart extends Command
             'canceled_by' => class_basename($appointment->holder->user::class),
         ]);
 
-        $appointment->holder->user->notify(
-            'Schedule Error',
-            "You have schedule conflicts between event '{$event->name}' and activity '{$appointment->holder->name}'",
-            ['type' => NotificationTypes::normal->value]
-        );
+        $appointment->holder->user->notify(...$this->conflict($event, $appointment));
 
     }
 
@@ -123,6 +121,15 @@ final class NotifyEventStart extends Command
             'Event Start',
             "Your Event {$event->name} start today.",
             ['type' => NotificationTypes::event->value, 'event' => $event->id],
+        ];
+    }
+
+    private function conflict(Event $event, Appointment $appointment)
+    {
+        return [
+            'Schedule Error',
+            "You have schedule conflicts between '{$event->name}' and '{$appointment->holder->name}'",
+            ['type' => NotificationTypes::normal->value],
         ];
     }
 

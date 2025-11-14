@@ -8,6 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\EventStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Appointment;
+use App\Models\Day;
 use App\Models\Event;
 use App\Services\AppointmentServices;
 use Carbon\Carbon;
@@ -36,7 +37,7 @@ final class NotifyEventSession extends Command
             if (! $day) {
                 continue;
             }
-            $this->handleAppointmentConflict($date, $day->start, $event);
+            $this->handleAppointmentConflict($date, $day, $event);
             $data = [
                 'date' => $date,
                 'time' => $day->start,
@@ -45,10 +46,10 @@ final class NotifyEventSession extends Command
                 'notes' => 'event session',
             ];
             app(AppointmentServices::class)->create(owner: $event, data: $data);
-            $notification = $this->sessionNotification($event, $day);
+            $notification = $this->session($event, $day);
             if ($event->end_date === $date) {
                 $event->update(['status' => EventStatus::completed->value]);
-                $notification = $this->finishNotification($event, $day);
+                $notification = $this->finish($event, $day);
             }
 
             $event->user->notify(...$notification);
@@ -60,13 +61,14 @@ final class NotifyEventSession extends Command
         $this->info('Customers notified for the upcoming event session.');
     }
 
-    private function handleAppointmentConflict(string $date, string $time, Event $event): void
+    private function handleAppointmentConflict(string $date, Day $day, Event $event): void
     {
-        $appointment = Appointment::where([
-            ['date', $date],
-            ['time', $time],
-            ['status', AppointmentStatus::accepted->value],
-        ])->first();
+        $appointment = app(AppointmentServices::class)
+            ->getAppointmentIfExists([
+                'date' => $date,
+                'session_duration' => $this->sessionDurationInMinutes($day),
+                'time' => $day->start,
+            ]);
 
         if (! $appointment) {
             return;
@@ -77,14 +79,10 @@ final class NotifyEventSession extends Command
             'canceled_by' => class_basename($appointment->holder->user::class),
         ]);
 
-        $appointment->holder->user->notify(
-            'Schedule Error',
-            "You have schedule conflicts between event '{$event->name}' and activity '{$appointment->holder->name}'",
-            ['type' => NotificationTypes::normal->value]
-        );
+        $appointment->holder->user->notify(...$this->conflict($event, $appointment));
     }
 
-    private function sessionNotification(Event $event, $day): array
+    private function session(Event $event, $day): array
     {
         return [
             'Event Session',
@@ -93,12 +91,21 @@ final class NotifyEventSession extends Command
         ];
     }
 
-    private function finishNotification(Event $event): array
+    private function finish(Event $event): array
     {
         return [
             'Event Finished',
             "Your event '{$event->name}' is now complete.",
             ['type' => NotificationTypes::event->value, 'event' => $event->id],
+        ];
+    }
+
+    private function conflict(Event $event, Appointment $appointment)
+    {
+        return [
+            'Schedule Error',
+            "You have schedule conflicts between '{$event->name}' and '{$appointment->holder->name}'",
+            ['type' => NotificationTypes::normal->value],
         ];
     }
 

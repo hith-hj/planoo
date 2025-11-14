@@ -115,22 +115,37 @@ final class AppointmentServices
     public function checkAppointmentExists(array $data): bool
     {
         $data = checkAndCastData($data, [
-            'activity_id' => 'int',
             'date' => 'string',
             'session_duration' => 'int',
             'time' => 'string',
         ]);
-        $activity = app(ActivityServices::class)->find($data['activity_id']);
-        Truthy(! $activity || ! method_exists($activity, 'appointments'), 'invalid activity');
         $start_time = Carbon::parse($data['time']);
         $end_time = (clone $start_time)->addMinutes($data['session_duration']);
 
-        return $activity->appointments()->where([
-            ['status', '!=', AppointmentStatus::canceled->value],
+        return Appointment::where([
+            ['status', AppointmentStatus::accepted->value],
             ['date', $data['date']],
             ['time', '<', $end_time->toTimeString('minute')],
             ['end_at', '>', $start_time->toTimeString('minute')],
         ])->exists();
+    }
+
+    public function getAppointmentIfExists(array $data): ?Appointment
+    {
+        $data = checkAndCastData($data, [
+            'date' => 'string',
+            'session_duration' => 'int',
+            'time' => 'string',
+        ]);
+        $start_time = Carbon::parse($data['time']);
+        $end_time = (clone $start_time)->addMinutes($data['session_duration']);
+
+        return Appointment::where([
+            ['status', AppointmentStatus::accepted->value],
+            ['date', $data['date']],
+            ['time', '<', $end_time->toTimeString('minute')],
+            ['end_at', '>', $start_time->toTimeString('minute')],
+        ])->first();
     }
 
     public function create(object $owner, array $data, ?Customer $customer = null): Appointment

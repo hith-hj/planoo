@@ -30,7 +30,7 @@ final class NotifyCourseCustomer extends Command
             'user:id',
             'customers' => fn (BelongsToMany $query) => $query->where('is_complete', false),
             'days',
-        ])->get();
+        ])->lazy();
 
         foreach ($courses as $course) {
             $day = $course->days->firstWhere('day', $dayName);
@@ -48,7 +48,7 @@ final class NotifyCourseCustomer extends Command
             ];
             app(AppointmentServices::class)->create(owner: $course, data: $data);
 
-            $course->user->notify(...$this->sessionNotification($course, $day));
+            $course->user->notify(...$this->session($course, $day));
 
             foreach ($course->customers as $customer) {
                 $remaining = $customer->pivot->remaining_sessions;
@@ -64,10 +64,10 @@ final class NotifyCourseCustomer extends Command
                     'is_complete' => $isComplete,
                 ]);
 
-                $customer->notify(...$this->sessionNotification($course, $day));
+                $customer->notify(...$this->session($course, $day));
 
                 if ($isComplete) {
-                    $customer->notify(...$this->finishNotification($course));
+                    $customer->notify(...$this->finish($course));
                 }
             }
         }
@@ -77,11 +77,12 @@ final class NotifyCourseCustomer extends Command
 
     private function handleAppointmentConflict(string $date, string $time, Course $course): void
     {
-        $appointment = Appointment::where([
-            ['date', $date],
-            ['time', $time],
-            ['status', AppointmentStatus::accepted->value],
-        ])->first();
+        $appointment = app(AppointmentServices::class)
+            ->getAppointmentIfExists([
+                'date' => $date,
+                'session_duration' => $course->session_duration,
+                'time' => $time,
+            ]);
 
         if (! $appointment) {
             return;
@@ -92,14 +93,10 @@ final class NotifyCourseCustomer extends Command
             'canceled_by' => class_basename($appointment->holder->user::class),
         ]);
 
-        $appointment->holder->user->notify(
-            'Schedule Error',
-            "You have schedule conflicts between course '{$course->name}' and activity '{$appointment->holder->name}'",
-            ['type' => NotificationTypes::normal->value]
-        );
+        $appointment->holder->user->notify(...$this->conflict($course, $appointment));
     }
 
-    private function sessionNotification(Course $course, $day): array
+    private function session(Course $course, $day): array
     {
         return [
             'Course Session',
@@ -108,12 +105,21 @@ final class NotifyCourseCustomer extends Command
         ];
     }
 
-    private function finishNotification(Course $course): array
+    private function finish(Course $course): array
     {
         return [
             'Course Finished',
             "Your course '{$course->name}' is now complete.",
             ['type' => NotificationTypes::course->value, 'course' => $course->id],
+        ];
+    }
+
+    private function conflict(Course $course, Appointment $appointment)
+    {
+        return [
+            'Schedule Error',
+            "You have schedule conflicts between course '{$course->name}' and activity '{$appointment->holder->name}'",
+            ['type' => NotificationTypes::normal->value],
         ];
     }
 }
