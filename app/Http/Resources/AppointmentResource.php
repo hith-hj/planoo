@@ -38,13 +38,18 @@ final class AppointmentResource extends JsonResource
         return [
             'type' => class_basename($this->appointable_type),
             'id' => $this->appointable_id,
-            ...$this->getHolderDetails(class_basename($this->appointable_type))
+            'name' => $this->holder->name,
+            'category' => $this->holder->category,
+            'rate' => $this->holder->rate,
+            'description' => $this->holder->description,
+            'image' => $this->holder->medias[0],
+            ...$this->getHolderDetails(class_basename($this->appointable_type)),
         ];
     }
 
     private function getHolderDetails(string $type)
     {
-        return match(strtolower($type)){
+        return match (mb_strtolower($type)) {
             SectionsTypes::activity->name => $this->activity(),
             SectionsTypes::course->name => $this->course(),
             SectionsTypes::event->name => $this->event(),
@@ -55,10 +60,6 @@ final class AppointmentResource extends JsonResource
     private function activity()
     {
         return [
-            'name' => $this->holder->name,
-            'category' => $this->holder->category,
-            'rate' => $this->holder->rate,
-            'description' => $this->holder->description,
             'price' => $this->holder->price,
         ];
     }
@@ -66,10 +67,6 @@ final class AppointmentResource extends JsonResource
     private function course()
     {
         return [
-            'name' => $this->holder->name,
-            'category' => $this->holder->category,
-            'rate' => $this->holder->rate,
-            'description' => $this->holder->description,
             'price' => $this->holder->price,
         ];
     }
@@ -77,10 +74,6 @@ final class AppointmentResource extends JsonResource
     private function event()
     {
         return [
-            'name' => $this->holder->name,
-            'category' => $this->holder->category,
-            'rate' => $this->holder->rate,
-            'description' => $this->holder->description,
             'price' => $this->holder->admission_fee,
         ];
     }
