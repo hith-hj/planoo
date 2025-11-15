@@ -34,11 +34,8 @@ final class EventResource extends JsonResource
             'event_duration' => $this->event_duration,
             'start_date' => $this->start_date,
             'end_date' => $end_date,
+            'rate' => $this->rate,
             'status' => EventStatus::from($this->status)->name,
-            'days' => DayResource::collection($this->whenLoaded('days')),
-            'tags' => TagResource::collection($this->whenLoaded('tags')),
-            'location' => LocationResource::make($this->whenLoaded('location')),
-            'medias' => MediaResource::collection($this->whenLoaded('medias')),
             ...$this->exrtas(),
         ];
     }
@@ -49,6 +46,10 @@ final class EventResource extends JsonResource
 
         return [
             'customers' => $this->when($isOwner, CustomerResource::collection($this->whenLoaded('customers'))),
+            'days' => DayResource::collection($this->whenLoaded('days')),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'location' => LocationResource::make($this->whenLoaded('location')),
+            'medias' => MediaResource::collection($this->whenLoaded('medias')),
         ];
     }
 }

@@ -24,10 +24,7 @@ final class CourseResource extends JsonResource
             'course_duration' => $this->course_duration,
             'capacity' => $this->capacity,
             'cancellation_fee' => $this->cancellation_fee,
-            'days' => DayResource::collection($this->whenLoaded('days')),
-            'tags' => TagResource::collection($this->whenLoaded('tags')),
-            'location' => LocationResource::make($this->whenLoaded('location')),
-            'medias' => MediaResource::collection($this->whenLoaded('medias')),
+            'rate' => $this->rate,
             ...$this->exrtas(),
         ];
     }
@@ -39,6 +36,10 @@ final class CourseResource extends JsonResource
         return [
             'customers' => $this->when($isOwner, CustomerResource::collection($this->whenLoaded('customers'))),
             'details' => $this->when($isOwner, $this->whenLoaded('pivot')),
+            'days' => DayResource::collection($this->whenLoaded('days')),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'location' => LocationResource::make($this->whenLoaded('location')),
+            'medias' => MediaResource::collection($this->whenLoaded('medias')),
         ];
     }
 }
