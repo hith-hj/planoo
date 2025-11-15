@@ -14,13 +14,12 @@ trait VerificationHandler
     {
         $this->checkFields();
         $this->checkMethods();
-        $this->createCode(type: $codeType, timeToExpire: '15:m')
-            ->update([
-                'verified_at' => null,
-                'verified_by' => $by,
-            ]);
+        $code = $this->createCode(type: $codeType, timeToExpire: '15:m');
+        $this->update([
+            'verified_at' => null,
+            'verified_by' => $by,
+        ]);
 
-        $code = $this->code($codeType);
         $this->notify(
             title: "$codeType code",
             body: "Your code: $code->code, expire at {$code->expire_at->format('Y-m-d H:i')}",
@@ -35,7 +34,8 @@ trait VerificationHandler
     {
         $this->checkFields();
         $this->checkMethods();
-        $this->deleteCode($codeType)->touch('verified_at');
+        $this->deleteCode($codeType);
+        $this->touch('verified_at');
 
         return $this;
     }

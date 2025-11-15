@@ -19,13 +19,12 @@ trait CodeHandler
         }
 
         return Code::query();
-
     }
 
     public function code(string $type): ?Code
     {
         $code = $this->codes()->where('type', $type)->first();
-        Truthy($code === null, "$type Code not Found");
+        Truthy($code === null, "Code[{$type}] Code not Found");
 
         return $code;
     }
@@ -42,7 +41,7 @@ trait CodeHandler
         string $type = 'test',
         int $length = 5,
         ?string $timeToExpire = '15:m'
-    ): static {
+    ): Code {
 
         $this->deleteCode($type);
 
@@ -50,22 +49,30 @@ trait CodeHandler
             $this->codes()->withAttributes(['belongTo_id' => $this->number(), 'belongTo_type' => $type]) :
             $this->codes();
 
-        $query->create([
+        return $query->create([
             'type' => $type,
             'code' => $this->generate($type, $length),
             'expire_at' => $this->expireAt($timeToExpire),
         ]);
-
-        return $this;
     }
 
-    public function deleteCode(string $type): static
+    /**
+     * @param  int|string|Code  $param
+     * */
+    public function deleteCode($param): bool|int
     {
-        if ($this->codes()->whereType($type)->exists()) {
-            $this->codes()->whereType($type)->delete();
+        if ($param instanceof Code) {
+            return $param->delete();
         }
 
-        return $this;
+        $query = $this->codes()
+            ->where('type', $param)
+            ->orWhere('id', $param);
+        if ($query->exists()) {
+            return $query->delete();
+        }
+
+        return false;
     }
 
     private function generate(string $type, int $length): int
