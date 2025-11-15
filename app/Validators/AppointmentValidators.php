@@ -24,6 +24,7 @@ final class AppointmentValidators extends Validators
     public static function create(array $data)
     {
         $validators = Validator::make($data, [
+            'code' => ['required'],
             'activity_id' => ['required', 'exists:activities,id'],
             'day_id' => ['required', 'exists:days,id'],
             'date' => ['required', Rule::date()->afterToday()],

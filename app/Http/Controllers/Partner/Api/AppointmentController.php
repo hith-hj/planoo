@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Partner\Api;
 use App\Http\Controllers\Controller;
 use App\Services\ActivityServices;
 use App\Services\AppointmentServices;
+use App\Services\CodeServices;
 use App\Services\CustomerServices;
 use App\Validators\AppointmentValidators;
 use Illuminate\Http\Request;
@@ -44,6 +45,11 @@ final class AppointmentController extends Controller
     public function create(Request $request)
     {
         $validator = AppointmentValidators::create($request->all());
+
+        $code = app(CodeServices::class)->codeById($validator->safe()->integer('code'));
+        Truthy(! $code->isValid(), 'Invalid code');
+        app(CodeServices::class)->deleteCode($code);
+
         $activity = app(ActivityServices::class)
             ->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
         if ($this->services->checkAppointmentExists($validator->safe()->all())) {

@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Enums\AppointmentStatus;
+use App\Enums\CodesTypes;
 use App\Models\Appointment;
 use App\Models\Customer;
+use App\Services\CodeServices;
 
 beforeEach(function () {
     $this->seed();
@@ -35,7 +37,7 @@ describe('Appointment Controller Tests', function () {
         $response = $this->postJson("{$this->url}/check", $data);
         $response->assertOk();
         expect($response->json('payload.slots'))->not->toBeNull()
-            ->and($response->json('payload.slots'))->toHaveKeys(['day', 'date', 'slots'])
+            ->and($response->json('payload.slots'))->toHaveKeys(['day', 'date', 'slots', 'code'])
             ->and($response->json('payload.slots.slots'))->toBeIterable();
     });
 
@@ -51,7 +53,11 @@ describe('Appointment Controller Tests', function () {
                 $activity,
                 [
                     'time' => '10:30',
-                    'customer_phone' => '0987654321'
+                    'customer_phone' => '0987654321',
+                    'code' => app(CodeServices::class)->createCode(
+                        CodesTypes::appointment->name,
+                        timeToExpire: '1:m'
+                    )
                 ]
             );
 
@@ -67,7 +73,14 @@ describe('Appointment Controller Tests', function () {
         $activity = $this->user->activities()->inRandomOrder()->first();
         $customer = Customer::factory()->create();
         $data = Appointment::factory()
-            ->fakerData($activity, ['time' => '10:30', 'customer_id' => $customer->id,]);
+            ->fakerData($activity, [
+                'time' => '10:30',
+                'customer_id' => $customer->id,
+                'code' => app(CodeServices::class)->createCode(
+                    CodesTypes::appointment->name,
+                    timeToExpire: '1:m'
+                )
+            ]);
 
         $response = $this->postJson("{$this->url}/create", $data);
         $response->assertOk();
@@ -76,6 +89,23 @@ describe('Appointment Controller Tests', function () {
             ->and($response->json('payload.appointment.date'))->toBe($data['date'])
             ->and($response->json('payload.appointment.customer'))->not->toBeNull()
             ->and($response->json('payload.appointment.holder'))->not->toBeNull();
+    });
+
+    it('cant creates a new appointment with invalid code', function () {
+        $activity = $this->user->activities()->inRandomOrder()->first();
+        $customer = Customer::factory()->create();
+        $data = Appointment::factory()
+            ->fakerData($activity, [
+                'time' => '10:30',
+                'customer_id' => $customer->id,
+                'code' => app(CodeServices::class)->createCode(
+                    CodesTypes::appointment->name,
+                    timeToExpire: '-10:m'
+                )
+            ]);
+
+        $response = $this->postJson("{$this->url}/create", $data);
+        $response->assertStatus(400);
     });
 
     it('fails to create appointment with invalid data', function () {
@@ -103,6 +133,10 @@ describe('Appointment Controller Tests', function () {
 
         $appointmentData['activity_id'] = $activity->id;
         $appointmentData['day_id'] = 1;
+        $appointmentData['code'] = app(CodeServices::class)->createCode(
+            CodesTypes::appointment->name,
+            timeToExpire: '1:m'
+        );
 
         $this->postJson("{$this->url}/create", $appointmentData)
             ->assertStatus(400);

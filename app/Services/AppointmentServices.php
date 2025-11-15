@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\CodesTypes;
 use App\Enums\SectionsTypes;
 use App\Enums\SessionDuration;
 use App\Models\Activity;
@@ -108,8 +109,12 @@ final class AppointmentServices
                 $slots = [...$this->checkAllowedDurations($gapStart, $gapEnd, $duration)];
             }
         }
+        $code = app(CodeServices::class)->createCode(
+            type: CodesTypes::appointment->name,
+            timeToExpire: '2:m'
+        );
 
-        return ['day' => $day['day'], 'date' => $data['date'], 'slots' => $slots];
+        return ['code' => $code->id, 'day' => $day['day'], 'date' => $data['date'], 'slots' => $slots];
     }
 
     public function checkAppointmentExists(array $data): bool

@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 use App\Enums\AppointmentStatus;
+use App\Enums\CodesTypes;
 use App\Models\Activity;
 use App\Models\Appointment;
-
+use App\Services\CodeServices;
 
 beforeEach(function () {
     $this->seed();
@@ -16,13 +17,13 @@ beforeEach(function () {
 describe('Appointment Controller Tests', function () {
     it('returns paginated appointments ', function () {
         Appointment::truncate();
-        Appointment::factory(2)->for($this->user,'customer')->create();
+        Appointment::factory(2)->for($this->user, 'customer')->create();
         $res = $this->postJson("{$this->url}/all/activity?page=1&perPage=1");
         $res->assertOk();
-        expect($res->json('payload'))->toHaveKeys(['page','perPage','appointments']);
+        expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'appointments']);
         expect($res->json('payload.appointments'))->toHaveCount(1)
-        ->and($res->json('payload.page'))->toBe(1)
-        ->and($res->json('payload.perPage'))->toBe(1);
+            ->and($res->json('payload.page'))->toBe(1)
+            ->and($res->json('payload.perPage'))->toBe(1);
     });
 
     it('checks available slots for a specific date', function () {
@@ -32,7 +33,7 @@ describe('Appointment Controller Tests', function () {
         $response = $this->postJson("{$this->url}/check", $data);
         $response->assertOk();
         expect($response->json('payload.slots'))->not->toBeNull()
-            ->and($response->json('payload.slots'))->toHaveKeys(['day', 'date', 'slots'])
+            ->and($response->json('payload.slots'))->toHaveKeys(['day', 'date', 'slots', 'code'])
             ->and($response->json('payload.slots.slots'))->toBeIterable();
     });
 
@@ -42,8 +43,13 @@ describe('Appointment Controller Tests', function () {
 
     it('creates a new appointment for customer', function () {
         $activity = Activity::inRandomOrder()->first();
-        $data = Appointment::factory()->fakerData($activity, ['time' => '10:30',]);
-
+        $data = Appointment::factory()->fakerData($activity, [
+            'time' => '10:30',
+            'code' => app(CodeServices::class)->createCode(
+                CodesTypes::appointment->name,
+                timeToExpire: '1:m'
+            )
+        ]);
         $response = $this->postJson("{$this->url}/create", $data);
         $response->assertOk();
 
@@ -51,6 +57,20 @@ describe('Appointment Controller Tests', function () {
             ->and($response->json('payload.appointment.customer.id'))->toBe($this->user->id)
             ->and($response->json('payload.appointment.time'))->toBe($data['time'])
             ->and($response->json('payload.appointment.date'))->toBe($data['date']);
+    });
+
+    it('cant creates a new appointment for customer with invalid code', function () {
+        $activity = Activity::inRandomOrder()->first();
+        $data = Appointment::factory()->fakerData($activity, [
+            'time' => '10:30',
+            'code' => app(CodeServices::class)->createCode(
+                CodesTypes::appointment->name,
+                timeToExpire: '-10:s'
+            )
+        ]);
+        $response = $this->postJson("{$this->url}/create", $data);
+        dump($response->json());
+        $response->assertStatus(400);
     });
 
     it('fails to create appointment with invalid data', function () {
@@ -77,6 +97,10 @@ describe('Appointment Controller Tests', function () {
 
         $appointmentData['activity_id'] = $activity->id;
         $appointmentData['day_id'] = 1;
+        $appointmentData['code'] = app(CodeServices::class)->createCode(
+            CodesTypes::appointment->name,
+            timeToExpire: '1:m'
+        );
 
         $this->postJson("{$this->url}/create", $appointmentData)
             ->assertStatus(400);

@@ -24,7 +24,7 @@ trait CodeHandler
     public function code(string $type): ?Code
     {
         $code = $this->codes()->where('type', $type)->first();
-        Truthy($code === null, "Code[{$type}] Code not Found");
+        Truthy($code === null, "Code[{$type}] not Found");
 
         return $code;
     }
@@ -45,8 +45,11 @@ trait CodeHandler
 
         $this->deleteCode($type);
 
-        $query = $this instanceof Builder ?
-            $this->codes()->withAttributes(['belongTo_id' => $this->number(), 'belongTo_type' => $type]) :
+        $query = $this->codes() instanceof Builder ?
+            $this->codes()->withAttributes([
+                'belongTo_id' => $this->number(),
+                'belongTo_type' => $this::class,
+            ]) :
             $this->codes();
 
         return $query->create([
@@ -97,6 +100,7 @@ trait CodeHandler
         for ($i = 0; $i < $length; $i++) {
             $number .= random_int(0, 9);
         }
+
         return (int) $number;
     }
 
