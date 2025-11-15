@@ -26,6 +26,23 @@ describe('Appointment Controller Tests', function () {
             ->and($res->json('payload.perPage'))->toBe(1);
     });
 
+    it('find appointment by id ', function () {
+        Appointment::truncate();
+        $appointment = Appointment::factory()->create();
+        $res = $this->getJson("{$this->url}/find?appointment_id={$appointment->id}");
+        $res->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['appointment']);
+        expect($res->json('payload.appointment'))->not->toBeNull()
+        ->and($res->json('payload.appointment.holder'))->toHaveKeys(['type','id','name','image']);
+    });
+
+    it('cant find appointment by invalid id ', function () {
+        Appointment::truncate();
+        $appointment = Appointment::factory()->create();
+        $res = $this->getJson("{$this->url}/find?appointment_id=19090");
+        $res->assertStatus(422);
+    });
+
     it('checks available slots for a specific date', function () {
         $activity = Activity::inRandomOrder()->first();
         $data = Appointment::factory()->fakerData(owner: $activity);

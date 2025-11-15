@@ -27,8 +27,18 @@ final class AppointmentResource extends JsonResource
             'canceled_by' => $this->canceled_by,
             'notes' => $this->notes,
             // 'holder' => $this->whenLoaded('holder'),
-            'holder' => ['type' => class_basename($this->appointable_type), 'id' => $this->appointable_id],
+            'holder' => $this->holder(),
             'customer' => CustomerResource::make($this->whenLoaded('customer')),
+        ];
+    }
+
+    private function holder()
+    {
+        return [
+            'type' => class_basename($this->appointable_type),
+            'id' => $this->appointable_id,
+            'name' => $this->holder->name,
+            'image' => $this->holder->medias[0],
         ];
     }
 }

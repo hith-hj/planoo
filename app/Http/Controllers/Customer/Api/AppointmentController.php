@@ -34,6 +34,16 @@ final class AppointmentController extends Controller
         ]);
     }
 
+    public function find(Request $request)
+    {
+        $validator = AppointmentValidators::find($request->all());
+        $appointment = $this->services->find($validator->safe()->integer('appointment_id'));
+
+        return Success(payload: [
+            'appointment' => $appointment->toResource(),
+        ]);
+    }
+
     public function check(Request $request)
     {
         $validator = AppointmentValidators::check($request->all());
