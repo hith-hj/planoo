@@ -31,8 +31,10 @@ trait ReviewHandler
         if (! isset($this->rate)) {
             return false;
         }
-        $sum = $this->reviews()->sum('rate');
-        $count = $this->reviews()->count();
+        $reviews = $this->reviews;
+        $reviewsCount = count($reviews);
+        $sum = $reviews->sum('rate');
+        $count = $reviewsCount > 0 ? $reviewsCount : 1;
         $rate = round(($sum / $count) / 2, 1);
 
         return $this->update(['rate' => $rate]);
