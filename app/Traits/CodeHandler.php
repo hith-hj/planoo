@@ -21,6 +21,9 @@ trait CodeHandler
         return Code::query();
     }
 
+    /**
+     * Get code by type
+     * */
     public function code(string $type): ?Code
     {
         $code = $this->codes()->where('type', $type)->first();
@@ -29,6 +32,9 @@ trait CodeHandler
         return $code;
     }
 
+    /**
+     * Get code by id
+     * */
     public function codeById(int $id): ?Code
     {
         $code = $this->codes()->find($id);
@@ -42,9 +48,6 @@ trait CodeHandler
         int $length = 5,
         ?string $timeToExpire = '15:m'
     ): Code {
-
-        $this->deleteCode($type);
-
         $query = $this->codes() instanceof Builder ?
             $this->codes()->withAttributes([
                 'belongTo_id' => $this->number(),
@@ -52,11 +55,13 @@ trait CodeHandler
             ]) :
             $this->codes();
 
-        return $query->create([
-            'type' => $type,
-            'code' => $this->generate($type, $length),
-            'expire_at' => $this->expireAt($timeToExpire),
-        ]);
+        return $query->updateOrCreate(
+            ['type' => $type],
+            [
+                'code' => $this->generate($type, $length),
+                'expire_at' => $this->expireAt($timeToExpire),
+            ]
+        );
     }
 
     /**
@@ -96,12 +101,11 @@ trait CodeHandler
 
     private function number(int $length = 5): int
     {
-        $number = '';
-        for ($i = 0; $i < $length; $i++) {
-            $number .= random_int(0, 9);
-        }
+        Truthy($length <= 3, 'min code Length is 3.');
+        $min = (int) pow(10, $length - 1);
+        $max = (int) (pow(10, $length) - 1);
 
-        return (int) $number;
+        return random_int($min, $max);
     }
 
     private function expireAt(?string $timeToExpire): Carbon
