@@ -9,7 +9,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
+                    {{-- colors: {
                         better: {
                             teal: '#00A099',       // The primary brand teal
                             tealhover: '#00857f',
@@ -19,7 +19,29 @@
                             lightgray: '#F4F4F4',  // Backgrounds
                             border: '#E5E5E5'
                         }
+                    }, --}}
+                    colors: {
+                        better: {
+                            teal: '#00A89C',       // The primary brand teal
+                            tealhover: '#04cec8',
+                            purple: '#462e8e',     // The GLL/Better corporate purple
+                            yellow: '#FFC845',     // CTA Yellow
+                            dark: '#333333',       // Text color
+                            lightgray: '#F4F4F4',  // Backgrounds
+                            border: '#E5E5E5'
+                        }
                     },
+                    {{-- colors: {
+                        better:{
+                            teal:'#00A89C',
+                            tealhover:'#04cec8'
+                            purple:'#462e8e',
+                            yellow: '#FFC845',     // CTA Yellow
+                            dark: '#333333',       // Text color
+                            lightgray: '#F4F4F4',  // Backgrounds
+                            border: '#E5E5E5'
+                        }
+                    }, --}}
                     fontFamily: {
                         // Better uses a clean sans stack similar to Verdana/Arial
                         sans: ['Verdana', 'Arial', 'sans-serif'],
@@ -34,7 +56,7 @@
     <style>
         /* Specific overrides to match the exact "Better" feel */
         .hero-section {
-            background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
             background-size: cover;
             background-position: center;
         }
@@ -58,14 +80,14 @@
 <body class="font-sans text-better-dark antialiased bg-white">
 
     <!-- TOP UTILITY BAR -->
-    <div class="bg-better-lightgray text-xs py-2 hidden md:block border-b border-gray-200">
+    {{-- <div class="bg-better-lightgray text-xs py-2 hidden md:block border-b border-gray-200">
         <div class="max-w-container mx-auto px-4 flex justify-end space-x-6 text-gray-600">
             <a href="#" class="hover:text-better-teal">Help Centre</a>
             <a href="#" class="hover:text-better-teal">Corporate</a>
             <a href="#" class="hover:text-better-teal">Careers</a>
             <a href="#" class="hover:text-better-teal">GLL Sport Foundation</a>
         </div>
-    </div>
+    </div> --}}
 
     <!-- MAIN HEADER -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -75,10 +97,10 @@
             <a href="#" class="flex items-center gap-2 group">
                 <!-- Imitating the 'Better' text logo style -->
                 <span class="text-4xl font-bold tracking-tight text-better-purple group-hover:opacity-90">
-                    Better<span class="text-better-teal">.</span>
+                    Planoo<span class="text-better-teal">.</span>
                 </span>
                 <span class="text-[10px] uppercase text-gray-500 font-semibold tracking-widest mt-2 hidden sm:block">
-                    The feel good place
+                    get better
                 </span>
             </a>
 
@@ -121,7 +143,7 @@
     </header>
 
     <!-- HERO SECTION WITH SEARCH WIDGET -->
-    <div class="relative w-full h-[550px] hero-section flex flex-col justify-center items-center px-4">
+    <div class="relative w-full h-screen hero-section bg-blend-overlay bg-better-purple flex flex-col justify-center items-center">
 
         <!-- Hero Text -->
         <h1 class="text-white text-4xl md:text-6xl font-bold mb-8 text-center drop-shadow-md">
@@ -170,12 +192,12 @@
         <!-- 3-Column Promo Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
 
-            <!-- Card 1: Memberships -->
+            <!-- Card 1: Courts -->
             <div class="group cursor-pointer">
                 <div class="relative overflow-hidden rounded-lg mb-4 h-64">
                     <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute bottom-0 left-0 bg-better-teal text-white px-4 py-2 font-bold text-sm">
-                        Memberships
+                        Courts
                     </div>
                 </div>
                 <h3 class="text-xl font-bold text-better-purple mb-2 group-hover:text-better-teal transition-colors">
@@ -183,7 +205,7 @@
                 </h3>
                 <p class="text-gray-600 mb-4">No contract options available. Access to over 200 centres.</p>
                 <a href="#" class="text-better-teal font-bold hover:underline flex items-center">
-                    View memberships
+                    View Courts
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </a>
             </div>
@@ -231,12 +253,12 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
 
-            <!-- Card 1: Memberships -->
+            <!-- Card 1: Courts -->
             <div class="group cursor-pointer">
                 <div class="relative overflow-hidden rounded-lg mb-4 h-64">
                     <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute bottom-0 left-0 bg-better-teal text-white px-4 py-2 font-bold text-sm">
-                        Memberships
+                        Courts
                     </div>
                 </div>
                 <h3 class="text-xl font-bold text-better-purple mb-2 group-hover:text-better-teal transition-colors">
@@ -244,7 +266,7 @@
                 </h3>
                 <p class="text-gray-600 mb-4">No contract options available. Access to over 200 centres.</p>
                 <a href="#" class="text-better-teal font-bold hover:underline flex items-center">
-                    View memberships
+                    View Courts
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </a>
             </div>

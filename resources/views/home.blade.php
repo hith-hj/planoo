@@ -12,10 +12,15 @@
             theme: {
                 extend: {
                     colors: {
-                        'better-blue': '#0054A5', // Primary blue
-                        'better-dark': '#003366', // Deep nav/footer blue
+                        {{-- 'better-blue': '#0054A5', // Primary blue --}}
+                        {{-- 'better-dark': '#003366', // Deep nav/footer blue --}}
+                        'better-blue': '#04cec8',
+                        'better-dark': '#462e8e',
                         'better-teal': '#00A89C', // Accent teal
                         'better-gray': '#E5E7EB', // Light background gray
+
+                        //bink:462e8e
+                        //green:04cec8
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -27,7 +32,8 @@
     <style>
         /* Custom styles for better visual fidelity */
         .hero-bg {
-            background-image: url('https://placehold.co/1920x800/003366/ffffff/png?text=Placeholder+Image+%26+Overlay');
+            {{-- background-image: url('https://placehold.co/1920x800/003366/ffffff/png?text=Planoo'); --}}
+            background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
             background-size: cover;
             background-position: center;
         }
@@ -40,29 +46,29 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
-                <a href="#" class="text-3xl font-extrabold text-better-dark rounded-lg p-2 transition hover:text-better-teal">
+                <a href="#" class="text-3xl font-extrabold text-better-teal rounded-lg p-2 transition hover:text-better-dark">
                     Planoo.
                 </a>
 
                 <!-- Desktop Navigation (Hidden on Mobile) -->
                 <nav class="hidden lg:flex space-x-6 items-center">
-                    <a href="#" class="text-better-dark hover:text-better-teal font-medium transition py-2 px-3 rounded-lg">What's On</a>
-                    <a href="#" class="text-better-dark hover:text-better-teal font-medium transition py-2 px-3 rounded-lg">Locations</a>
-                    <a href="#" class="text-better-dark hover:text-better-teal font-medium transition py-2 px-3 rounded-lg">Memberships</a>
-                    <a href="#" class="text-better-dark hover:text-better-teal font-medium transition py-2 px-3 rounded-lg">Activities</a>
-                    <a href="#" class="text-better-dark hover:text-better-teal font-medium transition py-2 px-3 rounded-lg">About Us</a>
+                    <a href="#" class="text-better-teal hover:text-better-dark font-bold transition py-2 px-3 rounded-lg">What's On</a>
+                    <a href="#" class="text-better-teal hover:text-better-dark font-bold transition py-2 px-3 rounded-lg">Locations</a>
+                    <a href="#" class="text-better-teal hover:text-better-dark font-bold transition py-2 px-3 rounded-lg">Memberships</a>
+                    <a href="#" class="text-better-teal hover:text-better-dark font-bold transition py-2 px-3 rounded-lg">Activities</a>
+                    <a href="#" class="text-better-teal hover:text-better-dark font-bold transition py-2 px-3 rounded-lg">About Us</a>
                 </nav>
 
                 <!-- Secondary Actions & Mobile Menu Button -->
                 <div class="flex items-center space-x-4">
-                    <button class="text-better-dark hover:text-better-teal p-2 rounded-full transition hidden lg:block" aria-label="Search">
+                    <button class="text-better-teal hover:text-better-dark p-2 rounded-full transition hidden lg:block" aria-label="Search">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
-                    <a href="#" class="hidden sm:block text-better-dark hover:text-better-teal font-semibold px-4 py-2 rounded-lg transition">Log in</a>
-                    <a href="#" class="bg-better-teal hover:bg-better-blue text-white font-bold px-4 py-2 rounded-xl shadow-lg transition duration-300 transform hover:scale-105">Join Now</a>
+                    <a href="#" class="hidden sm:block text-better-teal hover:text-better-dark font-semibold px-4 py-2 rounded-lg transition">Log in</a>
+                    <a href="#" class="bg-better-teal hover:bg-better-dark text-white font-bold px-4 py-2 rounded-xl shadow-lg transition duration-300 transform hover:scale-105">Join Now</a>
 
                     <!-- Mobile Menu Button (Visible on Mobile) -->
-                    <button id="mobile-menu-button" class="lg:hidden p-2 text-better-dark rounded-md hover:bg-better-gray" aria-label="Open menu">
+                    <button id="mobile-menu-button" class="lg:hidden p-2 text-better-teal rounded-md hover:bg-better-gray" aria-label="Open menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                     </button>
                 </div>
@@ -72,25 +78,25 @@
         <!-- Mobile Menu Dropdown (Initially Hidden) -->
         <div id="mobile-menu" class="hidden lg:hidden bg-white shadow-xl absolute w-full pb-4 border-t border-better-gray">
             <div class="px-4 pt-2 space-y-2">
-                <a href="#" class="block text-better-dark hover:bg-better-gray py-2 px-3 rounded-lg font-medium">What's On</a>
-                <a href="#" class="block text-better-dark hover:bg-better-gray py-2 px-3 rounded-lg font-medium">Locations</a>
-                <a href="#" class="block text-better-dark hover:bg-better-gray py-2 px-3 rounded-lg font-medium">Memberships</a>
-                <a href="#" class="block text-better-dark hover:bg-better-gray py-2 px-3 rounded-lg font-medium">Activities</a>
-                <a href="#" class="block text-better-dark hover:bg-better-gray py-2 px-3 rounded-lg font-medium">About Us</a>
-                <a href="#" class="block text-better-dark hover:bg-better-gray py-2 px-3 rounded-lg font-medium border-t pt-2 mt-2">Log in</a>
-                <button class="w-full text-better-dark hover:bg-better-gray py-2 px-3 rounded-lg font-medium text-left">Search</button>
+                <a href="#" class="block text-better-teal hover:bg-better-gray py-2 px-3 rounded-lg font-bold">What's On</a>
+                <a href="#" class="block text-better-teal hover:bg-better-gray py-2 px-3 rounded-lg font-bold">Locations</a>
+                <a href="#" class="block text-better-teal hover:bg-better-gray py-2 px-3 rounded-lg font-bold">Memberships</a>
+                <a href="#" class="block text-better-teal hover:bg-better-gray py-2 px-3 rounded-lg font-bold">Activities</a>
+                <a href="#" class="block text-better-teal hover:bg-better-gray py-2 px-3 rounded-lg font-bold">About Us</a>
+                <a href="#" class="block text-better-teal hover:bg-better-gray py-2 px-3 rounded-lg font-bold border-t pt-2 mt-2">Log in</a>
+                <button class="w-full text-better-teal hover:bg-better-gray py-2 px-3 rounded-lg font-bold text-left">Search</button>
             </div>
         </div>
     </header>
 
     <main>
         <!-- Hero Section -->
-        <section class="hero-bg h-screen flex items-center justify-center text-center">
-            <div class="bg-black bg-opacity-40 p-8 md:p-16 rounded-3xl mx-4 max-w-4xl shadow-2xl">
+        <section class="hero-bg bg-blend-overlay bg-better-teal h-screen flex items-center justify-center text-center">
+            <div class="bg-better-dark/70 bg-opacity-90 p-8 md:p-16 rounded-3xl mx-4 max-w-4xl shadow-2xl">
                 <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight mb-4">
                     Get Active. Live Better.
                 </h1>
-                <p class="text-xl text-gray-200 mb-8">
+                <p class="text-xl text-gray-200 mb-8 font-semibold">
                     Discover your local gym, pool, or leisure centre and start your fitness journey today.
                 </p>
                 <a href="#" class="inline-block bg-better-teal hover:bg-better-dark text-white text-lg font-bold py-4 px-10 rounded-full shadow-xl transition duration-300 transform hover:scale-105">
@@ -104,7 +110,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl font-bold text-center text-better-dark mb-12">Popular Activities</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Card 1 -->
+
                     <div class="group cursor-pointer">
 		                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
 		                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
@@ -112,63 +118,67 @@
 		                        Swimming
 		                    </div>
 		                </div>
-		                <h3 class="text-xl font-bold text-better-purple mb-2 group-hover:text-better-teal transition-colors">
+		                <h3 class="text-xl font-bold text-better-teal mb-2 group-hover:text-better-dark transition-colors">
 		                    Lanes, lessons, and leisure. Find pool timetables near you
 		                </h3>
 		                <p class="text-gray-600 mb-4">Access to over 200 centres.</p>
-		                <a href="#" class="text-better-teal font-bold hover:underline flex items-center">
+		                <a href="#" class="text-better-teal font-bold pb-2 hover:underline flex items-center
+                        hover:text-better-dark ">
 		                    View Swimming
 		                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
 		                </a>
 		            </div>
-		            <div class="group cursor-pointer">
-		                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-		                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-		                    <div class="absolute bottom-0 left-0 bg-better-teal text-white px-4 py-2 font-bold text-sm">
-		                        Swimming
-		                    </div>
-		                </div>
-		                <h3 class="text-xl font-bold text-better-purple mb-2 group-hover:text-better-teal transition-colors">
-		                    Lanes, lessons, and leisure. Find pool timetables near you
-		                </h3>
-		                <p class="text-gray-600 mb-4">Access to over 200 centres.</p>
-		                <a href="#" class="text-better-teal font-bold hover:underline flex items-center">
-		                    View Swimming
-		                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-		                </a>
-		            </div>
-		            <div class="group cursor-pointer">
-		                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-		                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-		                    <div class="absolute bottom-0 left-0 bg-better-teal text-white px-4 py-2 font-bold text-sm">
-		                        Swimming
-		                    </div>
-		                </div>
-		                <h3 class="text-xl font-bold text-better-purple mb-2 group-hover:text-better-teal transition-colors">
-		                    Lanes, lessons, and leisure. Find pool timetables near you
-		                </h3>
-		                <p class="text-gray-600 mb-4">Access to over 200 centres.</p>
-		                <a href="#" class="text-better-teal font-bold hover:underline flex items-center">
-		                    View Swimming
-		                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-		                </a>
-		            </div>
-		            <div class="group cursor-pointer">
-		                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-		                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-		                    <div class="absolute bottom-0 left-0 bg-better-teal text-white px-4 py-2 font-bold text-sm">
-		                        Swimming
-		                    </div>
-		                </div>
-		                <h3 class="text-xl font-bold text-better-purple mb-2 group-hover:text-better-teal transition-colors">
-		                    Lanes, lessons, and leisure. Find pool timetables near you
-		                </h3>
-		                <p class="text-gray-600 mb-4">Access to over 200 centres.</p>
-		                <a href="#" class="text-better-teal font-bold hover:underline flex items-center">
-		                    View Swimming
-		                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-		                </a>
-		            </div>
+
+                    <div class="group cursor-pointer">
+                        <div class="relative overflow-hidden rounded-lg mb-4 h-64">
+                            <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute bottom-0 left-0 bg-better-teal text-white px-4 py-2 font-bold text-sm">
+                                Swimming
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-better-teal mb-2 group-hover:text-better-dark transition-colors">
+                            Lanes, lessons, and leisure. Find pool timetables near you
+                        </h3>
+                        <p class="text-gray-600 mb-4">Access to over 200 centres.</p>
+                        <a href="#" class="text-better-teal font-bold pb-2 hover:underline flex items-center hover:text-better-dark ">
+                            View Swimming
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                    </div>
+
+                    <div class="group cursor-pointer">
+                        <div class="relative overflow-hidden rounded-lg mb-4 h-64">
+                            <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute bottom-0 left-0 bg-better-teal text-white px-4 py-2 font-bold text-sm">
+                                Swimming
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-better-teal mb-2 group-hover:text-better-dark transition-colors">
+                            Lanes, lessons, and leisure. Find pool timetables near you
+                        </h3>
+                        <p class="text-gray-600 mb-4">Access to over 200 centres.</p>
+                        <a href="#" class="text-better-teal font-bold pb-2 hover:underline flex items-center hover:text-better-dark ">
+                            View Swimming
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                    </div>
+
+                    <div class="group cursor-pointer">
+                        <div class="relative overflow-hidden rounded-lg mb-4 h-64">
+                            <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute bottom-0 left-0 bg-better-teal text-white px-4 py-2 font-bold text-sm">
+                                Swimming
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-better-teal mb-2 group-hover:text-better-dark transition-colors">
+                            Lanes, lessons, and leisure. Find pool timetables near you
+                        </h3>
+                        <p class="text-gray-600 mb-4">Access to over 200 centres.</p>
+                        <a href="#" class="text-better-teal font-bold pb-2 hover:underline flex items-center hover:text-better-dark ">
+                            View Swimming
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -180,39 +190,47 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Card 1 -->
                     <div class="bg-better-gray p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                        <h3 class="text-xl font-bold text-better-dark mb-2">Swimming</h3>
+                        <h3 class="text-xl font-bold text-better-dark mb-2 hover:text-better-teal">Swimming</h3>
                         <p class="text-gray-600">Lanes, lessons, and leisure. Find pool timetables near you.</p>
-                        <a href="#" class="text-better-blue font-semibold mt-3 block hover:text-better-teal">View Options &rarr;</a>
+                        <a href="#" class="text-better-dark font-semibold mt-3 block hover:text-better-teal">
+                            View Options &rarr;
+                        </a>
                     </div>
-                    <!-- Card 2 -->
+
                     <div class="bg-better-gray p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                        <h3 class="text-xl font-bold text-better-dark mb-2">Gym & Fitness</h3>
-                        <p class="text-gray-600">State-of-the-art equipment and functional training zones.</p>
-                        <a href="#" class="text-better-blue font-semibold mt-3 block hover:text-better-teal">View Options &rarr;</a>
+                        <h3 class="text-xl font-bold text-better-dark mb-2 hover:text-better-teal">Swimming</h3>
+                        <p class="text-gray-600">Lanes, lessons, and leisure. Find pool timetables near you.</p>
+                        <a href="#" class="text-better-dark font-semibold mt-3 block hover:text-better-teal">
+                            View Options &rarr;
+                        </a>
                     </div>
-                    <!-- Card 3 -->
+
                     <div class="bg-better-gray p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                        <h3 class="text-xl font-bold text-better-dark mb-2">Classes</h3>
-                        <p class="text-gray-600">From Yoga to HIIT, find a class to suit your pace.</p>
-                        <a href="#" class="text-better-blue font-semibold mt-3 block hover:text-better-teal">View Options &rarr;</a>
+                        <h3 class="text-xl font-bold text-better-dark mb-2 hover:text-better-teal">Swimming</h3>
+                        <p class="text-gray-600">Lanes, lessons, and leisure. Find pool timetables near you.</p>
+                        <a href="#" class="text-better-dark font-semibold mt-3 block hover:text-better-teal">
+                            View Options &rarr;
+                        </a>
                     </div>
-                    <!-- Card 4 -->
+
                     <div class="bg-better-gray p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                        <h3 class="text-xl font-bold text-better-dark mb-2">Sports & Racquets</h3>
-                        <p class="text-gray-600">Book courts for tennis, badminton, squash, and more.</p>
-                        <a href="#" class="text-better-blue font-semibold mt-3 block hover:text-better-teal">View Options &rarr;</a>
+                        <h3 class="text-xl font-bold text-better-dark mb-2 hover:text-better-teal">Swimming</h3>
+                        <p class="text-gray-600">Lanes, lessons, and leisure. Find pool timetables near you.</p>
+                        <a href="#" class="text-better-dark font-semibold mt-3 block hover:text-better-teal">
+                            View Options &rarr;
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Secondary CTA Banner -->
-        <section class="py-16 bg-better-blue">
+        <section class="py-16 bg-better-teal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:flex md:justify-between md:items-center">
                 <h2 class="text-3xl font-bold text-white mb-6 md:mb-0 md:text-left">
                     Ready to join the network?
                 </h2>
-                <a href="#" class="inline-block bg-white text-better-blue hover:bg-better-teal hover:text-white text-lg font-bold py-3 px-8 rounded-full shadow-xl transition duration-300 transform hover:scale-105">
+                <a href="#" class="inline-block bg-white text-better-blue hover:bg-better-dark hover:text-white text-lg font-bold py-3 px-8 rounded-full shadow-xl transition duration-300 transform hover:scale-110">
                     Explore Here
                 </a>
             </div>
@@ -267,7 +285,7 @@
                 <!-- Column 1 -->
                 <div>
                     <h4 class="font-bold text-lg mb-4 text-better-teal">About Better</h4>
-                    <ul class="space-y-2 text-sm">
+                    <ul class="space-y-2 text-sm font-semibold tracking-widest">
                         <li><a href="#" class="hover:text-better-teal transition">Our Mission</a></li>
                         <li><a href="#" class="hover:text-better-teal transition">Careers</a></li>
                         <li><a href="#" class="hover:text-better-teal transition">Press & Media</a></li>
@@ -277,7 +295,7 @@
                 <!-- Column 2 -->
                 <div>
                     <h4 class="font-bold text-lg mb-4 text-better-teal">Help & Info</h4>
-                    <ul class="space-y-2 text-sm">
+                    <ul class="space-y-2 text-sm font-semibold tracking-widest">
                         <li><a href="#" class="hover:text-better-teal transition">FAQ</a></li>
                         <li><a href="#" class="hover:text-better-teal transition">Terms & Conditions</a></li>
                         <li><a href="#" class="hover:text-better-teal transition">Privacy Policy</a></li>
@@ -287,7 +305,7 @@
                 <!-- Column 3 -->
                 <div>
                     <h4 class="font-bold text-lg mb-4 text-better-teal">Quick Links</h4>
-                    <ul class="space-y-2 text-sm">
+                    <ul class="space-y-2 text-sm font-semibold tracking-widest">
                         <li><a href="#" class="hover:text-better-teal transition">Book an Activity</a></li>
                         <li><a href="#" class="hover:text-better-teal transition">Member Login</a></li>
                         <li><a href="#" class="hover:text-better-teal transition">Centre Finder</a></li>
@@ -312,7 +330,7 @@
 
             <!-- Copyright and Footer Bottom -->
             <div class="pt-8 mt-8 border-t border-better-blue-light text-sm text-center">
-                <p>&copy; 2024 Better (GLL). All rights reserved. Registered Charity No: 1122858.</p>
+                <p>Planoo &copy; 2025</p>
             </div>
         </div>
     </footer>
