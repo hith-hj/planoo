@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', function () {
-//     return Success('You reached planoo platform');
-// });
+Route::view('/', 'home');
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'ar'])) {
+        session()->put('locale', $locale);
+    }
 
-Route::view('/','home');
-Route::view('/two','home_2');
+    return redirect()->back();
+})->name('lang');

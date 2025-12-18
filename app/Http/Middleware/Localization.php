@@ -18,22 +18,26 @@ final class Localization
     public function handle(Request $request, Closure $next): Response
     {
         $defaultLocale = config('app.locale', 'en');
-        if ($request->hasHeader('Accept-Language')) {
-
-            $local = $request->header('Accept-Language');
-        } elseif ($request->hasHeader('X-Language')) {
-
-            $local = $request->header('X-Language');
+        if ($request->wantsJson()) {
+            if ($request->hasHeader('Accept-Language')) {
+                $locale = $request->header('Accept-Language');
+            } elseif ($request->hasHeader('X-Language')) {
+                $locale = $request->header('X-Language');
+            } else {
+                $locale = $defaultLocale;
+            }
         } else {
-
-            $local = $defaultLocale;
+            if (session()->has('locale')) {
+                $locale = session()->get('locale');
+            } else {
+                $locale = $defaultLocale;
+            }
         }
 
-        if (! in_array($local, ['en', 'ar'])) {
-            $local = $defaultLocale;
+        if (! in_array($locale, ['en', 'ar'])) {
+            $locale = $defaultLocale;
         }
-
-        app()->setLocale($local);
+        app()->setLocale($locale);
 
         return $next($request);
     }
