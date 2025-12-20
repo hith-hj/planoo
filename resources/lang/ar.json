@@ -48,13 +48,12 @@
 	"Fun activities for children From swimming lessons to sports clubs, our programs keep kids active and engaged":"نشاطات متنوعة للاطفال مثل السباحة و النوادي الرياضية  برامجنا تتسعى الى  ابقاء الاطفال فاعلين",
 	"Here you can find our applications":"",
 	"Customers":"زبائن",
-	"Clients":"عملاء",
-	"Our App":"طبيق  :type ",
-	"Download link":"باسخدام هذا الرابط بامكانك تحميل تطبيق  :type الخاص   :user ",
-
+	"Partners":"شركاء",
+	"Our App":"تطبيق  :type ",
+	"Download link":"حمل تطبيق  :type الخاص   :user هنا",
 
 	"About Us": "من نحن",
-	"We are dedicated to creating vibrant spaces where health, learning, and community come together. Our mission is to inspire people of all ages to live better, healthier, and more connected lives.": "نحن ملتزمون بإنشاء مساحات نابضة بالحياة حيث تجتمع الصحة والتعلم والمجتمع معًا. مهمتنا هي إلهام الناس من جميع الأعمار ليعيشوا حياة أفضل وأكثر صحة وترابطًا.",
+	"We are dedicated to creating vibrant spaces where health, learning, and community come together.":"نحن ملتزمون بخلق مساحات حيوية حيث تتلاقى الصحة والتعليم والمجتمع.",
 
 	"Our Vision": "رؤيتنا",
 	"To empower communities by promoting wellness, education, and social connection.": "تمكين المجتمعات من خلال تعزيز العافية والتعليم والتواصل الاجتماعي.",
@@ -105,6 +104,14 @@
 	"New York": "دمشق",
 	"Phone": "الهاتف",
 	"Email": "البريد الالكروني",
-	"Follow us": "تابعنا"
-
+	"Follow us": "تابعنا",
+	"Download App":"حمل التطبيقات",
+	"Become Partner":"كن شريكا",
+	"Looking for something interesting?":"هل تبحث عن شيئ مثير لفعله",
+	"Let's help you find it":"لنساعدك في ايجاده",
+	"Our mission is to inspire people of all ages to live better, healthier, and more connected lives.":"مهمتنا هي إلهام الناس من جميع الأعمار للعيش حياة أفضل وأكثر صحة واتصالاً.",
+	"android":"أندرويد",
+	"IOS":"أيفون",
+	"customers":"زبائن",
+	"partners":"شركاء"
 }
