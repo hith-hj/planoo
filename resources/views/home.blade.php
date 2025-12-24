@@ -60,7 +60,7 @@
         </div>
 
         <!-- 3-Column Promo Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 px-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 px-4 md:px-12">
             {{-- Courts --}}
             <div class="group cursor-pointer">
                 <div class="relative overflow-hidden rounded-lg mb-4 h-64">
@@ -174,7 +174,7 @@
             </div>
 
             <!-- 3-Column Promo Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-12 ">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-12">
                 {{-- Courts --}}
                 <div class="group cursor-pointer">
                     <div class="relative overflow-hidden rounded-lg mb-4 h-64">

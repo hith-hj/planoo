@@ -1,17 +1,18 @@
 <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-    <div class="max-w-container mx-auto px-4 h-20 flex items-center justify-between">
+    <div class="h-18 flex items-center justify-between md:justify-around">
 
         <!-- Logo -->
-        <a href="#" class="flex items-center gap-2 group">
+        <a href="#" class="flex flex-col items-start group">
             <span class="text-4xl font-bold tracking-tight text-purple group-hover:opacity-90">
                 Planoo<span class="text-teal">.</span>
             </span>
-            <span class="text-md uppercase text-gray-500 font-semibold tracking-widest mt-2 hidden sm:block">
+            <span class="text-md uppercase text-gray-500 font-semibold tracking-widest hidden md:block">
                 {{ __('get better') }}
             </span>
         </a>
+
         <!-- Desktop Nav -->
-        <nav class="hidden lg:flex items-center gap-8 font-bold text-purple">
+        <nav class="hidden md:flex items-center gap-8 font-bold text-purple ltr:text-xl">
             <a href="/#home" data-section="home" class="hover:text-teal py-2">{{ __('Home') }}</a>
             <a href="/#sections" data-section="sections" class="hover:text-teal py-2">{{ __('Sections') }}</a>
             <a href="/#apps" data-section="apps" class="hover:text-teal py-2">{{ __('Apps') }}</a>
@@ -45,7 +46,7 @@
         <!-- Right Actions -->
         <div class="flex items-center gap-4">
             <!-- Login -->
-            <a href="#" class="hidden sm:block font-bold text-purple hover:underline">
+            <a href="#apps" class="hidden sm:block font-bold text-purple hover:underline">
                 {{ __('Become Partner') }}
             </a>
 
