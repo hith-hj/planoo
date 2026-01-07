@@ -37,11 +37,11 @@ final class CourseServices
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'price']);
 
-        $appointments = $query->paginate($perPage, ['*'], 'page', $page);
+        $courses = $query->paginate($perPage, ['*'], 'page', $page);
 
-        NotFound($appointments->items(), 'appointments');
+        NotFound($courses->items(), 'courses');
 
-        return $appointments;
+        return $courses;
     }
 
     public function all(): Collection

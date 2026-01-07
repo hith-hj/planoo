@@ -35,11 +35,11 @@ final class EventServices
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'admission_fee', 'event_duration']);
 
-        $appointments = $query->paginate($perPage, ['*'], 'page', $page);
+        $events = $query->paginate($perPage, ['*'], 'page', $page);
 
-        NotFound($appointments->items(), 'appointments');
+        NotFound($events->items(), 'events');
 
-        return $appointments;
+        return $events;
     }
 
     public function all(): Collection

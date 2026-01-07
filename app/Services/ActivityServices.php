@@ -32,11 +32,11 @@ final class ActivityServices
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'price']);
 
-        $appointments = $query->paginate($perPage, ['*'], 'page', $page);
+        $activities = $query->paginate($perPage, ['*'], 'page', $page);
 
-        NotFound($appointments->items(), 'appointments');
+        NotFound($activities->items(), 'activities');
 
-        return $appointments;
+        return $activities;
     }
 
     public function allByUser(User $user): Collection|Model
