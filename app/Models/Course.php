@@ -9,6 +9,7 @@ use App\Interfaces\Locatable;
 use App\Interfaces\Mediable;
 use App\Interfaces\Reviewable;
 use App\Interfaces\Taggable;
+use App\Traits\FavoriteHandler;
 use App\Traits\MediaHandler;
 use App\Traits\ReviewHandler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 final class Course extends Model implements Dayable, Locatable, Mediable, Reviewable, Taggable
 {
+    use FavoriteHandler;
     use HasFactory;
     use MediaHandler;
     use ReviewHandler;

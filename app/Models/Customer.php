@@ -74,4 +74,9 @@ final class Customer extends Authenticatable implements JWTSubject, Locatable, N
     {
         return $this->hasMany(Review::class);
     }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
 }

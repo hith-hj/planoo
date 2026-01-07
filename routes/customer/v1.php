@@ -8,6 +8,7 @@ use App\Http\Controllers\Customer\Api\AuthController;
 use App\Http\Controllers\Customer\Api\CourseController;
 use App\Http\Controllers\Customer\Api\CustomerController;
 use App\Http\Controllers\Customer\Api\EventController;
+use App\Http\Controllers\Customer\Api\FavoriteController;
 use App\Http\Controllers\Customer\Api\HomeController;
 use App\Http\Controllers\Customer\Api\LocationController;
 use App\Http\Controllers\Customer\Api\NotificationController;
@@ -135,6 +136,18 @@ Route::controller(NotificationController::class)
             Route::get('find', 'find')->name('find');
             Route::post('view', 'view')->name('view');
             Route::post('clear', 'clear')->name('clear');
+            Route::delete('delete', 'delete')->name('delete');
+        }
+    );
+
+Route::controller(FavoriteController::class)
+    ->prefix('favorite')
+    ->name('favorite.')
+    ->group(
+        function (): void {
+            Route::get('all', 'all')->name('all');
+            Route::get('find', 'find')->name('find');
+            Route::post('create/{owner_type}/{owner_id}', 'create')->name('create');
             Route::delete('delete', 'delete')->name('delete');
         }
     );
