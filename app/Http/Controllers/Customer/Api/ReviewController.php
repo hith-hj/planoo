@@ -33,4 +33,17 @@ final class ReviewController extends Controller
             payload: ['review' => $review->toResource()]
         );
     }
+
+    public function update(Request $request)
+    {
+        $validator = ReviewValidators::create($request->all());
+
+        $review = $this->service->find($validator->safe()->integer('review_id'));
+        $this->service->update(getModelGlobal(), $review, $validator->safe()->except('review_id'));
+
+        return Success(
+            msg: 'review created',
+            payload: ['review' => $review->toResource()]
+        );
+    }
 }

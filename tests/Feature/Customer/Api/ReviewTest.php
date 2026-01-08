@@ -12,6 +12,7 @@ beforeEach(function () {
     $this->user('customer')->api();
     $this->url = '/api/customer/v1/review';
     $this->customer = Customer::factory()->create();
+    $this->replaceUser($this->customer);
     $this->activity = Activity::factory()->create();
 });
 
@@ -34,7 +35,7 @@ describe('Review Controller Tests', function () {
             ->and($res->json('payload.review.content'))->toBe($rev['content']);
     });
 
-    it('cant creates a review for same activity before 24 hour has passed', function () {
+    it('cant update a review for same activity before 24 hour has passed', function () {
         $this->activity->reviews()->delete();
         $rev = Review::factory()->for($this->customer, 'customer')->make()->toArray();
         $this->postJson("$this->url/create/activity/{$this->activity->id}", $rev)->assertOk();
@@ -42,7 +43,7 @@ describe('Review Controller Tests', function () {
         $res->assertStatus(400);
     });
 
-    it('can creates another review for same activity after 24 hour has passed', function () {
+    it('can update review for same activity after 24 hour has passed', function () {
         $this->activity->reviews()->delete();
         $rev = Review::factory()->for($this->customer, 'customer')->make()->toArray();
         $res = $this->postJson(
@@ -50,7 +51,10 @@ describe('Review Controller Tests', function () {
             $rev
         )->assertOk();
         Review::find($res->json('payload.review.id'))->update(['created_at'=>now()->subDays(3)]);
+        $rev['content'] = 'horayyyy';
         $res = $this->postJson("$this->url/create/activity/{$this->activity->id}", $rev);
         $res->assertOk();
+        expect($this->activity->reviews()->count())->toBe(1)
+        ->and($res->json('payload.review.content'))->toBe('horayyyy');
     });
 });

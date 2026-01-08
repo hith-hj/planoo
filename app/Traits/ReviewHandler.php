@@ -28,15 +28,15 @@ trait ReviewHandler
 
     public function updateRate(): bool
     {
-        if (! isset($this->rate)) {
+        if (! array_key_exists('rate', $this->getAttributes())) {
             return false;
         }
-        $reviews = $this->reviews;
-        $reviewsCount = count($reviews);
-        $sum = $reviews->sum('rate');
-        $count = $reviewsCount > 0 ? $reviewsCount : 1;
-        $rate = round(($sum / $count) / 2, 1);
 
-        return $this->update(['rate' => $rate]);
+        $reviews = $this->reviews;
+        if ($reviews->isEmpty()) {
+            return false;
+        }
+
+        return $this->update(['rate' => round($reviews->avg('rate') / 2, 1)]);
     }
 }

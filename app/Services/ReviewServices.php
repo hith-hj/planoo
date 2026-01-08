@@ -27,6 +27,14 @@ final class ReviewServices
         return $reviews->load(['customer'])->sortByDesc('created_at');
     }
 
+    public function find(int $id)
+    {
+        $review = Review::find($id);
+        NotFound($review, 'review');
+
+        return $review;
+    }
+
     public function create(Reviewable $reviewable, Customer $customer, array $data): Review
     {
         Required($customer, 'customer');
@@ -36,12 +44,29 @@ final class ReviewServices
             'content' => 'string',
         ]);
 
-        $query = $reviewable->reviews()->where('customer_id', $customer->id);
-        Truthy(
-            ($query->exists() && date_diff(now(), $query->first()->created_at)->d < 1),
-            'reviews not allowed until 24 hours is passed',
-        );
+        $review = $reviewable->reviews()->where('customer_id', $customer->id)->first();
+        if ($review) {
+            if (abs(now()->diffInSeconds($review->created_at) / 3600) > 24) {
+                return $this->update($reviewable, $review, $data);
+            }
+            Truthy(true, 'reviews editing allowed after 24 hours ');
+
+        }
         $review = $reviewable->createReview($customer, $data);
+        $reviewable->updateRate();
+
+        return $review;
+    }
+
+    public function update(Reviewable $reviewable, Review $review, array $data): Review
+    {
+        Truthy(empty($data), 'missing review data');
+
+        $review->update([
+            'content' => $data['content'],
+            'rate' => $data['rate'],
+        ]);
+
         $reviewable->updateRate();
 
         return $review;
