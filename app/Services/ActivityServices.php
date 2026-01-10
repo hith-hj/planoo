@@ -63,7 +63,7 @@ final class ActivityServices
         $activity = Activity::whereId($id)->first();
         NotFound($activity, 'activity');
 
-        return $activity->load($this->toBeLoaded());
+        return $activity->load([...$this->toBeLoaded(),'isFavorite']);
     }
 
     public function create(User $user, array $data): Activity

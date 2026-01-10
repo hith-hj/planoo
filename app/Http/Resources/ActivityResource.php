@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -33,9 +34,13 @@ final class ActivityResource extends JsonResource
     private function exrtas(): array
     {
         $isOwner = Auth::id() === $this->user_id;
-
+        $isCustomer = Auth::user() instanceof Customer;
         return [
             'details' => $this->when($isOwner, $this->whenLoaded('pivot')),
+            'is_favorite' => (bool) $this->when(
+                ! $isOwner && $isCustomer,
+                count($this->whenLoaded('isFavorite', default: []))
+            ),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'location' => LocationResource::make($this->whenLoaded('location')),
