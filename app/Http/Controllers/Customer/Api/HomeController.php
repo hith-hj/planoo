@@ -9,7 +9,7 @@ use App\Services\ActivityServices;
 use App\Services\CourseServices;
 use App\Services\EventServices;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 final class HomeController extends Controller
 {
@@ -19,17 +19,50 @@ final class HomeController extends Controller
             'activities' => app(ActivityServices::class)->allByFilter(perPage: 1)->toResourceCollection(),
             'courses' => app(CourseServices::class)->allByFilter(perPage: 1)->toResourceCollection(),
             'events' => app(EventServices::class)->allByFilter(perPage: 1)->toResourceCollection(),
+            // ...$this->getFeatered(),
         ]]);
     }
 
     public function recommended(): JsonResponse
     {
-        // $lastAppointment = Auth::user()->appointments()->last();
-
-        return Success(payload: ['feeds' => [
+        return Success(payload: ['recommended' => [
             'activities' => app(ActivityServices::class)->allByFilter(perPage: 3)->toResourceCollection(),
             'courses' => app(CourseServices::class)->allByFilter(perPage: 3)->toResourceCollection(),
             'events' => app(EventServices::class)->allByFilter(perPage: 3)->toResourceCollection(),
         ]]);
+    }
+
+    public function featured()
+    {
+        return Success(payload: $this->getFeatered());
+    }
+
+    public function search(Request $request)
+    {
+        $result = app(ActivityServices::class)->getter(
+            model: $request->query('owner'),
+            callable: [
+                'where' => [
+                    'name',
+                    'like',
+                    '%'.$request->query('search').'%',
+                ],
+            ],
+            columns: ['id', 'name', 'rate'],
+        ) ?? [];
+
+        return Success(payload: ['result' => $result]);
+    }
+
+    private function getFeatered()
+    {
+        return ['featured' => [
+            'activity' => app(ActivityServices::class)
+                ->allByFilter(perPage: 1, orderBy: ['rate' => 'desc'])->toResourceCollection(),
+            'course' => app(CourseServices::class)
+                ->allByFilter(perPage: 1, orderBy: ['rate' => 'desc'])->toResourceCollection(),
+            'event' => app(EventServices::class)
+                ->allByFilter(perPage: 1, orderBy: ['rate' => 'desc'])->toResourceCollection(),
+        ]];
     }
 }

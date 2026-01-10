@@ -123,6 +123,8 @@ Route::controller(HomeController::class)
     ->group(
         function (): void {
             Route::get('feeds', 'feeds')->name('feeds');
+            Route::get('search', 'search')->name('search');
+            Route::get('featured', 'featured')->name('featured');
             Route::get('recommended', 'recommended')->name('recommended');
         }
     );
