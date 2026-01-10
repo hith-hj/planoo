@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
-use App\Models\Customer;
 use App\Models\Favorite;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 

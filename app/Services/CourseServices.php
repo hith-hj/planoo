@@ -76,7 +76,7 @@ final class CourseServices
         $course = Course::whereId($id)->first();
         NotFound($course, 'course');
 
-        return $course->load($this->toBeLoaded());
+        return $course->load([...$this->toBeLoaded(), 'isFavorite']);
     }
 
     public function create(User $user, array $data): Course

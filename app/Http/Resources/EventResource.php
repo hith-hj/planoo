@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use App\Enums\EventStatus;
+use App\Models\Customer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -43,9 +44,17 @@ final class EventResource extends JsonResource
     private function exrtas(): array
     {
         $isOwner = Auth::id() === $this->user_id;
+        $isCustomer = Auth::user() instanceof Customer;
 
         return [
-            'customers' => $this->when($isOwner, CustomerResource::collection($this->whenLoaded('customers'))),
+            'customers' => $this->when(
+                $isOwner,
+                CustomerResource::collection($this->whenLoaded('customers'))
+            ),
+            'is_favorite' => (bool) $this->when(
+                ! $isOwner && $isCustomer,
+                count($this->whenLoaded('isFavorite', default: []))
+            ),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'location' => LocationResource::make($this->whenLoaded('location')),

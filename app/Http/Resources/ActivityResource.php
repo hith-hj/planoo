@@ -35,6 +35,7 @@ final class ActivityResource extends JsonResource
     {
         $isOwner = Auth::id() === $this->user_id;
         $isCustomer = Auth::user() instanceof Customer;
+
         return [
             'details' => $this->when($isOwner, $this->whenLoaded('pivot')),
             'is_favorite' => (bool) $this->when(
