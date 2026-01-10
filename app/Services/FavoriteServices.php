@@ -16,7 +16,7 @@ final class FavoriteServices
         $favorites = $customer->favorites;
         NotFound($favorites, 'favorites');
 
-        return $favorites;
+        return $favorites->load(['holder.medias']);
     }
 
     public function find(Customer $customer, int $id): Favorite
