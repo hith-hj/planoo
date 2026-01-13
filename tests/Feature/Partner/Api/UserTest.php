@@ -7,9 +7,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-	$this->seed();
-	$this->user('partner', 'stadium')->api();
-	$this->url = '/api/partner/v1/user';
+    $this->seed();
+    $this->user('partner', 'stadium')->api();
+    $this->url = '/api/partner/v1/user';
 });
 
 describe('User Controller Tests', function () {

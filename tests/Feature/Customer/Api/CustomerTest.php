@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Models\Media;
 use App\Models\Customer;
+use App\Models\Media;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-	$this->seed();
-	$this->user('customer')->api();
-	$this->url = '/api/customer/v1/customer';
+    $this->seed();
+    $this->user('customer')->api();
+    $this->url = '/api/customer/v1/customer';
 });
 
 describe('Customer Controller Tests', function () {

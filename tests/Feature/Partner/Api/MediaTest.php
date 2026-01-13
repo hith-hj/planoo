@@ -6,12 +6,11 @@ use App\Models\Activity;
 use App\Models\Media;
 use Illuminate\Support\Facades\Storage;
 
-
 beforeEach(function () {
-	$this->seed();
-	$this->user('partner', 'stadium')->api();
-	$this->url = '/api/partner/v1/media';
-	Storage::fake('public');
+    $this->seed();
+    $this->user('partner', 'stadium')->api();
+    $this->url = '/api/partner/v1/media';
+    Storage::fake('public');
 });
 
 describe('Media Controller Tests', function () {
@@ -37,7 +36,7 @@ describe('Media Controller Tests', function () {
         ])->assertOk();
 
         foreach ($res->json('payload.medias') as $file) {
-	        $fileName = $this->getFileName($file['url']);
+            $fileName = $this->getFileName($file['url']);
 
             Storage::disk('public')->assertExists("uploads/images/activities/{$activity->id}/{$fileName}");
         }
@@ -67,7 +66,7 @@ describe('Media Controller Tests', function () {
 
     it('deletes media for an activity', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
-		$activity->medias()->delete();
+        $activity->medias()->delete();
         $this->postJson("{$this->url}/create/activity/{$activity->id}", [
             'type' => 'image',
             'media' => Media::factory()->medias(1),
@@ -77,17 +76,17 @@ describe('Media Controller Tests', function () {
             'type' => 'image',
             'media' => Media::factory()->medias(2),
         ])->assertOk();
-        foreach($res->json('payload.medias') as $media){
-	        $fileName = $this->getFileName($media['url']);
+        foreach ($res->json('payload.medias') as $media) {
+            $fileName = $this->getFileName($media['url']);
 
-	        Storage::disk('public')->assertExists("uploads/images/activities/{$activity->id}/{$fileName}");
+            Storage::disk('public')->assertExists("uploads/images/activities/{$activity->id}/{$fileName}");
 
-	        $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
-	            'media_id' => $media['id'],
-	        ])->assertOk();
+            $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+                'media_id' => $media['id'],
+            ])->assertOk();
 
-	        Storage::disk('public')->assertMissing("uploads/images/activities/{$activity->id}/{$fileName}");
-    	}
+            Storage::disk('public')->assertMissing("uploads/images/activities/{$activity->id}/{$fileName}");
+        }
         expect($activity->fresh()->medias()->count())->toBe(1);
     });
     it('cant delete last media for an activity', function () {
@@ -99,7 +98,7 @@ describe('Media Controller Tests', function () {
             'media' => Media::factory()->medias(1),
         ])->assertOk();
         expect($activity->fresh()->medias()->count())->toBe(1);
-        foreach($res->json('payload.medias') as $media){
+        foreach ($res->json('payload.medias') as $media) {
             $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
                 'media_id' => $media['id'],
             ])->assertStatus(400);

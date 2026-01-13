@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Models\Activity;
 use App\Models\Customer;
 use App\Models\Favorite;
-use App\Models\User;
 
 beforeEach(function () {
     $this->seed();
@@ -65,13 +64,13 @@ describe('Favorite Controller Tests', function () {
 
     it('delete a favorite', function () {
         $fav = Favorite::factory()->for($this->user, 'customer')->create();
-        $res = $this->deleteJson("$this->url/delete",['favorite_id'=>$fav->id]);
+        $res = $this->deleteJson("$this->url/delete", ['favorite_id' => $fav->id]);
         $res->assertOk();
         expect($this->user->favorites()->count())->toBe(0);
     });
 
     it('cant delete a favorite with invalid id', function () {
-        $res = $this->deleteJson("$this->url/delete",['favorite_id'=>'invalid_id']);
+        $res = $this->deleteJson("$this->url/delete", ['favorite_id' => 'invalid_id']);
         $res->assertStatus(422);
     });
 });

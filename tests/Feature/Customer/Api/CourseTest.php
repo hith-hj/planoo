@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Models\Course;
-use App\Models\Customer;
 
 beforeEach(function () {
     $this->seed();
@@ -26,10 +25,10 @@ describe('Course Controller Tests', function () {
         Course::factory(2)->create();
         $res = $this->postJson("{$this->url}/all?page=1&perPage=1");
         $res->assertOk();
-        expect($res->json('payload'))->toHaveKeys(['page','perPage','courses']);
+        expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'courses']);
         expect($res->json('payload.courses'))->toHaveCount(1)
-        ->and($res->json('payload.page'))->toBe(1)
-        ->and($res->json('payload.perPage'))->toBe(1);
+            ->and($res->json('payload.page'))->toBe(1)
+            ->and($res->json('payload.perPage'))->toBe(1);
     });
 
     it('finds a specific course by ID', function () {
@@ -48,13 +47,13 @@ describe('Course Controller Tests', function () {
     it('can attend course', function () {
         $course = Course::factory()->create();
         $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
-        $customerCourse = $this->user->courses()->wherePivot('course_id',$course->id)->first();
+        $customerCourse = $this->user->courses()->wherePivot('course_id', $course->id)->first();
         expect($this->user->courses()->count())->toBe(1)
-        ->and($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
+            ->and($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
     });
 
     it('can not attend full course', function () {
-        $course = Course::factory()->create(['is_full'=>true]);
+        $course = Course::factory()->create(['is_full' => true]);
         $res = $this->postJson("{$this->url}/attend?course_id={$course->id}");
         $res->assertStatus(400);
     });
@@ -69,8 +68,8 @@ describe('Course Controller Tests', function () {
     it('can not cancel course after specific time', function () {
         $course = Course::factory()->create();
         $this->postJson("{$this->url}/attend?course_id={$course->id}");
-        $customer = $course->customers()->where('customer_id',$this->user->id)->first();
-        $customer->pivot->update(['created_at'=>now()->subDays(2)]);
+        $customer = $course->customers()->where('customer_id', $this->user->id)->first();
+        $customer->pivot->update(['created_at' => now()->subDays(2)]);
         $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}");
         $res->assertStatus(400);
     });

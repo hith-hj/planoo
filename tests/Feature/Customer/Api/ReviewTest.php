@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Models\Activity;
 use App\Models\Customer;
 use App\Models\Review;
-use App\Models\User;
 
 beforeEach(function () {
     $this->seed();
@@ -50,11 +49,11 @@ describe('Review Controller Tests', function () {
             "$this->url/create/activity/{$this->activity->id}",
             $rev
         )->assertOk();
-        Review::find($res->json('payload.review.id'))->update(['created_at'=>now()->subDays(3)]);
+        Review::find($res->json('payload.review.id'))->update(['created_at' => now()->subDays(3)]);
         $rev['content'] = 'horayyyy';
         $res = $this->postJson("$this->url/create/activity/{$this->activity->id}", $rev);
         $res->assertOk();
         expect($this->activity->reviews()->count())->toBe(1)
-        ->and($res->json('payload.review.content'))->toBe('horayyyy');
+            ->and($res->json('payload.review.content'))->toBe('horayyyy');
     });
 });

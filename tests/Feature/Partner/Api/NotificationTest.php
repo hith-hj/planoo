@@ -6,7 +6,7 @@ use App\Models\Notification;
 
 beforeEach(function () {
     $this->seed();
-    $this->user('partner','stadium')->api();
+    $this->user('partner', 'stadium')->api();
     $this->url = '/api/partner/v1/notification';
     Notification::truncate();
 });

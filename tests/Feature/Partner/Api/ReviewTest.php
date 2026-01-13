@@ -5,14 +5,13 @@ declare(strict_types=1);
 use App\Models\Activity;
 use App\Models\Customer;
 use App\Models\Review;
-use App\Models\User;
 
 beforeEach(function () {
     $this->seed();
     $this->user('partner', 'stadium')->api();
     $this->url = '/api/partner/v1/review';
     $this->customer = Customer::factory()->create();
-    $this->activity = Activity::factory()->for($this->user,'user')->create();
+    $this->activity = Activity::factory()->for($this->user, 'user')->create();
 });
 
 describe('Review Controller Tests', function () {

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\Customer;
-use App\Models\Event;
 use App\Models\Day;
+use App\Models\Event;
 use App\Models\Location;
 use App\Models\Media;
 use App\Models\Tag;
@@ -109,42 +109,42 @@ describe('Event Controller Tests', function () {
     });
 
     it('can attend customer by id for event', function () {
-        $event = Event::factory()->for($this->user,'user')->create();
-        $res = $this->postJson("{$this->url}/attend?event_id={$event->id}",['customer_id'=>1]);
+        $event = Event::factory()->for($this->user, 'user')->create();
+        $res = $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_id' => 1]);
         $res->assertOk();
-        $customerEvent = $event->customers()->wherePivot('customer_id',1)->first();
+        $customerEvent = $event->customers()->wherePivot('customer_id', 1)->first();
         expect($customerEvent)->not->toBeNull();
     });
 
     it('can attend customer by phone for event', function () {
-        $event = Event::factory()->for($this->user,'user')->create();
-        $res = $this->postJson("{$this->url}/attend?event_id={$event->id}",['customer_phone'=>'0987654321']);
+        $event = Event::factory()->for($this->user, 'user')->create();
+        $res = $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_phone' => '0987654321']);
         $res->assertOk();
-        $customer = Customer::where('phone','0987654321')->first();
-        $customerEvent = $event->customers()->wherePivot('customer_id',$customer->id)->first();
+        $customer = Customer::where('phone', '0987654321')->first();
+        $customerEvent = $event->customers()->wherePivot('customer_id', $customer->id)->first();
         expect($customerEvent)->not->toBeNull();
     });
 
     it('can not attend full event', function () {
-        $event = Event::factory()->for($this->user,'user')->create(['is_full'=>true]);
-        $res = $this->postJson("{$this->url}/attend?event_id={$event->id}",['customer_id'=>1]);
+        $event = Event::factory()->for($this->user, 'user')->create(['is_full' => true]);
+        $res = $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_id' => 1]);
         $res->assertStatus(400);
     });
 
     it('can cancel event attend by customer id', function () {
-        $event = Event::factory()->for($this->user,'user')->create();
-        $this->postJson("{$this->url}/attend?event_id={$event->id}",['customer_id'=>1]);
-        $res = $this->postJson("{$this->url}/cancel?event_id={$event->id}",['customer_id'=>1]);
+        $event = Event::factory()->for($this->user, 'user')->create();
+        $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_id' => 1]);
+        $res = $this->postJson("{$this->url}/cancel?event_id={$event->id}", ['customer_id' => 1]);
         $res->assertOk();
-        expect($event->customers()->wherePivot('customer_id',1)->first())->toBeNull();
+        expect($event->customers()->wherePivot('customer_id', 1)->first())->toBeNull();
     });
 
     it('can not cancel event after specifc time', function () {
-        $event = Event::factory()->for($this->user,'user')->create();
-        $this->postJson("{$this->url}/attend?event_id={$event->id}",['customer_id'=>1]);
-        $customer = $event->customers()->where('customer_id',1)->first();
-        $customer->pivot->update(['created_at'=>now()->subDays(2)]);
-        $res = $this->postJson("{$this->url}/cancel?event_id={$event->id}",['customer_id'=>1]);
+        $event = Event::factory()->for($this->user, 'user')->create();
+        $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_id' => 1]);
+        $customer = $event->customers()->where('customer_id', 1)->first();
+        $customer->pivot->update(['created_at' => now()->subDays(2)]);
+        $res = $this->postJson("{$this->url}/cancel?event_id={$event->id}", ['customer_id' => 1]);
         $res->assertStatus(400);
     });
 

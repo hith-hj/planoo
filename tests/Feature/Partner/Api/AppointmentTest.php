@@ -37,7 +37,7 @@ describe('Appointment Controller Tests', function () {
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['appointment']);
         expect($res->json('payload.appointment'))->not->toBeNull()
-        ->and($res->json('payload.appointment.holder'))->toHaveKeys(['type','id','name','image']);
+            ->and($res->json('payload.appointment.holder'))->toHaveKeys(['type', 'id', 'name', 'image']);
     });
 
     it('cant find appointment by invalid id ', function () {
@@ -74,7 +74,7 @@ describe('Appointment Controller Tests', function () {
                     'code' => app(CodeServices::class)->createCode(
                         CodesTypes::appointment->name,
                         timeToExpire: '1:m'
-                    )
+                    ),
                 ]
             );
 
@@ -96,7 +96,7 @@ describe('Appointment Controller Tests', function () {
                 'code' => app(CodeServices::class)->createCode(
                     CodesTypes::appointment->name,
                     timeToExpire: '1:m'
-                )
+                ),
             ]);
 
         $response = $this->postJson("{$this->url}/create", $data);
@@ -118,7 +118,7 @@ describe('Appointment Controller Tests', function () {
                 'code' => app(CodeServices::class)->createCode(
                     CodesTypes::appointment->name,
                     timeToExpire: '-10:m'
-                )
+                ),
             ]);
 
         $response = $this->postJson("{$this->url}/create", $data);
@@ -139,7 +139,7 @@ describe('Appointment Controller Tests', function () {
             'session_duration' => 120,
             'end_at' => '14:00',
             'notes' => 'Recusandae et quis voluptatibus.',
-            'customer_id' => '1'
+            'customer_id' => '1',
         ];
 
         $activity->appointments()->create([

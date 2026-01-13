@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\AppointmentStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Appointment;
@@ -7,6 +9,7 @@ use App\Models\Course;
 use App\Models\Customer;
 use App\Models\User;
 use Carbon\Carbon;
+
 use function Pest\Laravel\artisan;
 use function Pest\Laravel\assertDatabaseHas;
 

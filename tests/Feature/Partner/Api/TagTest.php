@@ -5,12 +5,10 @@ declare(strict_types=1);
 use App\Models\Activity;
 use App\Models\Tag;
 
-
-
 beforeEach(function () {
-	$this->seed();
-	$this->user('partner', 'stadium')->api();
-	$this->url = '/api/partner/v1/tag';
+    $this->seed();
+    $this->user('partner', 'stadium')->api();
+    $this->url = '/api/partner/v1/tag';
 });
 
 describe('Tag Controller Test', function () {

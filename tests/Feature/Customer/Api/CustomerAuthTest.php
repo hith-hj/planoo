@@ -146,11 +146,11 @@ describe('CustomerAuth Controller test', function () {
             'firebase_token' => $customer->firebase_token,
             'password' => 'password',
             'password_confirmation' => 'password',
-            'code' => $code->code
+            'code' => $code->code,
         ])->assertOk();
         expect($customer->fresh()->verified_at)->not->toBeNull()
-        ->and(Hash::check('password',$customer->fresh()->password))->toBeTrue()
-        ->and($customer->codes()->count())->toBe(0);
+            ->and(Hash::check('password', $customer->fresh()->password))->toBeTrue()
+            ->and($customer->codes()->count())->toBe(0);
     });
 
     it('cant reset password with invlid code ', function () {
@@ -165,7 +165,7 @@ describe('CustomerAuth Controller test', function () {
             'firebase_token' => $customer->firebase_token,
             'password' => 'password',
             'password_confirmation' => 'password',
-            'code' => 'invalid_code'
+            'code' => 'invalid_code',
         ])->assertStatus(422);
     });
 
@@ -181,7 +181,7 @@ describe('CustomerAuth Controller test', function () {
             'firebase_token' => 'invalid_token',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'code' => 'invalid_code'
+            'code' => 'invalid_code',
         ])->assertStatus(422);
     });
 
@@ -193,6 +193,6 @@ describe('CustomerAuth Controller test', function () {
             'new_password_confirmation' => 'new_password',
         ]);
         $res->assertOk();
-        expect(Hash::check('new_password',$customer->fresh()->password))->toBeTrue();
+        expect(Hash::check('new_password', $customer->fresh()->password))->toBeTrue();
     });
 });

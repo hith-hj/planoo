@@ -6,9 +6,9 @@ use App\Models\Activity;
 use App\Models\Location;
 
 beforeEach(function () {
-	$this->seed();
-	$this->user('partner', 'stadium')->api();
-	$this->url = '/api/partner/v1/location';
+    $this->seed();
+    $this->user('partner', 'stadium')->api();
+    $this->url = '/api/partner/v1/location';
 });
 
 describe('Location Controller Tests', function () {

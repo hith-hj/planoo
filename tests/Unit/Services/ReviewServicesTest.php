@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 use App\Models\Activity;
 use App\Models\Customer;
-use App\Services\ReviewServices;
 use App\Models\Review;
-use App\Models\User;
+use App\Services\ReviewServices;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -41,13 +40,13 @@ describe('Review Services Class', function () {
     });
 
     it('fails to retive reviews with invalid object', function () {
-        expect(fn () => $this->services->all((object) []))->toThrow(\TypeError::class);
+        expect(fn () => $this->services->all((object) []))->toThrow(TypeError::class);
     });
 
     it('can create review for customer', function () {
         $data = Review::factory()->for($this->customer, 'customer')->make()->toArray();
         $activity = Activity::factory()->create();
-        $res = $this->services->create($activity,$this->customer, $data);
+        $res = $this->services->create($activity, $this->customer, $data);
         expect($res)->toBeInstanceOf(Review::class)
             ->and($res->rate)->toBe($data['rate'])
             ->and($res->content)->toBe($data['content']);
@@ -55,11 +54,11 @@ describe('Review Services Class', function () {
 
     it('fails to create review for with invalid data', function () {
         $activity = Activity::factory()->create();
-        $this->services->create($activity,$this->customer, []);
-    })->throws(\Exception::class);
+        $this->services->create($activity, $this->customer, []);
+    })->throws(Exception::class);
 
     it('fails to create review for with invalid owner object', function () {
         $data = Review::factory()->make()->toArray();
-        $this->services->create((object)[], $this->customer, $data);
-    })->throws(\TypeError::class);
+        $this->services->create((object) [], $this->customer, $data);
+    })->throws(TypeError::class);
 });

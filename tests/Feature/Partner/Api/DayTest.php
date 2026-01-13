@@ -122,7 +122,7 @@ describe('Day Controller tests', function () {
 
     it('deletes a specific day', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
-        Day::factory(2)->day()->for($activity,'holder')->create();
+        Day::factory(2)->day()->for($activity, 'holder')->create();
         $day = $activity->days()->first();
 
         $res = $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [

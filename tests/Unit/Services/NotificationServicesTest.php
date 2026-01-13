@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Services\NotificationServices;
 use App\Models\Notification;
 use App\Models\User;
+use App\Services\NotificationServices;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -19,7 +19,7 @@ beforeEach(function () {
 describe('Notification Service', function () {
 
     it('retrive all Notifications for user', function () {
-        Notification::factory()->for($this->user,'holder')->create();
+        Notification::factory()->for($this->user, 'holder')->create();
         $res = $this->services->all($this->user);
         expect($res)->toBeInstanceOf(Collection::class)->toHaveCount(1);
         $this->assertDatabaseCount('notifications', 1);

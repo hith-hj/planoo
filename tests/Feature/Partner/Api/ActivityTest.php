@@ -9,9 +9,9 @@ use App\Models\Media;
 use App\Models\Tag;
 
 beforeEach(function () {
-	$this->seed();
-	$this->user('partner', 'stadium')->api();
-	$this->url = '/api/partner/v1/activity';
+    $this->seed();
+    $this->user('partner', 'stadium')->api();
+    $this->url = '/api/partner/v1/activity';
 });
 
 describe('Activity Controller Tests', function () {

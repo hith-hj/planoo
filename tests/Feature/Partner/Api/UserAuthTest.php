@@ -6,7 +6,7 @@ use App\Enums\CodesTypes;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-beforeEach(function(){
+beforeEach(function () {
     $this->seed();
     $this->url = '/api/partner/v1/auth';
 });
@@ -20,7 +20,7 @@ describe('UserAuth Controller test', function () {
     });
 
     it('fails_to_registers_a_user', function () {
-        $data = User::factory()->make(['acount_type'=>'kiki'])->toArray();
+        $data = User::factory()->make(['acount_type' => 'kiki'])->toArray();
         $res = $this->postJson(route('partner.register'), $data);
         expect($res->status())->toBe(422);
     });
@@ -46,7 +46,7 @@ describe('UserAuth Controller test', function () {
             'code' => 00000,
         ]);
         expect($res->status())->toBe(422)
-        ->and($res->json('payload.errors'))->not->toBeNull();
+            ->and($res->json('payload.errors'))->not->toBeNull();
     });
 
     it('allow_verified_user_login', function () {
@@ -96,7 +96,6 @@ describe('UserAuth Controller test', function () {
         $res->assertOk();
     });
 
-
     it('can resend verification code if user if not verified', function () {
         $user = User::factory()->create(['verified_at' => null, 'verified_by' => null]);
         expect($user->codes()->count())->toBe(0);
@@ -140,11 +139,11 @@ describe('UserAuth Controller test', function () {
             'firebase_token' => $user->firebase_token,
             'password' => 'password',
             'password_confirmation' => 'password',
-            'code' => $code->code
+            'code' => $code->code,
         ])->assertOk();
         expect($user->fresh()->verified_at)->not->toBeNull()
-        ->and(Hash::check('password',$user->fresh()->password))->toBeTrue()
-        ->and($user->codes()->count())->toBe(0);
+            ->and(Hash::check('password', $user->fresh()->password))->toBeTrue()
+            ->and($user->codes()->count())->toBe(0);
     });
 
     it('cant reset password with invlid code ', function () {
@@ -159,7 +158,7 @@ describe('UserAuth Controller test', function () {
             'firebase_token' => $user->firebase_token,
             'password' => 'password',
             'password_confirmation' => 'password',
-            'code' => 'invalid_code'
+            'code' => 'invalid_code',
         ])->assertStatus(422);
     });
 
@@ -175,7 +174,7 @@ describe('UserAuth Controller test', function () {
             'firebase_token' => 'invalid_token',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'code' => 'invalid_code'
+            'code' => 'invalid_code',
         ])->assertStatus(422);
     });
 
@@ -187,7 +186,7 @@ describe('UserAuth Controller test', function () {
             'new_password_confirmation' => 'new_password',
         ]);
         $res->assertOk();
-        expect(Hash::check('new_password',$user->fresh()->password))->toBeTrue();
+        expect(Hash::check('new_password', $user->fresh()->password))->toBeTrue();
     });
 
 });

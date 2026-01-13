@@ -5,9 +5,9 @@ declare(strict_types=1);
 use App\Models\Activity;
 
 beforeEach(function () {
-	$this->seed();
-	$this->user('customer')->api();
-	$this->url = '/api/customer/v1/activity';
+    $this->seed();
+    $this->user('customer')->api();
+    $this->url = '/api/customer/v1/activity';
 });
 
 describe('Activity Controller Tests', function () {
@@ -15,7 +15,7 @@ describe('Activity Controller Tests', function () {
         Activity::truncate();
         Activity::factory(2)->create();
         $res = $this->postJson("{$this->url}/all")->assertOk();
-        expect($res->json('payload'))->toHaveKeys(['page','perPage','activities']);
+        expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'activities']);
         expect($res->json('payload.activities'))->toHaveCount(2);
     });
 
@@ -23,10 +23,10 @@ describe('Activity Controller Tests', function () {
         Activity::truncate();
         Activity::factory(2)->create();
         $res = $this->postJson("{$this->url}/all?page=1&perPage=1")->assertOk();
-        expect($res->json('payload'))->toHaveKeys(['page','perPage','activities']);
+        expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'activities']);
         expect($res->json('payload.activities'))->toHaveCount(1)
-        ->and($res->json('payload.page'))->toBe(1)
-        ->and($res->json('payload.perPage'))->toBe(1);
+            ->and($res->json('payload.page'))->toBe(1)
+            ->and($res->json('payload.perPage'))->toBe(1);
     });
 
     it('finds a specific activity by ID', function () {

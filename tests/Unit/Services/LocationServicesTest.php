@@ -2,20 +2,18 @@
 
 declare(strict_types=1);
 
-use App\Services\LocationServices;
 use App\Models\Activity;
 use App\Models\Location;
-
+use App\Services\LocationServices;
 
 beforeEach(function () {
     $this->seed();
     $this->locationServices = new LocationServices();
     $this->owner = Activity::factory()->create();
     $this->data = [
-            'long' => 35.0, 'lat' => 40.0,
-        ];
+        'long' => 35.0, 'lat' => 40.0,
+    ];
 });
-
 
 describe('Location Service', function () {
 

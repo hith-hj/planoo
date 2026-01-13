@@ -5,10 +5,10 @@ declare(strict_types=1);
 use App\Models\Location;
 
 beforeEach(function () {
-	$this->seed();
-	$this->user('customer')->api();
-	$this->url = '/api/customer/v1/location';
-	Location::factory()->for($this->user,'holder')->create();
+    $this->seed();
+    $this->user('customer')->api();
+    $this->url = '/api/customer/v1/location';
+    Location::factory()->for($this->user, 'holder')->create();
 });
 
 describe('Location Controller Tests', function () {
@@ -20,7 +20,7 @@ describe('Location Controller Tests', function () {
     });
 
     it('creates a new location for an customer', function () {
-		$customer = $this->user;
+        $customer = $this->user;
         $customer->location()->delete();
         $locationData = Location::factory()->make()->toArray();
         $res = $this->postJson("{$this->url}/create", $locationData)->assertOk();
@@ -57,7 +57,7 @@ describe('Location Controller Tests', function () {
         $customer = $this->user;
         $location = $customer->location;
 
-        $res=$this->deleteJson("{$this->url}/delete", [
+        $res = $this->deleteJson("{$this->url}/delete", [
             'location_id' => $location->id,
         ]);
         $res->assertOk();
