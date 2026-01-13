@@ -28,6 +28,7 @@ final class ActivityServices
             'is_active' => [true, false],
             'session_duration' => SessionDuration::values(),
             'category_id' => [],
+            'name' => [],
         ]);
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'price']);

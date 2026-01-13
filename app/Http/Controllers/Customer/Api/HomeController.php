@@ -45,7 +45,7 @@ final class HomeController extends Controller
                 'where' => [
                     'name',
                     'like',
-                    '%'.$request->query('search').'%',
+                    '%' . $request->query('search') . '%',
                 ],
             ],
             // columns: ['id', 'name', 'rate'],

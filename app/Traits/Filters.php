@@ -64,7 +64,11 @@ trait Filters
                         $value = (int) $value;
                     }
                     if (in_array($value, $allowedFilters[$key]) || empty($allowedFilters[$key])) {
-                        $filter->where($key, $value);
+                        if (is_array($value)) {
+                            $filter->where($key, ...$value);
+                        } else {
+                            $filter->where($key, $value);
+                        }
                     }
                 }
             }

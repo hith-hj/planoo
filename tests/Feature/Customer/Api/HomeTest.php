@@ -17,7 +17,8 @@ describe('Activity Controller Tests', function () {
         Activity::factory()->create();
         Course::factory()->create();
         Event::factory()->create();
-        $res = $this->getJson("{$this->url}/feeds")->assertOk();
+        $res = $this->getJson("{$this->url}/feeds");
+        $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['feeds'])
             ->and($res->json('payload.feeds'))->toHaveKeys(['activities', 'courses', 'events']);
     });
