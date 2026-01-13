@@ -36,7 +36,10 @@ final class AppointmentResource extends JsonResource
     private function holder()
     {
         if (! $this->holder) {
-            return ['type' => 'Not Found'];
+            return [
+                'type' => $this->appointable_type,
+                'id' => $this->appointable_id,
+            ];
         }
 
         $this->holder->load(['category', 'medias']);

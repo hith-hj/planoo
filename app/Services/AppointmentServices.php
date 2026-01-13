@@ -196,9 +196,9 @@ final class AppointmentServices
                 SectionsTypes::activity->name => Appointment::where('appointable_type', Activity::class)
                     ->whereIn('appointable_id', $user->activities()->pluck('id')),
                 SectionsTypes::course->name => Appointment::where('appointable_type', Course::class)
-                    ->whereIn('appointable_id', $user->courses()->pluck('id')),
+                    ->whereIn('appointable_id', $user->courses()->pluck('courses.id')),
                 SectionsTypes::event->name => Appointment::where('appointable_type', Event::class)
-                    ->whereIn('appointable_id', $user->events()->pluck('id')),
+                    ->whereIn('appointable_id', $user->events()->pluck('events.id')),
                 default => throw new Exception('ownerType is required'),
             };
         }
@@ -209,9 +209,9 @@ final class AppointmentServices
         return match ($ownerType) {
             SectionsTypes::activity->name => $customer->appointments(),
             SectionsTypes::course->name => Appointment::where('appointable_type', Course::class)
-                ->whereIn('appointable_id', $customer->courses()->pluck('id')),
+                ->whereIn('appointable_id', $customer->courses()->pluck('courses.id')),
             SectionsTypes::event->name => Appointment::where('appointable_type', Event::class)
-                ->whereIn('appointable_id', $customer->events()->pluck('id')),
+                ->whereIn('appointable_id', $customer->events()->pluck('events.id')),
             default => throw new Exception('ownerType is required'),
         };
     }

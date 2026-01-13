@@ -16,9 +16,9 @@ final class HomeController extends Controller
     public function feeds(): JsonResponse
     {
         return Success(payload: ['feeds' => [
-            'activities' => app(ActivityServices::class)->allByFilter(perPage: 1)->toResourceCollection(),
-            'courses' => app(CourseServices::class)->allByFilter(perPage: 1)->toResourceCollection(),
-            'events' => app(EventServices::class)->allByFilter(perPage: 1)->toResourceCollection(),
+            'activities' => app(ActivityServices::class)->allByFilter(perPage: 10)->toResourceCollection(),
+            'courses' => app(CourseServices::class)->allByFilter(perPage: 10)->toResourceCollection(),
+            'events' => app(EventServices::class)->allByFilter(perPage: 10)->toResourceCollection(),
             // ...$this->getFeatered(),
         ]]);
     }
@@ -48,7 +48,7 @@ final class HomeController extends Controller
                     '%'.$request->query('search').'%',
                 ],
             ],
-            columns: ['id', 'name', 'rate'],
+            // columns: ['id', 'name', 'rate'],
         ) ?? [];
 
         return Success(payload: ['result' => $result]);
