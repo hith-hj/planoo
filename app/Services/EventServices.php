@@ -74,7 +74,7 @@ final class EventServices
         $event = Event::whereId($id)->first();
         NotFound($event, 'event');
 
-        return $event->load([...$this->toBeLoaded(), 'isFavorite']);
+        return $event->load([...$this->toBeLoaded(), 'isFavorite','isAttending']);
     }
 
     public function create(User $user, array $data): Event

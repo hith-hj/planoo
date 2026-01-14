@@ -55,6 +55,10 @@ final class EventResource extends JsonResource
                 ! $isOwner && $isCustomer,
                 count($this->whenLoaded('isFavorite', default: []))
             ),
+            'is_attending' => (bool) $this->when(
+                ! $isOwner && $isCustomer,
+                count($this->whenLoaded('isAttending', default: []))
+            ),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'location' => LocationResource::make($this->whenLoaded('location')),
