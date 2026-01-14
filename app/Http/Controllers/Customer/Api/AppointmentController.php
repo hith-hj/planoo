@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Customer\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Services\ActivityServices;
 use App\Services\AppointmentServices;
 use App\Services\CodeServices;
@@ -75,6 +76,9 @@ final class AppointmentController extends Controller
     {
         $validator = AppointmentValidators::find($request->all());
         $appointment = $this->services->find($validator->safe()->integer('appointment_id'));
+        if ($appointment->appointable_type !== Activity::class) {
+            return Error('Appointment type can not be canceled');
+        }
         $this->services->cancel(Auth::user(), $appointment);
 
         return Success(payload: [

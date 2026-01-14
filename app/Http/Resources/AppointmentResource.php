@@ -6,8 +6,11 @@ namespace App\Http\Resources;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\SectionsTypes;
+use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 final class AppointmentResource extends JsonResource
 {
@@ -27,9 +30,8 @@ final class AppointmentResource extends JsonResource
             'session_duration' => $this->session_duration,
             'canceled_by' => $this->canceled_by,
             'notes' => $this->notes,
-            // 'holder' => $this->whenLoaded('holder'),
             'holder' => $this->holder(),
-            'customer' => CustomerResource::make($this->whenLoaded('customer')),
+            'customer' => $this->customer(),
         ];
     }
 
@@ -54,6 +56,21 @@ final class AppointmentResource extends JsonResource
             'image' => $this->holder->medias[0],
             ...$this->getHolderDetails(class_basename($this->appointable_type)),
         ];
+    }
+
+    private function customer()
+    {
+        //if appointment belong to customer show customer info
+        if(Auth::user() instanceof Customer && $this->customer_id == Auth::id() ){
+            return CustomerResource::make($this->whenLoaded('customer'));
+        }
+        //if appointment belong to partner show customer info
+        if(Auth::user() instanceof User ){
+            if ($this->holder && $this->holder->user_id == Auth::id()) {
+                return CustomerResource::make($this->whenLoaded('customer'));
+            }
+        }
+        return null;
     }
 
     private function getHolderDetails(string $type)
