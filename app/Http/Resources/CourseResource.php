@@ -44,6 +44,10 @@ final class CourseResource extends JsonResource
                 ! $isOwner && $isCustomer,
                 count($this->whenLoaded('isFavorite', default: []))
             ),
+            'is_attending' => (bool) $this->when(
+                ! $isOwner && $isCustomer,
+                count($this->whenLoaded('isAttending', default: []))
+            ),
             'details' => $this->when($isOwner, $this->whenLoaded('pivot')),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
