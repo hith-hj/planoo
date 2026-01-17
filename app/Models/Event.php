@@ -25,8 +25,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 final class Event extends Model implements Dayable, Locatable, Mediable, Reviewable, Taggable
 {
-    use FavoriteHandler;
     use AttendHandler;
+    use FavoriteHandler;
     use HasFactory;
     use MediaHandler;
     use ReviewHandler;

@@ -60,17 +60,17 @@ final class AppointmentResource extends JsonResource
 
     private function customer()
     {
-        //if appointment belong to customer show customer info
-        if(Auth::user() instanceof Customer && $this->customer_id == Auth::id() ){
+        // if appointment belong to customer show customer info
+        if (Auth::user() instanceof Customer && $this->customer_id === Auth::id()) {
             return CustomerResource::make($this->whenLoaded('customer'));
         }
-        //if appointment belong to partner show customer info
-        if(Auth::user() instanceof User ){
-            if ($this->holder && $this->holder->user_id == Auth::id()) {
+        // if appointment belong to partner show customer info
+        if (Auth::user() instanceof User) {
+            if ($this->holder && $this->holder->user_id === Auth::id()) {
                 return CustomerResource::make($this->whenLoaded('customer'));
             }
         }
-        return null;
+
     }
 
     private function getHolderDetails(string $type)
