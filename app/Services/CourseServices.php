@@ -76,7 +76,7 @@ final class CourseServices
         $course = Course::whereId($id)->first();
         NotFound($course, 'course');
 
-        return $course->load([...$this->toBeLoaded(), 'isFavorite','isAttending']);
+        return $course->load([...$this->toBeLoaded(), 'isFavorite', 'isAttending']);
     }
 
     public function create(User $user, array $data): Course
@@ -117,6 +117,7 @@ final class CourseServices
         Required($course, 'course');
         Truthy($this->isAttending($customer, $course), 'Already attending this course.');
         Truthy($course->is_full, 'Course is full');
+        Truthy(! $course->is_active, 'Course is inactive');
 
         $course->customers()
             ->attach($customer->id, [

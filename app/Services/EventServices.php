@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\EventStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Customer;
 use App\Models\Event;
@@ -74,7 +75,7 @@ final class EventServices
         $event = Event::whereId($id)->first();
         NotFound($event, 'event');
 
-        return $event->load([...$this->toBeLoaded(), 'isFavorite','isAttending']);
+        return $event->load([...$this->toBeLoaded(), 'isFavorite', 'isAttending']);
     }
 
     public function create(User $user, array $data): Event
@@ -115,6 +116,8 @@ final class EventServices
         Required($event, 'event');
         Truthy($this->isAttending($customer, $event), 'Already attending this event.');
         Truthy($event->is_full, 'Event is full');
+        Truthy($event->status !== EventStatus::pending->value, 'Event is canceled');
+        Truthy(! $event->is_active, 'Event is inactive');
 
         $event->customers()->attach($customer->id);
         if ($event->customers()->count() === $event->capacity) {

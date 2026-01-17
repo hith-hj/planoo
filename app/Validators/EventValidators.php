@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 final class EventValidators extends Validators
 {
@@ -25,7 +26,7 @@ final class EventValidators extends Validators
             'capacity' => ['required', 'numeric', 'min:1', 'max:30'],
             'admission_fee' => ['nullable', 'numeric', 'min:1'],
             'withdrawal_fee' => ['nullable', 'numeric', 'min:1'],
-            'start_date' => ['required', 'date-format:Y-m-d'],
+            'start_date' => ['required', Rule::date()->afterToday(), 'date-format:Y-m-d'],
         ]);
 
         $validator->sometimes(

@@ -156,6 +156,8 @@ final class AppointmentServices
     public function create(object $owner, array $data, ?Customer $customer = null): Appointment
     {
         Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
+        Truthy(! $owner->is_active, 'Inactive owner');
+
         $date = Carbon::parse($data['date']);
         $start_time = Carbon::createFromTimeString($data['time']);
         $end_at = (clone $start_time)->addMinutes($data['session_duration']);
