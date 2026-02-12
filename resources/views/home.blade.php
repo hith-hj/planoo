@@ -326,6 +326,14 @@
                     <p class="text-gray-600">{{ __('Integrity, inclusivity, and innovation guide everything we do.') }}</p>
                 </div>
             </div>
+
+            <div class="flex justify-center items-center py-6">
+                <a href="{{route('about')}}">
+                    <button class="bg-purple hover:bg-yellow px-12 py-2 rounded-lg text-white hover:text-black font-normal transition">
+                        About page
+                    </button>
+                </a>
+            </div>
         </div>
     </section>
 

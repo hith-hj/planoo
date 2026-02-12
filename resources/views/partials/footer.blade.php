@@ -53,7 +53,7 @@
                 <ul class="space-y-3 text-gray-100 text-sm">
                     <li><a href="#" class="hover:text-gold transition">{{ __('Login') }}</a></li>
                     <li><a href="#" class="hover:text-gold transition">{{ __('My account') }}</a></li>
-                    <li><a href="#" class="hover:text-gold transition">{{ __('Terms & Condition') }}</a></li>
+                    <li><a href="{{route('terms')}}" class="hover:text-gold transition">{{ __('Terms & Condition') }}</a></li>
                 </ul>
             </div>
 
