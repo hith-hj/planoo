@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('phone');
             $table->tinyInteger('rate');
             $table->tinyInteger('status');
-            $table->text('firebase_token');
+            $table->text('firebase_token')->nullable();
             $table->text('description');
             $table->boolean('is_active');
             $table->boolean('is_notifiable');
