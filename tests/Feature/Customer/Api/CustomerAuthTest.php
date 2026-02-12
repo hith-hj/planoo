@@ -64,6 +64,20 @@ describe('CustomerAuth Controller test', function () {
         expect($res->json('payload'))->toHaveKeys(['customer', 'token']);
     });
 
+    it('allow_verified_customer_login_to_update_token', function () {
+        $customer = Customer::factory()->create(['phone' => '0911112222']);
+        $customer->update(['firebase_token' => null]);
+        $res = $this->postJson(route('customer.login'), [
+            'phone' => $customer->phone,
+            'password' => 'password',
+            'firebase_token' => 'new token',
+
+        ]);
+        expect($res->status())->toBe(200);
+        expect($res->json('payload'))->toHaveKeys(['customer', 'token'])
+            ->and($customer->fresh()->firebase_token)->toBe('new token');
+    });
+
     it('prevent_unverified_customer_login', function () {
         $customer = Customer::factory()->create([
             'phone' => '0911112222',
@@ -82,6 +96,7 @@ describe('CustomerAuth Controller test', function () {
         $res = $this->postJson(route('customer.login'), [
             'phone' => '0912345678',
             'password' => 'wrongpassword',
+            'firebase_token' => 'wrong token',
         ]);
         expect($res->status())->toBe(422);
         expect($res->json('payload.errors'))->not->toBeNull();
@@ -101,6 +116,20 @@ describe('CustomerAuth Controller test', function () {
         $this->user('customer')->api();
         $res = $this->postJson(route('customer.logout'));
         $res->assertOk();
+    });
+
+    it('can logout user with clear token flag is true', function () {
+        $this->user('customer')->api();
+        $res = $this->postJson(route('customer.logout'), ['clear_token' => true]);
+        $res->assertOk();
+        expect($this->user->fresh()->firebase_token)->toBeNull();
+    });
+
+    it('can not clear token when logout with false flag', function () {
+        $this->user('customer')->api();
+        $res = $this->postJson(route('customer.logout'), ['clear_token' => false]);
+        $res->assertOk();
+        expect($this->user->fresh()->firebase_token)->not->toBeNull();
     });
 
     it('can resend verification code if customer if not verified', function () {

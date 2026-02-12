@@ -73,6 +73,10 @@ final class CustomerAuthServices
         //     throw new Exception(__('inactive account,wait until activation'));
         // }
 
+        if ($customer->firebase_token === null) {
+            $customer->update(['firebase_token' => $validator->safe()->input('firebase_token')]);
+        }
+
         return [$customer->toResource(), JWTAuth::fromUser($customer)];
     }
 
@@ -137,8 +141,14 @@ final class CustomerAuthServices
         return Auth::refresh();
     }
 
-    public function logout()
+    public function logout($clear_token = false)
     {
+        if ($clear_token) {
+            /** @var Customer $customer */
+            $customer = Auth::user();
+            $customer->update(['firebase_token' => null]);
+        }
+
         return JWTAuth::invalidate(JWTAuth::getToken());
     }
 
