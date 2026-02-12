@@ -45,9 +45,10 @@ final class AuthController extends Controller
         return Success(payload: ['token' => $this->services->refreshToken()]);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        $this->services->logout();
+        $clear_token = $request->has('clear_token') && $request->boolean('clear_token') === true ? true : false;
+        $this->services->logout($clear_token);
 
         return Success(msg: __('logout'));
     }

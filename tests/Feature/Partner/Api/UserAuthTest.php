@@ -54,9 +54,25 @@ describe('UserAuth Controller test', function () {
         $res = $this->postJson(route('partner.login'), [
             'phone' => $user->phone,
             'password' => 'password',
+            'firebase_token' => $user->firebase_token,
+
         ]);
         expect($res->status())->toBe(200);
         expect($res->json('payload'))->toHaveKeys(['user', 'token']);
+    });
+
+    it('allow_verified_user_login_to_update_token', function () {
+        $user = User::factory()->create(['phone' => '0911112222']);
+        $user->update(['firebase_token'=>null]);
+        $res = $this->postJson(route('partner.login'), [
+            'phone' => $user->phone,
+            'password' => 'password',
+            'firebase_token' => 'new token',
+
+        ]);
+        expect($res->status())->toBe(200);
+        expect($res->json('payload'))->toHaveKeys(['user', 'token'])
+        ->and($user->fresh()->firebase_token)->toBe('new token');
     });
 
     it('prevent_unverified_user_login', function () {
@@ -68,6 +84,8 @@ describe('UserAuth Controller test', function () {
         $res = $this->postJson(route('partner.login'), [
             'phone' => $user->phone,
             'password' => 'password',
+            'firebase_token' => $user->firebase_token,
+
         ]);
         expect($res->status())->toBe(400);
     });
@@ -76,6 +94,7 @@ describe('UserAuth Controller test', function () {
         $res = $this->postJson(route('partner.login'), [
             'phone' => '0912345678',
             'password' => 'wrongpassword',
+            'firebase_token' => 'wrong_firebase_token',
         ]);
         expect($res->status())->toBe(422);
         expect($res->json('payload.errors'))->not->toBeNull();
@@ -86,6 +105,7 @@ describe('UserAuth Controller test', function () {
         $res = $this->postJson(route('partner.login'), [
             'phone' => $user->phone,
             'password' => 'wrongpassword',
+            'firebase_token' => $user->firebase_token,
         ]);
         expect($res->status())->toBe(400);
     });
@@ -94,6 +114,20 @@ describe('UserAuth Controller test', function () {
         $this->user('partner', 'stadium')->api();
         $res = $this->postJson(route('partner.logout'));
         $res->assertOk();
+    });
+
+    it('can logout user with clear token flag is true', function () {
+        $this->user('partner', 'stadium')->api();
+        $res = $this->postJson(route('partner.logout'), ['clear_token' => true]);
+        $res->assertOk();
+        expect($this->user->fresh()->firebase_token)->toBeNull();
+    });
+
+    it('can not clear token when logout with false flag', function () {
+        $this->user('partner', 'stadium')->api();
+        $res = $this->postJson(route('partner.logout'), ['clear_token' => false]);
+        $res->assertOk();
+        expect($this->user->fresh()->firebase_token)->not->toBeNull();
     });
 
     it('can resend verification code if user if not verified', function () {
@@ -188,5 +222,4 @@ describe('UserAuth Controller test', function () {
         $res->assertOk();
         expect(Hash::check('new_password', $user->fresh()->password))->toBeTrue();
     });
-
 });
