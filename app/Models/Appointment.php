@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\AppointmentStatus;
 use App\Observers\AppointmentObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,6 +26,16 @@ final class Appointment extends Model
     public function scopeOwner(Builder $query, string $owner_class, ?int $owner_id)
     {
         return $query->where([['appointable_type', $owner_class], ['appointable_id', $owner_id]]);
+    }
+
+    public function scopeConflict(Builder $query, string $date, string $startTime, string $endTime): void
+    {
+        $query->where([
+            ['status', AppointmentStatus::accepted->value],
+            ['date',   $date],
+            ['time',   '<', $endTime],
+            ['end_at', '>', $startTime],
+        ]);
     }
 
     public function customer(): BelongsTo

@@ -124,15 +124,47 @@ final class AppointmentServices
             'session_duration' => 'int',
             'time' => 'string',
         ]);
-        $start_time = Carbon::parse($data['time']);
-        $end_time = (clone $start_time)->addMinutes($data['session_duration']);
+        $start = Carbon::parse($data['time']);
+        $end = $start->copy()->addMinutes($data['session_duration']);
 
-        return Appointment::where([
-            ['status', AppointmentStatus::accepted->value],
-            ['date', $data['date']],
-            ['time', '<', $end_time->toTimeString('minute')],
-            ['end_at', '>', $start_time->toTimeString('minute')],
-        ])->exists();
+        return Appointment::conflict($data['date'], $start->toTimeString('minute'), $end->toTimeString('minute'))
+            ->exists();
+    }
+
+    public function canCreateAppointment(Customer $customer, array $data): bool
+    {
+        $data = checkAndCastData($data, [
+            'date' => 'string',
+            'time' => 'string',
+            'session_duration' => 'int',
+        ]);
+
+        $start = Carbon::parse($data['time']);
+        $end = $start->copy()->addMinutes($data['session_duration']);
+
+        $date = $data['date'];
+        $startTime = $start->toTimeString('minute');
+        $endTime = $end->toTimeString('minute');
+
+        if ($customer->appointments()->conflict($date, $startTime, $endTime)->exists()) {
+            return false;
+        }
+
+        if (
+            $customer->events()->count() > 1 &&
+            $customer->events()->appointments()->conflict($date, $startTime, $endTime)->exists()
+        ) {
+            return false;
+        }
+
+        if (
+            $customer->courses()->count() > 1 &&
+            $customer->courses()->appointments()->conflict($date, $startTime, $endTime)->exists()
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getAppointmentIfExists(array $data): ?Appointment
