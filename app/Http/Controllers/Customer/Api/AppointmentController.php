@@ -21,16 +21,30 @@ final class AppointmentController extends Controller
     {
         $page = $request->integer('page', 1);
         $perPage = $request->integer('perPage', 10);
-        $filters = $request->input('filters', []);
-        $orderBy = $request->input('orderBy', []);
+        $filters = $request->array('filters');
+        $orderBy = $request->array('orderBy');
         $ownerType = request('owner_type', 'activity');
+        $paginate = $request->boolean('paginate', true);
 
         $query = $this->services->getCustomerQuery(Auth::user(), $ownerType);
-        $appointments = $this->services->allByQuery($query, $page, $perPage, $filters, $orderBy);
+        $appointments = $this->services->allByQuery($query, $page, $perPage, $filters, $orderBy, $paginate);
 
         return Success(payload: [
             'page' => $page,
-            'perPage' => $perPage,
+            'perPage' => $paginate === false ? count($appointments) : $perPage,
+            'appointments' => $appointments->toResourceCollection(),
+        ]);
+    }
+
+    public function accepted(Request $request)
+    {
+        $orderBy = $request->array('orderBy');
+        $ownerType = request('owner_type', 'activity');
+
+        $query = $this->services->getCustomerQuery(Auth::user(), $ownerType);
+        $appointments = $this->services->acceptedByQuery($query, $orderBy);
+
+        return Success(payload: [
             'appointments' => $appointments->toResourceCollection(),
         ]);
     }
@@ -68,12 +82,12 @@ final class AppointmentController extends Controller
             return Error('Appointment just got booked');
         }
 
-        if (! $this->services->canCreateAppointment(
-            Auth::user(),
-            $validator->safe()->all()
-        )) {
-            return Error('You have Appointment at this date');
-        }
+        // if (! $this->services->canCreateAppointment(
+        //     Auth::user(),
+        //     $validator->safe()->all()
+        // )) {
+        //     return Error('You have Appointment at this date');
+        // }
 
         $appointment = $this->services->create($activity, $validator->safe()->all(), Auth::user());
 

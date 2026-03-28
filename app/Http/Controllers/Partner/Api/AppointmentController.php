@@ -21,13 +21,17 @@ final class AppointmentController extends Controller
     {
         $page = $request->integer('page', 1);
         $perPage = $request->integer('perPage', 10);
-        $filters = $request->input('filters', []);
-        $orderBy = $request->input('orderBy', []);
+        $filters = $request->array('filters');
+        $orderBy = $request->array('orderBy');
         $ownerType = request('owner_type', 'activity');
+        $paginate = $request->boolean('paginate', true);
+
         $query = $this->services->getUserQuery(Auth::user(), $ownerType);
-        $appointments = $this->services->allByQuery($query, $page, $perPage, $filters, $orderBy);
+        $appointments = $this->services->allByQuery($query, $page, $perPage, $filters, $orderBy, $paginate);
 
         return Success(payload: [
+            'page' => $page,
+            'perPage' => $paginate === false ? count($appointments) : $perPage,
             'appointments' => $appointments->toResourceCollection(),
         ]);
     }

@@ -27,11 +27,12 @@ final class AppointmentServices
         int $page = 1,
         int $perPage = 10,
         array $filters = [],
-        array $orderBy = []
+        array $orderBy = [],
+        bool $paginate = true
     ) {
         Required($query, 'query');
+        Truthy($paginate === false && count($filters) === 0, 'Invalid operation');
         $query->with($this->ToBeLoaded());
-
         $this->applyFilters($query, $filters, [
             'status' => AppointmentStatus::values(),
             'session_duration' => SessionDuration::values(),
@@ -40,9 +41,25 @@ final class AppointmentServices
 
         $this->applyOrderBy($query, $orderBy, ['date', 'time']);
 
-        $appointments = $query->paginate($perPage, ['*'], 'page', $page);
+        $appointments = $paginate ?
+            $query->paginate($perPage, ['*'], 'page', $page) :
+            $query->get();
 
-        NotFound($appointments->items(), 'appointments');
+        NotFound($paginate ? $appointments->items() : $appointments, 'appointments');
+
+        return $appointments;
+    }
+
+    public function acceptedByQuery($query, array $orderBy = [])
+    {
+        Required($query, 'query');
+        $query->where('status', AppointmentStatus::accepted->value);
+        $query->with($this->ToBeLoaded());
+        $this->applyOrderBy($query, $orderBy, ['date', 'time']);
+
+        $appointments = $query->get();
+
+        NotFound($appointments, 'appointments');
 
         return $appointments;
     }

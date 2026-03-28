@@ -30,6 +30,18 @@ describe('Appointment Controller Tests', function () {
             ->and($response->json('payload.appointments'))->toHaveCount(count($appointments));
     });
 
+    it('returns activity accepted appointments using filters without paginate ', function () {
+        $activity = $this->user->activities()->inRandomOrder()->first();
+        $activity->appointments()->delete();
+        $appointments = Appointment::factory(5)
+            ->for($activity, 'holder')
+            ->create();
+        $res = $this->postJson("{$this->url}/all/activity?paginate=false",['filters'=>['status'=>'0']]);
+        $res->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'appointments']);
+        expect($res->json('payload.appointments'))->toHaveCount(count($appointments));
+    });
+
     it('find appointment by id ', function () {
         Appointment::truncate();
         $appointment = Appointment::factory()->create();

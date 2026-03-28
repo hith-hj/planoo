@@ -26,6 +26,25 @@ describe('Appointment Controller Tests', function () {
             ->and($res->json('payload.perPage'))->toBe(1);
     });
 
+    it('returns customer accepted appointments using filters without paginate ', function () {
+        Appointment::truncate();
+        Appointment::factory(2)->for($this->user, 'customer')->create();
+        $res = $this->postJson("{$this->url}/all/activity?paginate=false",['filters'=>['status'=>'0']]);
+        $res->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'appointments']);
+        expect($res->json('payload.appointments'))->toHaveCount(2);
+    });
+
+    it('returns only customer accepted appointments ', function () {
+        Appointment::truncate();
+        Appointment::factory(2)->for($this->user, 'customer')->create();
+        $res = $this->postJson("{$this->url}/accepted",['orderBy'=>['date'=>'desc']]);
+        $res->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['appointments']);
+        expect($res->json('payload.appointments'))->toHaveCount(2);
+        expect($res->json('payload.appointments.0.status'))->toBe(AppointmentStatus::accepted->name);
+    });
+
     it('find appointment by id ', function () {
         Appointment::truncate();
         $appointment = Appointment::factory()->create();
