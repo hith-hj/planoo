@@ -38,7 +38,7 @@ describe('Appointment Controller Tests', function () {
     it('returns only customer accepted appointments ', function () {
         Appointment::truncate();
         Appointment::factory(2)->for($this->user, 'customer')->create();
-        $res = $this->postJson("{$this->url}/accepted",['orderBy'=>['date'=>'desc']]);
+        $res = $this->postJson("{$this->url}/accepted/activity",['orderBy'=>['date'=>'desc']]);
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['appointments']);
         expect($res->json('payload.appointments'))->toHaveCount(2);
