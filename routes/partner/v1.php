@@ -119,6 +119,7 @@ Route::controller(AppointmentController::class)
     ->group(
         function (): void {
             Route::post('all/{owner_type}/{owner_id?}', 'all')->name('all');
+            Route::post('accepted/{owner_type}/', 'accepted')->name('accepted');
             Route::get('find', 'find')->name('find');
             Route::post('check', 'check')->name('check');
             Route::post('create', 'create')->name('create');

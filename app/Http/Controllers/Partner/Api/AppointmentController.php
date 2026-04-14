@@ -36,6 +36,19 @@ final class AppointmentController extends Controller
         ]);
     }
 
+    public function accepted(Request $request)
+    {
+        $orderBy = $request->array('orderBy');
+        $ownerType = request('owner_type', 'activity');
+
+        $query = $this->services->getUserQuery(Auth::user(), $ownerType);
+        $appointments = $this->services->acceptedByQuery($query, $orderBy);
+
+        return Success(payload: [
+            'appointments' => $appointments->toResourceCollection(),
+        ]);
+    }
+
     public function find(Request $request)
     {
         $validator = AppointmentValidators::find($request->all());

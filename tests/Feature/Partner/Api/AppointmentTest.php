@@ -19,9 +19,7 @@ describe('Appointment Controller Tests', function () {
     it('retrive all appointments for activity', function () {
         $activity = $this->user->activities()->inRandomOrder()->first();
         $activity->appointments()->delete();
-        $appointments = Appointment::factory(5)
-            ->for($activity, 'holder')
-            ->create();
+        $appointments = Appointment::factory(5)->for($activity, 'holder')->create();
 
         $response = $this->postJson("{$this->url}/all/activity/{$activity->id}");
         $response->assertOk();
@@ -30,16 +28,27 @@ describe('Appointment Controller Tests', function () {
             ->and($response->json('payload.appointments'))->toHaveCount(count($appointments));
     });
 
-    it('returns activity accepted appointments using filters without paginate ', function () {
+    it('returns partner activity accepted appointments using filters without paginate ', function () {
         $activity = $this->user->activities()->inRandomOrder()->first();
         $activity->appointments()->delete();
-        $appointments = Appointment::factory(5)
-            ->for($activity, 'holder')
-            ->create();
-        $res = $this->postJson("{$this->url}/all/activity?paginate=false",['filters'=>['status'=>'0']]);
+        $appointments = Appointment::factory(5)->for($activity, 'holder')->create();
+
+        $res = $this->postJson("{$this->url}/all/activity?paginate=false", ['filters' => ['status' => '0']]);
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'appointments']);
         expect($res->json('payload.appointments'))->toHaveCount(count($appointments));
+    });
+
+    it('returns only partner activity accepted appointments ', function () {
+        $activity = $this->user->activities()->inRandomOrder()->first();
+        $activity->appointments()->delete();
+        $appointments = Appointment::factory(5)->for($activity, 'holder')->create();
+
+        $res = $this->postJson("{$this->url}/accepted/activity", ['orderBy' => ['date' => 'desc']]);
+        $res->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['appointments']);
+        expect($res->json('payload.appointments'))->toHaveCount(count($appointments));
+        expect($res->json('payload.appointments.0.status'))->toBe(AppointmentStatus::accepted->name);
     });
 
     it('find appointment by id ', function () {
