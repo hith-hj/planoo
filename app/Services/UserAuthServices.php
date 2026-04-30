@@ -54,7 +54,7 @@ final class UserAuthServices
 
     public function login(Validator $validator): array
     {
-        $credentials = $validator->safe()->only('phone', 'password');
+        $credentials = $validator->safe()->only(['phone', 'password']);
         if (! Auth::attempt($credentials)) {
             throw new Exception(__('invalid credentials'));
         }

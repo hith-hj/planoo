@@ -6,9 +6,7 @@ namespace Database\Seeders;
 
 use App\Enums\AdminsRoles;
 use App\Enums\UsersTypes;
-use App\Models\Activity;
 use App\Models\Admin;
-use App\Models\Appointment;
 use App\Models\Customer;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -22,36 +20,16 @@ final class DatabaseSeeder extends Seeder
         $this->createAdmin();
         $this->createCategories();
         $this->createTags();
-        $this->createCustomers();
         $this->createUsers();
+        // $this->createCustomers();
     }
 
     public function createAdmin()
     {
         Admin::factory()->create([
             'name' => 'S_Ad',
-            'email' => 'a@a.com',
+            'email' => 'S_Ad@admin.com',
             'role' => AdminsRoles::super->value,
-        ]);
-    }
-
-    private function createUsers()
-    {
-        User::factory()->create();
-        User::factory()->createMany([
-            [
-                'name' => 's',
-                'email' => 's@s.com',
-                'phone' => '0911111111',
-                'account_type' => UsersTypes::stadium->name,
-            ],
-            [
-                'name' => 'm',
-                'email' => 'm@m.com',
-                'phone' => '0933333333',
-                'account_type' => UsersTypes::stadium->name,
-                'password' => bcrypt('Mm12345@@'),
-            ],
         ]);
     }
 
@@ -80,12 +58,25 @@ final class DatabaseSeeder extends Seeder
         }
     }
 
-    private function createAppointments()
+    private function createUsers()
     {
-        $activities = Activity::all();
-        foreach ($activities as $activity) {
-            Appointment::factory()->for($activity, 'holder')->create();
-        }
+        // User::factory()->create();
+        User::factory()->createMany([
+            [
+                'name' => 'fadi partner',
+                'email' => 'fadi.alfrejat@gmail.com',
+                'phone' => '0944102050',
+                'account_type' => UsersTypes::stadium->name,
+                'password' => bcrypt('Password123@@'),
+            ],
+            [
+                'name' => 'test partner',
+                'email' => 'test@partner.com',
+                'phone' => '0911111111',
+                'account_type' => UsersTypes::stadium->name,
+                'password' => bcrypt('Mm12345@@'),
+            ],
+        ]);
     }
 
     private function createCustomers()

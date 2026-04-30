@@ -22,7 +22,7 @@ final class AdminFactory extends Factory
         return [
             'name' => fake()->firstNameFemale,
             'email' => fake()->unique()->email,
-            'password' => bcrypt('password'),
+            'password' => bcrypt('password@123'),
             'role' => fake()->randomElement(AdminsRoles::values()),
         ];
     }
