@@ -54,6 +54,7 @@
                     <li><a href="#" class="hover:text-gold transition">{{ __('Login') }}</a></li>
                     <li><a href="#" class="hover:text-gold transition">{{ __('My account') }}</a></li>
                     <li><a href="{{route('terms')}}" class="hover:text-gold transition">{{ __('Terms & Condition') }}</a></li>
+                    <li><a href="{{route('privacy')}}" class="hover:text-gold transition">{{ __('Privacy Policy') }}</a></li>
                 </ul>
             </div>
 

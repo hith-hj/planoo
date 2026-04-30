@@ -14,6 +14,8 @@
         </div>
     </section>
 
+
+
  	<div class="max-w-7xl mx-auto px-6 py-12">
 	    <!-- Introduction -->
 	    <section class="mb-10">
@@ -122,5 +124,114 @@
 	      </p>
 	    </section>
 	</div>
+
+	<div class="max-w-7xl mx-auto px-6 py-12" dir="rtl">
+ 		<section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. مقدمة</h2>
+	      <p class="leading-relaxed">
+	        مرحباً بكم في <span class="font-semibold">Planoo</span>. تحكم شروط الاستخدام هذه وصولك إلى منصتنا الرياضية واستخدامها، بما في ذلك تطبيقات الهاتف المحمول والمواقع الإلكترونية والخدمات ذات الصلة. من خلال التسجيل أو استخدام منصتنا، فإنك توافق على الامتثال لهذه الشروط.
+	      </p>
+	    </section>
+
+	    <!-- Eligibility -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. الأهلية</h2>
+	      <ul class="list-disc pl-6 space-y-2">
+	        <li>يجب أن لا يقل عمر المستخدمين عن 16 عاماً (أو الحد الأدنى للسن القانوني في ولايتهم القضائية).</li>
+	        <li>باستخدام المنصة، فإنك تؤكد استيفاءك لمتطلبات الأهلية.</li>
+	      </ul>
+	    </section>
+
+	    <!-- Account Registration -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. تسجيل الحساب</h2>
+	      <ul class="list-disc pl-6 space-y-2">
+	        <li>يجب تقديم معلومات دقيقة وكاملة أثناء عملية التسجيل.</li>
+	        <li>أنت مسؤول عن الحفاظ على سرية بيانات اعتماد تسجيل الدخول الخاصة بك.</li>
+	        <li>تعتبر مسؤولاً عن أي نشاط يتم بموجب حسابك.</li>
+	      </ul>
+	    </section>
+
+	    <!-- Acceptable Use -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. الاستخدام المقبول</h2>
+	      <p class="mb-4">أنت توافق على عدم القيام بما يلي:</p>
+	      <ul class="list-disc pl-6 space-y-2">
+	        <li>نشر محتوى مسيء أو تمييزي أو ضار.</li>
+	        <li>استخدام المنصة في أنشطة غير قانونية.</li>
+	        <li>محاولة اختراق المنصة أو تعطيلها أو إساءة استخدام خدماتها.</li>
+	        <li>عدم احترام المستخدمين الآخرين أو الانخراط في سلوك غير رياضي.</li>
+	      </ul>
+	    </section>
+
+	    <!-- Content & Intellectual Property -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. المحتوى والملكية الفكرية</h2>
+	      <ul class="list-disc pl-6 space-y-2">
+	        <li>جميع المحتويات والشعارات والعلامات التجارية الموجودة على المنصة مملوكة لشركة Planoo أو مرخصيها.</li>
+	        <li>لا يجوز لك نسخ محتوى المنصة أو توزيعه أو استغلاله دون موافقة خطية مسبقة.</li>
+	        <li>يظل المحتوى الذي ينشئه المستخدم ملكاً لك، ولكنك تمنح Planoo ترخيصاً لاستخدامه.</li>
+	      </ul>
+	    </section>
+
+	    <!-- Services -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. الخدمات</h2>
+	      <p class="leading-relaxed">
+	        قد توفر المنصة برامج تدريبية، وبثاً مباشراً، وتحديثات للأحداث الرياضية، ومنتديات مجتمعية، وميزات اجتماعية. قد تتغير الخدمات أو تتوقف في أي وقت دون إشعار مسبق.
+	      </p>
+	    </section>
+
+	    <!-- Payments -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. المدفوعات والاشتراكات</h2>
+	      <ul class="list-disc pl-6 space-y-2">
+	        <li>قد تتطلب بعض الميزات اشتراكات مدفوعة.</li>
+	        <li>جميع المدفوعات غير قابلة للاسترداد ما لم يقتضِ القانون خلاف ذلك.</li>
+	        <li>يجب على المستخدمين الامتثال لشروط الفوترة وجداول الدفع.</li>
+	      </ul>
+	    </section>
+
+	    <!-- Privacy -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. الخصوصية</h2>
+	      <p class="leading-relaxed">
+	        سيتم التعامل مع بياناتك الشخصية وفقاً لسياسة الخصوصية الخاصة بنا. نحن نولي الأولوية لسلامة المستخدم وحماية البيانات.
+	      </p>
+	    </section>
+
+	    <!-- Limitation of Liability -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. تحديد المسؤولية</h2>
+	      <p class="leading-relaxed">
+	        يتم توفير المنصة "كما هي" دون أي ضمانات. لا تتحمل Planoo المسؤولية عن الإصابات أو الخسائر أو الأضرار الناتجة عن الأنشطة الرياضية أو الاعتماد على محتوى المنصة.
+	      </p>
+	    </section>
+
+	    <!-- Termination -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. إنهاء الخدمة</h2>
+	      <p class="leading-relaxed">
+	        نحتفظ بالحق في تعليق أو إنهاء الحسابات التي تنتهك هذه الشروط. كما يحق للمستخدمين إنهاء حساباتهم في أي وقت.
+	      </p>
+	    </section>
+
+	    <!-- Governing Law -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">11. القانون المعمول به</h2>
+	      <p class="leading-relaxed">
+	        تخضع هذه الشروط لقوانين [ولايتك القضائية]. يتم حل أي نزاعات في محاكم [ولايتك القضائية].
+	      </p>
+	    </section>
+
+	    <!-- Changes -->
+	    <section class="mb-10">
+	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">12. التغييرات في الشروط</h2>
+	      <p class="leading-relaxed">
+	        قد نقوم بتحديث هذه الشروط بشكل دوري. استمرارك في استخدام المنصة بعد إجراء التغييرات يعتبر قبولاً للشروط الجديدة.
+	      </p>
+	    </section>
+ 	</div>
+
 
 @endsection
