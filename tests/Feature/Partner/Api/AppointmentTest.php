@@ -85,6 +85,7 @@ describe('Appointment Controller Tests', function () {
     });
 
     it('creates a new appointment with user phone', function () {
+        Appointment::truncate();
         $activity = $this->user->activities()->inRandomOrder()->first();
         $data = Appointment::factory()
             ->fakerData(
@@ -108,6 +109,7 @@ describe('Appointment Controller Tests', function () {
     });
 
     it('creates a new appointment with user id', function () {
+        Appointment::truncate();
         $activity = $this->user->activities()->inRandomOrder()->first();
         $customer = Customer::factory()->create();
         $data = Appointment::factory()
@@ -121,6 +123,7 @@ describe('Appointment Controller Tests', function () {
             ]);
 
         $response = $this->postJson("{$this->url}/create", $data);
+
         $response->assertOk();
         expect($response->json('payload.appointment'))->not->toBeNull()
             ->and($response->json('payload.appointment.time'))->toBe($data['time'])

@@ -93,9 +93,16 @@ final class CustomerServices
         return $customer->update($data);
     }
 
-    public function delete(Customer $customer, array $data): bool
+    public function delete(Customer $customer): bool
     {
-        return false;
+        $customer->medias()->delete();
+        $customer->location()->delete();
+        $customer->courses()->delete();
+        $customer->appointments()->delete();
+        $customer->events()->delete();
+        $customer->delete();
+
+        return true;
     }
 
     public function uploadProfileImage(Customer $customer, array $data)

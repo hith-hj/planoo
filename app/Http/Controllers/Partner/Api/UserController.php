@@ -33,7 +33,10 @@ final class UserController extends Controller
 
     public function delete()
     {
-        return Success('To be implemented');
+        $user = $this->services->get(Auth::id());
+        $this->services->delete($user);
+
+        return Success('Your account is deleted');
     }
 
     public function uploadProfileImage(Request $request)

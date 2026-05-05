@@ -79,6 +79,7 @@ describe('Appointment Controller Tests', function () {
     });
 
     it('creates a new appointment for customer', function () {
+        Appointment::truncate();
         $activity = Activity::inRandomOrder()->first();
         $data = Appointment::factory()->fakerData($activity, [
             'time' => '10:30',

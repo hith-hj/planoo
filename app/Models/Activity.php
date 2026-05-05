@@ -9,9 +9,11 @@ use App\Interfaces\Locatable;
 use App\Interfaces\Mediable;
 use App\Interfaces\Reviewable;
 use App\Interfaces\Taggable;
+use App\Observers\ActivityObserver;
 use App\Traits\FavoriteHandler;
 use App\Traits\MediaHandler;
 use App\Traits\ReviewHandler;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
+#[ObservedBy([ActivityObserver::class])]
 final class Activity extends Model implements Dayable, Locatable, Mediable, Reviewable, Taggable
 {
     use FavoriteHandler;

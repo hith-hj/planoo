@@ -19,6 +19,8 @@
 /public/uploads
 /public/storage
 /public/images
+/public/css
+/public/js
 /storage/*.key
 /storage/pail
 /vendor

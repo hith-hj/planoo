@@ -26,9 +26,15 @@ final class UserServices
         return $user->update($data);
     }
 
-    public function delete(User $user, array $data): bool
+    public function delete(User $user): bool
     {
-        return false;
+        $user->medias()->delete();
+        $user->activities()->delete();
+        $user->courses()->delete();
+        $user->events()->delete();
+        $user->delete();
+
+        return true;
     }
 
     public function uploadProfileImage(User $user, array $data): Media

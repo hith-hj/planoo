@@ -138,7 +138,7 @@ trait MediaHandler
         }
     }
 
-    private function recursiveCopy($src, $dst)
+    private function recursiveCopy(string $src, string $dst)
     {
         $dir = opendir($src);
         @mkdir($dst, 0755, true);
@@ -161,7 +161,7 @@ trait MediaHandler
         closedir($dir);
     }
 
-    private function deleteExtraFiles($src, $dst)
+    private function deleteExtraFiles(string $src, string $dst)
     {
         $dir = opendir($dst);
 
@@ -187,7 +187,7 @@ trait MediaHandler
         closedir($dir);
     }
 
-    private function deleteDirectory($dir)
+    private function deleteDirectory(string $dir)
     {
         $items = array_diff(scandir($dir), ['.', '..']);
         foreach ($items as $item) {

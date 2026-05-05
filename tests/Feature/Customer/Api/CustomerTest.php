@@ -61,4 +61,15 @@ describe('Customer Controller Tests', function () {
         expect($this->user->fresh()->medias()->count())->toBe(0);
         Storage::disk('public')->assertMissing("uploads/images/customers/{$this->user->id}/{$fileName}");
     });
+
+    it('delete customer account', function () {
+        Customer::truncate();
+        $customer = Customer::factory()->create();
+        $this->assertDatabaseCount('customers', 1);
+        $this->replaceUser($customer);
+        $res = $this->deleteJson(route('customer.customer.delete'));
+        $res->assertOk();
+        expect($customer->fresh())->toBeNull();
+        $this->assertDatabaseCount('customers', 0);
+    });
 });
