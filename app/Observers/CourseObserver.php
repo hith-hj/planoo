@@ -29,12 +29,12 @@ final class CourseObserver
      */
     public function deleted(Course $course): void
     {
-        $course->days()->delete();
-        $course->tags()->delete();
-        $course->category()->delete();
-        $course->location()->delete();
-        $course->appointments()->delete();
-        $course->customers();
+        // $course->days()->delete();
+        // $course->tags()->delete();
+        // $course->category()->delete();
+        // $course->location()->delete();
+        // $course->appointments()->delete();
+        // $course->customers();
     }
 
     /**
