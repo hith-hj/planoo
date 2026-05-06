@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Enums\NotificationTypes;
 use App\Models\Course;
 
 final class CourseObserver
@@ -29,11 +30,18 @@ final class CourseObserver
      */
     public function deleted(Course $course): void
     {
-        $course->days()->delete();
-        $course->location()->delete();
-        $course->appointments()->delete();
-        $course->tags()->detach();
-        $course->customers()->detach();
+        // $course->days()->delete();
+        // $course->location()->delete();
+        // $course->appointments()->delete();
+        // $course->tags()->detach();
+        // foreach ($course->customers as $customer) {
+        //     $customer->notify(
+        //         'Course removal',
+        //         "this course {$course->name} is removed.",
+        //         ['type' => NotificationTypes::course->value, 'course' => $course->id],
+        //     );
+        // }
+        // $course->customers()->detach();
     }
 
     /**

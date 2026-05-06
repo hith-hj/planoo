@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Enums\NotificationTypes;
 use App\Models\Event;
 
 final class EventObserver
@@ -29,11 +30,18 @@ final class EventObserver
      */
     public function deleted(Event $event): void
     {
-        $event->days()->delete();
-        $event->location()->delete();
-        $event->appointments()->delete();
-        $event->tags()->detach();
-        $event->customers()->detach();
+        // $event->days()->delete();
+        // $event->location()->delete();
+        // $event->appointments()->delete();
+        // $event->tags()->detach();
+        // foreach ($event->customers as $customer) {
+        //     $customer->notify(
+        //         'Event removal',
+        //         "this event {$event->name} is removed.",
+        //         ['type' => NotificationTypes::event->value, 'event' => $event->id],
+        //     );
+        // }
+        // $event->customers()->detach();
     }
 
     /**
