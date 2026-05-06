@@ -29,11 +29,10 @@ final class ActivityObserver
      */
     public function deleted(Activity $activity): void
     {
-        // $activity->days()->delete();
-        // $activity->tags()->delete();
-        // $activity->category()->delete();
-        // $activity->location()->delete();
-        // $activity->appointments()->delete();
+        $activity->days()->delete();
+        $activity->location()->delete();
+        $activity->appointments()->delete();
+        $activity->tags()->detach();
     }
 
     /**

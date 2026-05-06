@@ -29,12 +29,11 @@ final class EventObserver
      */
     public function deleted(Event $event): void
     {
-        // $event->days()->delete();
-        // $event->tags()->delete();
-        // $event->category()->delete();
-        // $event->location()->delete();
-        // $event->appointments()->delete();
-        // $event->customers();
+        $event->days()->delete();
+        $event->location()->delete();
+        $event->appointments()->delete();
+        $event->tags()->detach();
+        $event->customers()->detach();
     }
 
     /**
