@@ -36,7 +36,7 @@ final class CustomerController extends Controller
         $customer = $this->services->get(Auth::id());
         $this->services->delete($customer);
 
-        return Success('Your account is deleted');
+        return Success('account is deleted');
     }
 
     public function uploadProfileImage(Request $request)

@@ -114,10 +114,10 @@ final class EventServices
     {
         Required($customer, 'customer');
         Required($event, 'event');
-        Truthy($this->isAttending($customer, $event), 'Already attending this event.');
+        Truthy($this->isAttending($customer, $event), 'already attending this event');
         Truthy($event->is_full, 'Event is full');
-        Truthy($event->status !== EventStatus::pending->value, 'Event is canceled');
-        Truthy(! $event->is_active, 'Event is inactive');
+        Truthy($event->status !== EventStatus::pending->value, 'event is canceled');
+        Truthy(! $event->is_active, 'event is inactive');
 
         $event->customers()->attach($customer->id);
         if ($event->customers()->count() === $event->capacity) {
@@ -136,8 +136,8 @@ final class EventServices
     {
         Required($customer, 'customer');
         Required($event, 'event');
-        Truthy(! $this->isAttending($customer, $event), 'Not attending this event.');
-        Truthy(! $this->canCancel($customer, $event), 'Can\'t cancel this event.');
+        Truthy(! $this->isAttending($customer, $event), 'not attending this event');
+        Truthy(! $this->canCancel($customer, $event), 'can\'t cancel this event');
         $event->customers()->detach($customer->id);
         if ($event->customers()->count() < $event->capacity) {
             $event->update(['is_full' => false]);

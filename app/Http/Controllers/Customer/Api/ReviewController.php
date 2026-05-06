@@ -42,7 +42,7 @@ final class ReviewController extends Controller
         $this->service->update(getModelGlobal(), $review, $validator->safe()->except('review_id'));
 
         return Success(
-            msg: 'review created',
+            msg: 'review updated',
             payload: ['review' => $review->toResource()]
         );
     }

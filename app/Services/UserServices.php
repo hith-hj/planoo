@@ -49,7 +49,7 @@ final class UserServices
 
     public function deleteProfileImage(Media $media): ?bool
     {
-        NotFound($media, 'Media');
+        NotFound($media, 'media');
         Storage::disk('public')->delete($media->url);
 
         return $media->delete();

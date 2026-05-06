@@ -31,7 +31,7 @@ final class AppointmentServices
         bool $paginate = true
     ) {
         Required($query, 'query');
-        Truthy($paginate === false && count($filters) === 0, 'Invalid operation');
+        Truthy($paginate === false && count($filters) === 0, 'invalid operation');
         $query->with($this->ToBeLoaded());
         $this->applyFilters($query, $filters, [
             'status' => AppointmentStatus::values(),
@@ -205,7 +205,7 @@ final class AppointmentServices
     public function create(object $owner, array $data, ?Customer $customer = null): Appointment
     {
         Truthy(! method_exists($owner, 'appointments'), 'missing appointments() method');
-        Truthy(! $owner->is_active, 'Inactive owner');
+        Truthy(! $owner->is_active, 'inactive owner');
 
         $date = Carbon::parse($data['date']);
         $start_time = Carbon::createFromTimeString($data['time']);
@@ -227,7 +227,7 @@ final class AppointmentServices
     public function cancel(object $user, Appointment $appointment): bool
     {
         Truthy($appointment->status !== AppointmentStatus::accepted->value, 'invalid appointment status');
-        Truthy(! $this->canCancel($appointment), 'You can\'t cancel now');
+        Truthy(! $this->canCancel($appointment), 'you can\'t cancel now');
 
         return $appointment->update([
             'status' => AppointmentStatus::canceled->value,

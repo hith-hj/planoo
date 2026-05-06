@@ -74,12 +74,12 @@ final class AppointmentController extends Controller
         $validator = AppointmentValidators::create($request->all());
 
         $code = app(CodeServices::class)->codeById($validator->safe()->integer('code'));
-        Truthy(! $code->isValid(), 'Invalid code');
+        Truthy(! $code->isValid(), 'invalid code');
         app(CodeServices::class)->deleteCode($code);
 
         $activity = app(ActivityServices::class)->find($validator->safe()->integer('activity_id'));
         if ($this->services->checkAppointmentExists($validator->safe()->all())) {
-            return Error('Appointment just got booked');
+            return Error('appointment just got booked');
         }
 
         // if (! $this->services->canCreateAppointment(
@@ -99,7 +99,7 @@ final class AppointmentController extends Controller
         $validator = AppointmentValidators::find($request->all());
         $appointment = $this->services->find($validator->safe()->integer('appointment_id'));
         if ($appointment->appointable_type !== Activity::class) {
-            return Error('Appointment type can not be canceled');
+            return Error('appointment type can not be canceled');
         }
         $this->services->cancel(Auth::user(), $appointment);
 

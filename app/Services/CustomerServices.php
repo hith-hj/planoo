@@ -117,7 +117,7 @@ final class CustomerServices
 
     public function deleteProfileImage(Media $media)
     {
-        NotFound($media, 'Media');
+        NotFound($media, 'media');
         Storage::disk('public')->delete($media->url);
 
         return $media->delete();

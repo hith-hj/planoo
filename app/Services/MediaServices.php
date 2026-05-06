@@ -39,7 +39,7 @@ final class MediaServices
 
     public function delete(Media $media): bool
     {
-        NotFound($media, 'Media');
+        NotFound($media, 'media');
         Storage::disk('public')->delete($media->url);
 
         return $media->delete();
@@ -48,6 +48,6 @@ final class MediaServices
     private function canCreateMedia(object $mediable)
     {
         $count = config('app.settings.max_media_count', 5);
-        Truthy($mediable->medias()->count() >= $count, "Limit of $count media is reached");
+        Truthy($mediable->medias()->count() >= $count, "media limit is $count");
     }
 }

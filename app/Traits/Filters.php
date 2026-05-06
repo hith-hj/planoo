@@ -27,7 +27,7 @@ trait Filters
         array $columns = ['*'],
         bool $sql = false,
     ): Collection|Model|null {
-        Truthy(! in_array($model, SectionsTypes::names()), "Invalid model type: {$model}");
+        Truthy(! in_array($model, SectionsTypes::names()), "invalid model type: {$model}");
         $model = '\App\Models\\'.ucfirst(trim($model));
         $class = class_basename($model);
         Truthy(! class_exists($model), "class $class not found");

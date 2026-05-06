@@ -45,8 +45,8 @@ final class UserAuthServices
     {
         $user = $this->getUser($validator);
         $code = $user->code(CodesTypes::verification->name);
-        Truthy($code->code !== $validator->safe()->integer('code'), __('invalid code'));
-        Truthy($code->expire_at !== null && ! $code->isValid(), __('code expired'));
+        Truthy($code->code !== $validator->safe()->integer('code'), 'invalid code');
+        Truthy($code->expire_at !== null && ! $code->isValid(), 'code expired');
         $user->verified();
 
         return $user;
@@ -93,11 +93,11 @@ final class UserAuthServices
     {
         $user = $this->getUser($validator);
         Truthy($user->firebase_token !== $validator->safe()->input('firebase_token'), 'invalid operation');
-        Truthy($user->verified_at !== null, __('verify account'));
+        Truthy($user->verified_at !== null, 'verify account');
 
         $code = $user->code(CodesTypes::password->name);
-        Truthy($code->code !== $validator->safe()->integer('code'), __('invalid code'));
-        Truthy($code->expire_at !== null && ! $code->isValid(), __('code expired'));
+        Truthy($code->code !== $validator->safe()->integer('code'), 'invalid code');
+        Truthy($code->expire_at !== null && ! $code->isValid(), 'code expired');
 
         $user->verified(CodesTypes::password->name)
             ->update(['password' => Hash::make($validator->safe()->input('password'))]);
@@ -108,7 +108,7 @@ final class UserAuthServices
     public function resendCode(Validator $validator): User
     {
         $user = $this->getUser($validator);
-        Truthy($user->verified_at !== null, __('invalid operation'));
+        Truthy($user->verified_at !== null, 'invalid operation');
 
         $user->verify();
 
@@ -156,7 +156,7 @@ final class UserAuthServices
     private function getUser($validator): User
     {
         $user = User::where('phone', $validator->safe()->input('phone'))->first();
-        NotFound($user);
+        NotFound($user, 'user');
 
         return $user;
     }

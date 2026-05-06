@@ -16,8 +16,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 if (! function_exists('Success')) {
     /**
      * Return Success JsonResponse
-     *
-     * @param  int  $coode
      */
     function Success(
         string $msg = 'Success',
@@ -26,7 +24,7 @@ if (! function_exists('Success')) {
     ): JsonResponse {
         $response = [
             'success' => true,
-            'message' => $msg,
+            'message' => __("$msg"),
         ];
         if ($payload !== []) {
             $response['payload'] = $payload;
@@ -39,8 +37,6 @@ if (! function_exists('Success')) {
 if (! function_exists('Error')) {
     /**
      * Return Error JsonResponse
-     *
-     * @param  int  $coode
      */
     function Error(
         string $msg = 'Error',
@@ -49,7 +45,7 @@ if (! function_exists('Error')) {
     ): JsonResponse {
         $response = [
             'success' => false,
-            'message' => $msg,
+            'message' => __("$msg"),
         ];
         if ($payload !== []) {
             $response['payload'] = $payload;
@@ -78,7 +74,7 @@ if (! function_exists('Exists')) {
 if (! function_exists('NotFound')) {
     /**
      * check if argument is empty
-     * if true throw not found exception
+     * if true throw Not found exception
      *
      * @param  mixed  $argument
      * @param  mixed  $name
@@ -123,7 +119,7 @@ if (! function_exists('Truthy')) {
      *
      * @param  bool  $condition
      * @param  string  $message
-     * @param  mixed  $name
+     * @param  mixed  $parameters
      *
      * @throws Exception
      */
@@ -143,7 +139,7 @@ if (! function_exists('Falsy')) {
      *
      * @param  bool  $condition
      * @param  string  $message
-     * @param  mixed  $name
+     * @param  mixed  $parameters
      *
      * @throws Exception
      */
@@ -166,8 +162,6 @@ if (! function_exists('getModel')) {
      * The function validates the model type, ensures the class exists,<br>
      * and confirms the model belongs to the authenticated user.<br>
      *
-     * @param  string|null  $type
-     * @param  int|null  $id
      *
      * @throws Illuminate\Validation\ValidationException
      * @throws NotFoundHttpException
@@ -176,14 +170,14 @@ if (! function_exists('getModel')) {
     {
         $id = $owner_id ?? (int) request('owner_id');
         $type = $owner_type ?? request('owner_type');
-        Truthy(is_null($type) || is_null($id), 'Failed to retrieve model');
-        Truthy(! in_array($type, SectionsTypes::names()), "Invalid model type: {$type}");
+        Truthy(is_null($type) || is_null($id), 'failed to retrieve model');
+        Truthy(! in_array($type, SectionsTypes::names()), sprintf('%s : %s', __('invalid model type'), "{$type}"));
         $type = ucfirst($type);
         $class = "App\\Models\\{$type}";
-        Truthy(! class_exists($class), "Class does not exist: {$class}");
+        Truthy(! class_exists($class), sprintf('%s : %s', __('class does not exist'), "{$class}"));
         $model = $class::find($id);
-        NotFound($model, "Model not found: {$type} with ID {$id}");
-        Truthy((int) $model->user_id !== (int) Auth::id(), 'Unauthorized access to model.');
+        NotFound($model, sprintf('%s : %s', __('model not found'), "{$type} - {$id}"));
+        Truthy((int) $model->user_id !== (int) Auth::id(), 'unauthorized access');
 
         return $model;
     }
@@ -197,8 +191,6 @@ if (! function_exists('getModelGlobal')) {
      * if any of the fields is not present in the request exception will be thrown.<br>
      * The function validates the model type, ensures the class exists,<br>
      *
-     * @param  string|null  $type
-     * @param  int|null  $id
      *
      * @throws Illuminate\Validation\ValidationException
      * @throws NotFoundHttpException
@@ -207,13 +199,13 @@ if (! function_exists('getModelGlobal')) {
     {
         $id = $owner_id ?? (int) request('owner_id');
         $type = $owner_type ?? request('owner_type');
-        Truthy(is_null($type) || is_null($id), 'Failed to retrieve model');
-        Truthy(! in_array($type, SectionsTypes::names()), "Invalid model type: {$type}");
+        Truthy(is_null($type) || is_null($id), 'failed to retrieve model');
+        Truthy(! in_array($type, SectionsTypes::names()), sprintf('%s : %s', __('invalid model type'), "$type"));
         $type = ucfirst($type);
         $class = "App\\Models\\{$type}";
-        Truthy(! class_exists($class), "Class does not exist: {$class}");
+        Truthy(! class_exists($class), sprintf('%s : %s', __('class does not exist'), "{$class}"));
         $model = $class::find($id);
-        NotFound($model, "Model not found: {$type} with ID {$id}");
+        NotFound($model, sprintf('%s : %s', __('model not found'), "{$type} - {$id}"));
 
         return $model;
     }
@@ -261,7 +253,7 @@ if (! function_exists('checkAndCastData')) {
             }
             settype($data[$key], $value);
         }
-        Falsy(empty($missing), 'fields missing: '.implode(', ', $missing));
+        Falsy(empty($missing), sprintf('%s : %s', __('fields missing'), implode(', ', $missing)));
 
         return $data;
     }

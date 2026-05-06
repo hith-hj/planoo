@@ -15,7 +15,7 @@ final class DayServices
     public function allByObject(Dayable $dayable): Collection|Model
     {
         $days = $dayable->days;
-        NotFound($days, 'Days');
+        NotFound($days, 'days');
 
         return $days;
     }

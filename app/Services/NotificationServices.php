@@ -20,25 +20,25 @@ final class NotificationServices
 
     public function find(int $id): Notification
     {
-        Required($id, 'Id');
+        Required($id, 'id');
         $noti = Notification::find($id);
-        NotFound($noti, 'Notification');
+        NotFound($noti, 'notification');
 
         return $noti;
     }
 
     public function findByNotifiable(Notifiable $notifiable, int $id): Notification
     {
-        Required($id, 'Id');
+        Required($id, 'id');
         $noti = $notifiable->notifications()->find($id);
-        NotFound($noti, 'Notification');
+        NotFound($noti, 'notification');
 
         return $noti;
     }
 
     public function view(array $ids): bool|int
     {
-        Required($ids, 'Id');
+        Required($ids, 'id');
 
         return Notification::whereIn('id', $ids)->update(['is_viewed' => 1]);
     }
