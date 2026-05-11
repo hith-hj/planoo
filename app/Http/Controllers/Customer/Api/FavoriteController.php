@@ -18,6 +18,9 @@ final class FavoriteController extends Controller
     public function all()
     {
         $favorites = $this->services->get($this->getCustomer());
+        foreach ($favorites as $favorite) {
+            $this->updateMediaUrl($favorite);
+        }
 
         return Success(payload: ['favorites' => $favorites]);
     }
@@ -29,6 +32,7 @@ final class FavoriteController extends Controller
             $this->getCustomer(),
             $validator->safe()->integer('favorite_id')
         );
+        $this->updateMediaUrl($favorite);
 
         return Success(payload: ['favorite' => $favorite]);
     }
@@ -57,6 +61,13 @@ final class FavoriteController extends Controller
         $this->services->delete($validator->safe()->integer('favorite_id'));
 
         return Success();
+    }
+
+    private function updateMediaUrl($favorite)
+    {
+        foreach ($favorite->holder->medias as $media) {
+            $media->url = asset($media->url);
+        }
     }
 
     private function getCustomer(): Customer
