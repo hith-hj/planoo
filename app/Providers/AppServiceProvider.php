@@ -30,7 +30,7 @@ final class AppServiceProvider extends ServiceProvider
         Model::unguard();
         Model::preventLazyLoading(! app()->environment('production'));
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(100)->by($request->user()?->id ?: $request->ip());
+            return Limit::perMinute(250)->by($request->user()?->id ?: $request->ip());
         });
     }
 }
