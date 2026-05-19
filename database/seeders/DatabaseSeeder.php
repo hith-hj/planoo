@@ -13,15 +13,23 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
+use function Pest\Laravel\artisan;
+
 final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->createSettings();
         $this->createAdmin();
         $this->createCategories();
         $this->createTags();
         $this->createUsers();
         // $this->createCustomers();
+    }
+
+    public function createSettings()
+    {
+        artisan('app:set-system-settings');
     }
 
     public function createAdmin()

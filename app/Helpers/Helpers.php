@@ -8,6 +8,7 @@ use App\Interfaces\Locatable;
 use App\Interfaces\Mediable;
 use App\Interfaces\Reviewable;
 use App\Interfaces\Taggable;
+use App\Models\Setting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -208,6 +209,17 @@ if (! function_exists('getModelGlobal')) {
         NotFound($model, sprintf('%s : %s', __('model not found'), "{$type} - {$id}"));
 
         return $model;
+    }
+}
+
+if (! function_exists('Setting')) {
+    function Setting(?string $name = null, mixed $default = null)
+    {
+        if ($name !== null) {
+            return Setting::where('name', $name)->first()?->value ?? $default;
+        }
+
+        return $default;
     }
 }
 
