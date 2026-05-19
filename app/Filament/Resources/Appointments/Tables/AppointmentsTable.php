@@ -25,16 +25,18 @@ final class AppointmentsTable
             })
             ->columns([
                 TextColumn::make('appointable')
-                    ->state(fn ($record) => class_basename($record->appointable_type).':'.$record->holder->name)
+                    ->state(fn ($record) => class_basename($record->appointable_type).':'.$record->holder?->name ?? 'holder missing')
                     ->url(function ($record) {
                         $class = mb_strtolower(class_basename($record->appointable_type));
                         $model = $record->holder;
-                        if($model == null){
+                        if ($model === null) {
                             return;
                         }
+
                         return match ($class) {
                             'activity' => ActivityResource::getUrl('view', ['record' => $model->id]),
                             'course' => CourseResource::getUrl('view', ['record' => $model->id]),
+                            'event' => EventResource::getUrl('view', ['record' => $model->id]),
                             default => '#',
                         };
                     })
