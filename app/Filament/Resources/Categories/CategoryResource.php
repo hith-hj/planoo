@@ -17,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Artisan;
 use UnitEnum;
 
 final class CategoryResource extends Resource
@@ -59,5 +60,10 @@ final class CategoryResource extends Resource
             'view' => ViewCategory::route('/{record}'),
             'edit' => EditCategory::route('/{record}/edit'),
         ];
+    }
+
+    protected function afterCreate(): void
+    {
+        defer(fn() => Artisan::call('app:sync-files-to-public'));
     }
 }

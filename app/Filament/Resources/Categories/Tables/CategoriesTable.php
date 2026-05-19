@@ -11,6 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -21,8 +22,10 @@ final class CategoriesTable
         return $table
             ->columns([
                 TextColumn::make('name')->searchable(),
+                ImageColumn::make('icon')->disk('public')->circular(),
                 TextColumn::make('activities_count')->counts('activities'),
                 TextColumn::make('courses_count')->counts('courses'),
+                TextColumn::make('events_count')->counts('events'),
             ])
             ->filters([
                 //
@@ -43,7 +46,10 @@ final class CategoriesTable
                             ->send();
                     })
                     ->hidden(function ($record) {
-                        return $record->activities()->count() > 0 || $record->courses()->count() > 0;
+                        return
+                            $record->activities()->count() > 0 ||
+                            $record->courses()->count() > 0 ||
+                            $record->events()->count() > 0;
                     }),
             ])
             ->toolbarActions([

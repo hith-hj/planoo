@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -14,6 +15,7 @@ final class CategoryInfolist
         return $schema
             ->components([
                 TextEntry::make('name'),
+                ImageEntry::make('icon')->disk('public')->circular(),
             ]);
     }
 }

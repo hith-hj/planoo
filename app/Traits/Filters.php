@@ -58,7 +58,7 @@ trait Filters
             function (Builder $filter) use ($filters, $allowedFilters) {
                 foreach ($filters as $key => $value) {
                     if (! in_array($key, array_keys($allowedFilters))) {
-                        return;
+                        continue;
                     }
                     if (is_numeric($value)) {
                         $value = (int) $value;

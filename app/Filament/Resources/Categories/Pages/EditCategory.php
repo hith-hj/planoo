@@ -8,6 +8,7 @@ use App\Filament\Resources\Categories\CategoryResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Artisan;
 
 final class EditCategory extends EditRecord
 {
@@ -19,5 +20,10 @@ final class EditCategory extends EditRecord
             ViewAction::make(),
             DeleteAction::make(),
         ];
+    }
+
+    protected function afterSave(): void
+    {
+        defer(fn() => Artisan::call('app:sync-files-to-public'));
     }
 }

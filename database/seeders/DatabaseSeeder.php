@@ -11,9 +11,8 @@ use App\Models\Customer;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-
-use function Pest\Laravel\artisan;
 
 final class DatabaseSeeder extends Seeder
 {
@@ -29,7 +28,7 @@ final class DatabaseSeeder extends Seeder
 
     public function createSettings()
     {
-        artisan('app:set-system-settings');
+        Artisan::call('app:set-system-settings');
     }
 
     public function createAdmin()
