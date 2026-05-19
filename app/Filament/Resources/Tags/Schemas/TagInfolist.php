@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Tags\Schemas;
 
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -14,7 +15,7 @@ final class TagInfolist
         return $schema
             ->components([
                 TextEntry::make('name'),
-                TextEntry::make('icon'),
+                ImageEntry::make('icon')->disk('public')->circular(),
             ]);
     }
 }

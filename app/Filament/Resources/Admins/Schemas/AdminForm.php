@@ -8,6 +8,7 @@ use App\Enums\AdminsRoles;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Operation;
 
 final class AdminForm
 {
@@ -24,6 +25,7 @@ final class AdminForm
                 TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                    ->disabledOn(Operation::Edit)
                     ->required(),
                 Select::make('role')
                     ->required()
