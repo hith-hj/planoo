@@ -32,7 +32,7 @@ final class Course extends Model implements Dayable, Locatable, Mediable, Review
     use ReviewHandler;
 
     protected $attributes = [
-        'is_active' => false,
+        'is_active' => true,
         'is_full' => false,
         'rate' => 0,
     ];
