@@ -6,10 +6,15 @@ namespace App\Enums;
 
 enum SessionDuration: int
 {
+    case Quarter = 15;
     case HalfHour = 30;
     case OneHour = 60;
     case HourAndHalf = 90;
     case TwoHours = 120;
+    case TwoAndHalf = 150;
+    case ThreeHours = 180;
+    case FourHours = 240;
+    case FiveHours = 300;
 
     public static function values()
     {

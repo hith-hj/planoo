@@ -8,6 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
 use App\Filament\Resources\Activities\ActivityResource;
 use App\Filament\Resources\Courses\CourseResource;
+use App\Filament\Resources\Events\EventResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
@@ -25,7 +26,7 @@ final class AppointmentsTable
             })
             ->columns([
                 TextColumn::make('appointable')
-                    ->state(fn ($record) => class_basename($record->appointable_type).':'.$record->holder?->name ?? 'holder missing')
+                    ->state(fn ($record) => class_basename($record->appointable_type).':'.$record->holder?->name ?? 'holder deleted')
                     ->url(function ($record) {
                         $class = mb_strtolower(class_basename($record->appointable_type));
                         $model = $record->holder;

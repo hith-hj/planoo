@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Settings;
 
-use App\Filament\Resources\Settings\Pages\CreateSettings;
-use App\Filament\Resources\Settings\Pages\EditSettings;
 use App\Filament\Resources\Settings\Pages\ListSettings;
-use App\Filament\Resources\Settings\Pages\ViewSettings;
 use App\Filament\Resources\Settings\Schemas\SettingsForm;
 use App\Filament\Resources\Settings\Schemas\SettingsInfolist;
 use App\Filament\Resources\Settings\Tables\SettingsTable;

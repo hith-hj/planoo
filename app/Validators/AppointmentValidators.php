@@ -23,7 +23,7 @@ final class AppointmentValidators extends Validators
 
     public static function create(array $data)
     {
-        $validators = Validator::make($data, [
+        return Validator::make($data, [
             'code' => ['required'],
             'activity_id' => ['required', 'exists:activities,id'],
             'day_id' => ['required', 'exists:days,id'],
@@ -34,8 +34,6 @@ final class AppointmentValidators extends Validators
             'customer_id' => ['sometimes', 'required', 'exists:customers,id', 'required_without:customer_phone'],
             'customer_phone' => ['sometimes', 'regex:/^09[1-9]{1}\d{7}$/', 'required_without:customer_id'],
         ]);
-
-        return $validators;
     }
 
     public static function find(array $data)

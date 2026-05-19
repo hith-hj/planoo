@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 final class MediaValidators extends Validators
 {
@@ -15,24 +16,23 @@ final class MediaValidators extends Validators
         ]);
     }
 
-    public static function create(array $data)
+    public static function create(array $data): \Illuminate\Validation\Validator
     {
-        $validator = Validator::make($data, [
-            'type' => ['required', 'in:image,video'],
-            'media' => ['required', 'array', 'min:1', 'max:5'],
-            'media.*' => ['required', 'array'],
-            'media.*.name' => ['nullable', 'string'],
-        ])->sometimes(
-            'media.*.file',
-            ['image', 'mimetypes:image/jpeg,image/png,', 'max:2048'],
-            fn ($input) => $input->type === 'image'
-        )->sometimes(
-            'media.*.file',
-            ['file', 'mimetypes:video/avi,video/mpeg,video/mp4', 'max:20480'],
-            fn ($input) => $input->type === 'video'
-        );
+        $maxMedia = setting('max_media_count', 5);
+        $isImage = ($data['type'] ?? null) === 'image';
+        $isVideo = ($data['type'] ?? null) === 'video';
 
-        return $validator;
+        return Validator::make($data, [
+            'type' => ['required', Rule::in(['image', 'video'])],
+            'media' => ['required', 'array', 'min:1', "max:{$maxMedia}"],
+            'media.*' => ['required', 'array'],
+            'media.*.name' => ['nullable', 'string', 'max:255'],
+            'media.*.file' => [
+                'required',
+                Rule::when($isImage, ['image', 'mimes:jpeg,png', 'max:2048']),
+                Rule::when($isVideo, ['file', 'mimes:avi,mp4,mpeg', 'max:20480']),
+            ],
+        ]);
     }
 
     public static function update(array $data)

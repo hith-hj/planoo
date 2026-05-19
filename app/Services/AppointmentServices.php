@@ -304,7 +304,7 @@ final class AppointmentServices
     {
         $diff = now()
             ->diffInSeconds($appointment->created_at) / 3600;
-        if (abs($diff) > config('app.settings.appointment_cancelation_period', 1)) {
+        if (abs($diff) > Setting('appointment_cancelation_period', 1)) {
             return false;
         }
 
