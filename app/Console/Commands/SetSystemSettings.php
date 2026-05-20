@@ -42,6 +42,7 @@ final class SetSystemSettings extends Command
             );
 
             $this->info("Setting '{$name}' is ready.");
+
             return;
         }
 
@@ -58,6 +59,7 @@ final class SetSystemSettings extends Command
 
             if (! $this->option('force')) {
                 $this->warn('Execution stopped. Use --force to overwrite or append.');
+
                 return;
             }
 

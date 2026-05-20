@@ -47,14 +47,14 @@ trait MediaHandler
         UploadedFile $file,
     ): Media {
         $type = $this->getFileType($file);
-        $fileName = time() . '_' . $file->hashName();
+        $fileName = time().'_'.$file->hashName();
         $path = $file->storeAs(
             $this->getFolder($type),
             $fileName,
             'public'
         );
         if (! app()->environment(['local', 'testing'])) {
-            defer(fn() => Artisan::call('app:sync-files-to-public'));
+            defer(fn () => Artisan::call('app:sync-files-to-public'));
         }
 
         return $this->medias()->create([

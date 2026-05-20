@@ -19,13 +19,14 @@ final class AppointmentInfolist
         return $schema
             ->components([
                 TextEntry::make('appointable')
-                    ->state(fn ($record) => class_basename($record->appointable_type).':'.($record->holder?->name ?? 'deleted') )
+                    ->state(fn ($record) => class_basename($record->appointable_type).':'.($record->holder?->name ?? 'deleted'))
                     ->url(function ($record) {
                         $class = mb_strtolower(class_basename($record->appointable_type));
                         $model = $record->holder;
                         if ($model === null) {
                             return;
                         }
+
                         return match ($class) {
                             'activity' => ActivityResource::getUrl('view', ['record' => $model->id]),
                             'course' => CourseResource::getUrl('view', ['record' => $model->id]),

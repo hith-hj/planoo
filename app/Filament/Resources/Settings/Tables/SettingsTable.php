@@ -24,7 +24,7 @@ final class SettingsTable
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make()->hidden(fn()=>Auth::user()->role !== AdminsRoles::super->value),
+                DeleteAction::make()->hidden(fn () => Auth::user()->role !== AdminsRoles::super->value),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([]),

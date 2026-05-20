@@ -30,6 +30,11 @@ final class CategoryResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'static';
 
+    protected function afterCreate(): void
+    {
+        defer(fn () => Artisan::call('app:sync-files-to-public'));
+    }
+
     public static function form(Schema $schema): Schema
     {
         return CategoryForm::configure($schema);
@@ -60,10 +65,5 @@ final class CategoryResource extends Resource
             'view' => ViewCategory::route('/{record}'),
             'edit' => EditCategory::route('/{record}/edit'),
         ];
-    }
-
-    protected function afterCreate(): void
-    {
-        defer(fn() => Artisan::call('app:sync-files-to-public'));
     }
 }

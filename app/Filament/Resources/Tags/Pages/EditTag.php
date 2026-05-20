@@ -24,6 +24,6 @@ final class EditTag extends EditRecord
 
     protected function afterSave(): void
     {
-        defer(fn() => Artisan::call('app:sync-files-to-public'));
+        defer(fn () => Artisan::call('app:sync-files-to-public'));
     }
 }

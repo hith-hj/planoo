@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class syncFilesToPublic extends Command
+final class syncFilesToPublic extends Command
 {
     /**
      * The name and signature of the console command.
@@ -48,7 +51,7 @@ class syncFilesToPublic extends Command
             $this->deleteExtraFiles($source, $destination);
 
             Log::info('Images Synced');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::info('images syncing error', ['error' => $e->getMessage()]);
         }
     }
@@ -63,8 +66,8 @@ class syncFilesToPublic extends Command
                 continue;
             }
 
-            $srcPath = $src . DIRECTORY_SEPARATOR . $file;
-            $dstPath = $dst . DIRECTORY_SEPARATOR . $file;
+            $srcPath = $src.DIRECTORY_SEPARATOR.$file;
+            $dstPath = $dst.DIRECTORY_SEPARATOR.$file;
 
             if (is_dir($srcPath)) {
                 $this->recursiveCopy($srcPath, $dstPath);
@@ -85,8 +88,8 @@ class syncFilesToPublic extends Command
                 continue;
             }
 
-            $srcPath = $src . DIRECTORY_SEPARATOR . $file;
-            $dstPath = $dst . DIRECTORY_SEPARATOR . $file;
+            $srcPath = $src.DIRECTORY_SEPARATOR.$file;
+            $dstPath = $dst.DIRECTORY_SEPARATOR.$file;
 
             if (! file_exists($srcPath)) {
                 if (is_dir($dstPath)) {
@@ -106,7 +109,7 @@ class syncFilesToPublic extends Command
     {
         $items = array_diff(scandir($dir), ['.', '..']);
         foreach ($items as $item) {
-            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            $path = $dir.DIRECTORY_SEPARATOR.$item;
             is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
         }
         rmdir($dir);
