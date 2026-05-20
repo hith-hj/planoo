@@ -19,7 +19,7 @@ final class SettingsForm
                     ->unique('settings', 'name')
                     ->disabledOn(Operation::Edit),
                 TextInput::make('value'),
-                Textarea::make('description')->disabledOn(Operation::Edit),
+                Textarea::make('description'),
             ]);
     }
 }

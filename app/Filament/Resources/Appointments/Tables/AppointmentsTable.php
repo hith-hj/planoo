@@ -26,7 +26,7 @@ final class AppointmentsTable
             })
             ->columns([
                 TextColumn::make('appointable')
-                    ->state(fn ($record) => class_basename($record->appointable_type).':'.$record->holder?->name ?? 'holder deleted')
+                    ->state(fn ($record) => class_basename($record->appointable_type).':'.($record->holder?->name ?? 'deleted') )
                     ->url(function ($record) {
                         $class = mb_strtolower(class_basename($record->appointable_type));
                         $model = $record->holder;

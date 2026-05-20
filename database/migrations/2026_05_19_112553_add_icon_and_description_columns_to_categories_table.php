@@ -14,8 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->addColumn('string', 'icon')->nullable();
-            $table->addColumn('text', 'description')->nullable();
+            $table->string('icon')->nullable();
+            $table->text('description')->nullable();
         });
     }
 
@@ -25,8 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->dropColumn('icon');
-            $table->dropColumn('description');
+            $table->dropColumn(['icon', 'description']);
         });
     }
 };

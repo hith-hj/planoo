@@ -8,6 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
 use App\Filament\Resources\Activities\ActivityResource;
 use App\Filament\Resources\Courses\CourseResource;
+use App\Filament\Resources\Events\EventResource;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -18,14 +19,17 @@ final class AppointmentInfolist
         return $schema
             ->components([
                 TextEntry::make('appointable')
-                    ->state(fn ($record) => class_basename($record->appointable_type).':'.$record->holder->name)
+                    ->state(fn ($record) => class_basename($record->appointable_type).':'.($record->holder?->name ?? 'deleted') )
                     ->url(function ($record) {
                         $class = mb_strtolower(class_basename($record->appointable_type));
                         $model = $record->holder;
-
+                        if ($model === null) {
+                            return;
+                        }
                         return match ($class) {
                             'activity' => ActivityResource::getUrl('view', ['record' => $model->id]),
                             'course' => CourseResource::getUrl('view', ['record' => $model->id]),
+                            'event' => EventResource::getUrl('view', ['record' => $model->id]),
                             default => '#',
                         };
                     })
