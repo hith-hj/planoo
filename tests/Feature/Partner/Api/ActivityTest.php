@@ -66,6 +66,34 @@ describe('Activity Controller Tests', function () {
             ->and($createdActivity->medias->count())->toBe(2);
     });
 
+    it('creates a new activity without tags', function () {
+        $activityData = Activity::factory()->for($this->user, 'user')
+            ->make(['user_id' => $this->user->id])->toArray();
+
+        $days = Day::factory()->days();
+        $location = Location::factory()->make()->toArray();
+        $media = [
+            'type' => 'image',
+            'media' => Media::factory()->medias(2),
+        ];
+
+        $payload = array_merge($activityData, ['days' => $days], $location, $media);
+
+        $response = $this->postJson("{$this->url}/create", $payload)->assertOk();
+
+        expect($response->json('payload.activity'))->not->toBeNull();
+
+        $createdId = $response->json('payload.activity.id');
+        $createdActivity = Activity::with(['days', 'medias', 'location'])->find($createdId);
+
+        expect($createdActivity->days()->count())->toBe(count($days))
+            ->and($createdActivity->location)->not->toBeNull()
+            ->and($createdActivity->location->long)->toBe($location['long'])
+            ->and($createdActivity->tags)->not->toBeNull()
+            ->and($createdActivity->medias)->not->toBeNull()
+            ->and($createdActivity->medias->count())->toBe(2);
+    });
+
     it('fails to create an activity with invalid data', function () {
         $this->postJson("{$this->url}/create", [])->assertStatus(422);
     });

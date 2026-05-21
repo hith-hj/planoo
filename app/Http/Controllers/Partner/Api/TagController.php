@@ -25,10 +25,12 @@ final class TagController extends Controller
     public function create(Request $request)
     {
         $validator = TagValidators::create($request->all());
-        $this->services->create(
-            getModel(),
-            $validator->safe()->all()
-        );
+        if ($request->filled('tags')) {
+            $this->services->create(
+                getModel(),
+                $validator->safe()->all()
+            );
+        }
 
         return Success('tag assigend');
     }

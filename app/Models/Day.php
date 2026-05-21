@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -22,6 +23,13 @@ final class Day extends Model
         return [
             'is_active' => 'bool',
         ];
+    }
+
+    protected function fullSessionLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->day." [ {$this->start} - {$this->end} ]",
+        );
     }
 
     public function holder(): MorphTo

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum WeekDays
+enum WeekDays: string
 {
-    case saturday;
-    case sunday;
-    case monday;
-    case tuesday;
-    case wednesday;
-    case thursday;
-    case friday;
+    case saturday = 'saturday';
+    case sunday = 'sunday';
+    case monday = 'monday';
+    case tuesday = 'tuesday';
+    case wednesday = 'wednesday';
+    case thursday = 'thursday';
+    case friday = 'friday';
 
     public static function names(): array
     {
@@ -21,6 +21,6 @@ enum WeekDays
 
     public static function values()
     {
-        return self::names();
+        return array_column(self::cases(), 'value');
     }
 }
