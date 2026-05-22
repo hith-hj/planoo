@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Courses\Tables;
 
 use App\Enums\CourseDuration;
-use App\Enums\SessionDuration;
 use App\Filament\Resources\Users\UserResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\ViewAction;

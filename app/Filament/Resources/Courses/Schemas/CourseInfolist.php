@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Courses\Schemas;
 
-use App\Enums\SessionDuration;
 use App\Filament\Resources\Users\UserResource;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
