@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use App\Enums\CourseDuration;
-use App\Enums\SessionDuration;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -28,7 +27,6 @@ final class CourseValidators extends Validators
             'name' => ['required', 'string'],
             'description' => ['required', 'string', 'max:1500'],
             'price' => ['required', 'numeric', 'min:1'],
-            'session_duration' => ['required', 'numeric', new Enum(SessionDuration::class)],
             'course_duration' => ['required', 'numeric', new Enum(CourseDuration::class)],
             'capacity' => ['required', 'numeric', 'min:1', "max:{$maxCapacity}"],
             'cancellation_fee' => ['nullable', 'numeric', 'min:1'],

@@ -35,9 +35,6 @@ final class CourseForm
                     ->required()
                     ->numeric()
                     ->prefix('$'),
-                TextInput::make('session_duration')
-                    ->required()
-                    ->numeric(),
                 TextInput::make('course_duration')
                     ->required()
                     ->numeric(),

@@ -8,29 +8,42 @@ use App\Enums\AppointmentStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Appointment;
 use App\Models\Course;
+use App\Models\Day;
 use App\Services\AppointmentServices;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 final class NotifyCourseCustomer extends Command
 {
-    // app:notifiy-course-customer-session
-    protected $signature = 'app:nccs';
+    protected $signature = 'app:nccs {date? : The target processing date (YYYY-MM-DD)}';
 
     protected $description = 'Notify course customers about upcoming sessions';
 
     public function handle(): void
     {
-        $now = Carbon::now();
-        $dayName = mb_strtolower($now->format('l'));
-        $date = $now->toDateString();
+        $argumentDate = $this->argument('date');
+
+        if ($argumentDate) {
+            $targetDate = Carbon::parse($argumentDate);
+        } else {
+            $daysInFuture = (int) Setting('days_before_course_appointment', 0);
+            $targetDate = Carbon::now()->addDays($daysInFuture);
+        }
+
+        $dayName = mb_strtolower($targetDate->format('l'));
+        $dateString = $targetDate->toDateString();
 
         $courses = Course::with([
             'user:id',
             'customers' => fn (BelongsToMany $query) => $query->where('is_complete', false),
             'days',
-        ])->lazy();
+        ])
+            ->whereHas('days', fn ($query) => $query->where('day', $dayName))
+            ->lazy();
+
+        $appointmentService = app(AppointmentServices::class);
 
         foreach ($courses as $course) {
             $day = $course->days->firstWhere('day', $dayName);
@@ -38,51 +51,66 @@ final class NotifyCourseCustomer extends Command
                 continue;
             }
 
-            $this->handleAppointmentConflict($date, $day->start, $course);
-            $data = [
-                'date' => $date,
-                'time' => $day->start,
-                'session_duration' => $course->session_duration,
-                'price' => ceil($course->price / $course->course_duration),
-                'notes' => 'course session',
-            ];
-            app(AppointmentServices::class)->create(owner: $course, data: $data);
+            DB::transaction(function () use ($course, $day, $dateString, $appointmentService) {
+                $sessionDuration = $this->calculateSessionDurationFromDay($day);
 
-            $course->user->notify(...$this->session($course, $day));
+                $this->handleAppointmentConflict($dateString, $day->start, $course, $sessionDuration, $appointmentService);
 
-            foreach ($course->customers as $customer) {
-                $remaining = $customer->pivot->remaining_sessions;
-
-                if ($remaining === 0 || (bool) $customer->pivot->is_complete === true) {
-                    continue;
-                }
-
-                $isComplete = $remaining === 1;
-
-                $customer->pivot->update([
-                    'remaining_sessions' => $remaining - 1,
-                    'is_complete' => $isComplete,
+                $appointmentService->create(owner: $course, data: [
+                    'date' => $dateString,
+                    'time' => $day->start,
+                    'session_duration' => $sessionDuration,
+                    'price' => ceil($course->price / $course->course_duration),
+                    'notes' => 'course session',
                 ]);
 
-                $customer->notify(...$this->session($course, $day));
+                $course->user->notify(...$this->session($course, $day, $dateString));
 
-                if ($isComplete) {
-                    $customer->notify(...$this->finish($course));
+                foreach ($course->customers as $customer) {
+                    $pivot = $customer->pivot;
+                    $remaining = $pivot->remaining_sessions;
+
+                    if ($remaining <= 0 || (bool) $pivot->is_complete === true) {
+                        continue;
+                    }
+
+                    $newRemaining = $remaining - 1;
+                    $isComplete = ($newRemaining === 0);
+
+                    $pivot->update([
+                        'remaining_sessions' => $newRemaining,
+                        'is_complete' => $isComplete,
+                    ]);
+
+                    $customer->notify(...$this->session($course, $day, $dateString));
+
+                    if ($isComplete) {
+                        $customer->notify(...$this->finish($course));
+                    }
                 }
-            }
+            });
         }
 
-        $this->info('Customers notified for the upcoming session.');
+        $this->info("Customers notified for sessions scheduled on {$dateString}.");
     }
 
-    private function handleAppointmentConflict(string $date, string $time, Course $course): void
+    private function calculateSessionDurationFromDay(Day $day): int
     {
-        $appointment = app(AppointmentServices::class)
-            ->getAppointmentIfExists([
-                'date' => $date,
-                'session_duration' => $course->session_duration,
-                'time' => $time,
-            ]);
+        return (int) Carbon::parse($day->start)->diffInMinutes(Carbon::parse($day->end));
+    }
+
+    private function handleAppointmentConflict(
+        string $date,
+        string $time,
+        Course $course,
+        int $session_duration,
+        AppointmentServices $appointmentService
+    ): void {
+        $appointment = $appointmentService->getAppointmentIfExists([
+            'date' => $date,
+            'session_duration' => $session_duration,
+            'time' => $time,
+        ]);
 
         if (! $appointment) {
             return;
@@ -96,11 +124,13 @@ final class NotifyCourseCustomer extends Command
         $appointment->holder->user->notify(...$this->conflict($course, $appointment));
     }
 
-    private function session(Course $course, $day): array
+    private function session(Course $course, Day $day, string $dateString): array
     {
+        $dayLabel = $dateString === Carbon::now()->toDateString() ? 'today' : "on {$dateString}";
+
         return [
             'Course Session',
-            "You have a {$course->name} session today at {$day->start}.",
+            "You have a {$course->name} session {$dayLabel} at {$day->start}.",
             ['type' => NotificationTypes::session->value, 'course' => $course->id],
         ];
     }
@@ -114,7 +144,7 @@ final class NotifyCourseCustomer extends Command
         ];
     }
 
-    private function conflict(Course $course, Appointment $appointment)
+    private function conflict(Course $course, Appointment $appointment): array
     {
         return [
             'Schedule Error',

@@ -22,7 +22,6 @@ return new class extends Migration
         Schema::table('courses', function (Blueprint $table) {
             $table->index(['is_active', 'is_full', 'category_id', 'rate']);
             $table->index(['is_active', 'is_full', 'category_id', 'price']);
-            $table->index(['is_active', 'is_full', 'session_duration']);
             $table->index(['is_active', 'is_full', 'course_duration']);
         });
 
@@ -47,7 +46,6 @@ return new class extends Migration
         Schema::table('courses', function (Blueprint $table) {
             $table->dropIndex(['is_active', 'is_full', 'category_id', 'rate']);
             $table->dropIndex(['is_active', 'is_full', 'category_id', 'price']);
-            $table->dropIndex(['is_active', 'is_full', 'session_duration']);
             $table->dropIndex(['is_active', 'is_full', 'course_duration']);
         });
 

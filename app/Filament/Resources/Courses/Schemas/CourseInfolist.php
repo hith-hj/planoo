@@ -28,8 +28,6 @@ final class CourseInfolist
                     ->boolean(),
                 TextEntry::make('price')
                     ->money('syp'),
-                TextEntry::make('session_duration')
-                    ->formatStateUsing(fn ($state) => SessionDuration::from($state)->name),
                 TextEntry::make('course_duration')
                     ->numeric()
                     ->suffix('days'),

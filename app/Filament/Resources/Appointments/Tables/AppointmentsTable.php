@@ -26,7 +26,7 @@ final class AppointmentsTable
             })
             ->columns([
                 TextColumn::make('appointable')
-                    ->state(fn ($record) => class_basename($record->appointable_type).':'.($record->holder?->name ?? 'deleted'))
+                    ->state(fn($record) => class_basename($record->appointable_type) . ':' . ($record->holder?->name ?? 'deleted'))
                     ->url(function ($record) {
                         $class = mb_strtolower(class_basename($record->appointable_type));
                         $model = $record->holder;
@@ -54,11 +54,11 @@ final class AppointmentsTable
                     ->money('syp')
                     ->sortable(),
                 TextColumn::make('session_duration')
-                    ->formatStateUsing(fn ($state) => SessionDuration::from($state)->name)
+                    ->formatStateUsing(fn($state) => SessionDuration::tryFrom($state)->name ?? $state)
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => AppointmentStatus::from($state)->name)
+                    ->formatStateUsing(fn($state) => AppointmentStatus::tryFrom($state)->name ?? $state)
                     ->sortable(),
                 TextColumn::make('notes')
                     ->limit(20)

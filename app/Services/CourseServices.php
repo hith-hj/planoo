@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Enums\CourseDuration;
 use App\Enums\NotificationTypes;
-use App\Enums\SessionDuration;
 use App\Models\Course;
 use App\Models\Customer;
 use App\Models\User;
@@ -30,7 +29,6 @@ final class CourseServices
         $this->applyFilters($query, $filters, [
             'is_active' => [true, false],
             'is_full' => [true, false],
-            'session_duration' => SessionDuration::values(),
             'course_duration' => CourseDuration::values(),
             'category_id' => [],
         ]);

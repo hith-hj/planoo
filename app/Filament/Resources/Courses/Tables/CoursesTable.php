@@ -34,11 +34,8 @@ final class CoursesTable
                 TextColumn::make('price')
                     ->money('syp')
                     ->sortable(),
-                TextColumn::make('session_duration')
-                    ->formatStateUsing(fn ($state) => SessionDuration::from($state)->name)
-                    ->sortable(),
                 TextColumn::make('course_duration')
-                    ->formatStateUsing(fn ($state) => CourseDuration::from($state)->name)
+                    ->formatStateUsing(fn ($state) => CourseDuration::from($state)->name.' days')
                     ->sortable(),
                 TextColumn::make('capacity')
                     ->numeric()
