@@ -60,7 +60,7 @@ final class EventFactory extends Factory
             $event->category()->associate(Category::inRandomOrder()->first())->save();
             $event->tags()->attach(Tag::inRandomOrder()->take(2)->get());
             $event->days()->create([
-                'day' => Carbon::createFromDate($event->start_date)->format('l'),
+                'day' => mb_strtolower(Carbon::createFromDate($event->start_date)->format('l')),
                 'start' => '06:00',
                 'end' => '10:00',
             ]);

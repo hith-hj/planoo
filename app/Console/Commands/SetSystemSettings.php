@@ -47,28 +47,42 @@ final class SetSystemSettings extends Command
         }
 
         $this->bulkSeeding();
-        $this->info('Finished inserting.');
+        $this->info('Finished processing settings.');
     }
 
     private function bulkSeeding(): void
     {
-        $this->info('Checking if settings exist...');
+        $this->info('Checking system settings...');
 
-        if (Setting::exists()) {
-            $this->info('Settings are already inserted.');
+        if ($this->option('force')) {
+            $this->warn('Force detected. Overwriting settings back to defaults...');
+            Setting::upsert($this->systemSettings(), ['name'], ['value', 'description']);
 
-            if (! $this->option('force')) {
-                $this->warn('Execution stopped. Use --force to overwrite or append.');
-
-                return;
-            }
-
-            $this->warn('Force flag detected. Proceeding...');
+            return;
         }
 
-        $this->info('Inserting system settings into the database...');
+        $insertedCount = 0;
+        foreach ($this->systemSettings() as $defaultSetting) {
+            $setting = Setting::firstOrCreate(
+                ['name' => $defaultSetting['name']],
+                [
+                    'value' => $defaultSetting['value'],
+                    'description' => $defaultSetting['description'],
+                ]
+            );
 
-        Setting::upsert($this->systemSettings(), ['name'], ['value', 'description']);
+            if ($setting->wasRecentlyCreated) {
+                $insertedCount++;
+                $this->line("Added missing setting: <info>{$defaultSetting['name']}</info>");
+            }
+        }
+
+        if ($insertedCount === 0) {
+            $this->info('All settings already exist. No modifications made to your database.');
+            $this->comment('Tip: Use --force if you want to explicitly overwrite data back to defaults.');
+        } else {
+            $this->info("Successfully added {$insertedCount} missing settings.");
+        }
     }
 
     private function systemSettings(): array
@@ -78,6 +92,21 @@ final class SetSystemSettings extends Command
                 'name' => 'course_cancelation_period',
                 'value' => '24',
                 'description' => 'The period after which course cancelation is not allowed (number in hours)',
+            ],
+            [
+                'name' => 'days_before_course_appointment',
+                'value' => '0',
+                'description' => 'This controll when the appointment of the course is created',
+            ],
+            [
+                'name' => 'days_before_event_appointment',
+                'value' => '0',
+                'description' => 'This controll when the appointment of the event is created',
+            ],
+            [
+                'name' => 'days_before_event_start',
+                'value' => '0',
+                'description' => 'This controll when the event starting notification is sent',
             ],
             [
                 'name' => 'appointment_cancelation_period',

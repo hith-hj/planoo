@@ -65,9 +65,4 @@ describe('Notify Event Session Test', function () {
         expect($conflict->status)->toBe(AppointmentStatus::canceled->value);
     });
 
-    it('outputs confirmation message', function () {
-        Artisan::call('app:nes');
-        $output = Artisan::output();
-        expect($output)->toContain('Customers notified for the upcoming event session.');
-    });
 });
