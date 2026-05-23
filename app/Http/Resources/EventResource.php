@@ -48,16 +48,22 @@ final class EventResource extends JsonResource
 
         return [
             'customers' => $this->when(
-                $isOwner,
-                CustomerResource::collection($this->whenLoaded('customers'))
+                $isOwner && $this->relationLoaded('customers'),
+                fn() => $this->customers->map(function ($customer) {
+                    return [
+                        'name' => $customer->name,
+                        'remaining_sessions' => $customer->pivot->remaining_sessions,
+                        'is_complete' => $customer->pivot->is_complete,
+                    ];
+                })
             ),
-            'is_favorite' => (bool) $this->when(
-                ! $isOwner && $isCustomer,
-                count($this->whenLoaded('isFavorite', default: []))
+            'is_favorite' => $this->when(
+                ! $isOwner && $isCustomer && $this->relationLoaded('isFavorite'),
+                fn() => (bool) count($this->isFavorite)
             ),
-            'is_attending' => (bool) $this->when(
-                ! $isOwner && $isCustomer,
-                count($this->whenLoaded('isAttending', default: []))
+            'is_attending' => $this->when(
+                ! $isOwner && $isCustomer && $this->relationLoaded('isAttending'),
+                fn() => (bool) count($this->isAttending)
             ),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
