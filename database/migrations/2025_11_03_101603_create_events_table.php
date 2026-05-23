@@ -31,6 +31,9 @@ return new class extends Migration
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->timestamps();
+            $table->index(['is_active', 'is_full', 'category_id', 'rate']);
+            $table->index(['is_active', 'is_full', 'category_id', 'admission_fee']);
+            $table->index(['is_active', 'is_full', 'start_date']);
         });
 
         Schema::create('customer_event', function (Blueprint $table) {

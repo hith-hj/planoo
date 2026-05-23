@@ -26,6 +26,9 @@ return new class extends Migration
             $table->boolean('is_active');
             $table->integer('rate')->default(0);
             $table->timestamps();
+            $table->index(['is_active', 'category_id', 'rate']);
+            $table->index(['is_active', 'category_id', 'price']);
+            $table->index('session_duration');
         });
     }
 
