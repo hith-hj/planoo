@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\CourseDuration;
+use App\Enums\CourseStatus;
 use App\Models\Appointment;
 use App\Models\Category;
 use App\Models\Course;
@@ -14,6 +15,7 @@ use App\Models\Location;
 use App\Models\Media;
 use App\Models\Review;
 use App\Models\Tag;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,6 +25,10 @@ final class CourseFactory extends Factory
 {
     public function definition(): array
     {
+        $duration = fake()->randomElement(CourseDuration::values());
+        $cpacity = random_int(5, 15);
+        $start_date = today()->addDays($duration * 2)->toDateString();
+
         return [
             'user_id' => 1,
             'category_id' => 1,
@@ -31,9 +37,11 @@ final class CourseFactory extends Factory
             'is_active' => 1,
             'is_full' => false,
             'price' => random_int(1000, 10000),
-            'course_duration' => fake()->randomElement(CourseDuration::values()),
-            'capacity' => random_int(1, 30),
+            'course_duration' => $duration,
+            'capacity' => $cpacity,
+            'start_date' => $start_date,
             'cancellation_fee' => fake()->optional()->numberBetween(1000, 5000),
+            'status' => CourseStatus::pending->value,
             'rate' => 0,
         ];
     }

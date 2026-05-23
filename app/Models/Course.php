@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\CourseStatus;
 use App\Interfaces\Dayable;
 use App\Interfaces\Locatable;
 use App\Interfaces\Mediable;
@@ -35,6 +36,7 @@ final class Course extends Model implements Dayable, Locatable, Mediable, Review
         'is_active' => true,
         'is_full' => false,
         'rate' => 0,
+        'status' => CourseStatus::pending->value,
     ];
 
     protected function casts(): array

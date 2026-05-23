@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Enums\CourseStatus;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -21,34 +22,42 @@ final class CourseResource extends JsonResource
             'is_active' => $this->is_active,
             'price' => $this->price,
             'is_full' => $this->is_full,
-            'session_duration' => $this->session_duration,
             'course_duration' => $this->course_duration,
             'capacity' => $this->capacity,
             'cancellation_fee' => $this->cancellation_fee,
+            'start_date' => $this->start_date,
+            'status' => CourseStatus::from($this->status)->name,
             'rate' => $this->rate,
-            ...$this->exrtas(),
+            ...$this->extras(),
         ];
     }
 
-    private function exrtas(): array
+    private function extras(): array
     {
-        $isOwner = Auth::id() === $this->user_id;
-        $isCustomer = Auth::user() instanceof Customer;
+        $user = Auth::user();
+        $isOwner = $user?->id === $this->user_id;
+        $isCustomer = $user instanceof Customer;
 
         return [
             'customers' => $this->when(
-                $isOwner,
-                CustomerResource::collection($this->whenLoaded('customers'))
+                $isOwner && $this->relationLoaded('customers'),
+                fn() => $this->customers->map(function ($customer) {
+                    return [
+                        'name' => $customer->name,
+                        'remaining_sessions' => $customer->pivot->remaining_sessions,
+                        'is_complete' => $customer->pivot->is_complete,
+                    ];
+                })
             ),
-            'is_favorite' => (bool) $this->when(
-                ! $isOwner && $isCustomer,
-                count($this->whenLoaded('isFavorite', default: []))
+            'is_favorite' => $this->when(
+                ! $isOwner && $isCustomer && $this->relationLoaded('isFavorite'),
+                fn() => (bool) count($this->isFavorite)
             ),
-            'is_attending' => (bool) $this->when(
-                ! $isOwner && $isCustomer,
-                count($this->whenLoaded('isAttending', default: []))
+            'is_attending' => $this->when(
+                ! $isOwner && $isCustomer && $this->relationLoaded('isAttending'),
+                fn() => (bool) count($this->isAttending)
             ),
-            'details' => $this->when($isOwner, $this->whenLoaded('pivot')),
+            'details' => $this->when($isOwner && $this->relationLoaded('pivot'), fn() => $this->pivot),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'location' => LocationResource::make($this->whenLoaded('location')),
