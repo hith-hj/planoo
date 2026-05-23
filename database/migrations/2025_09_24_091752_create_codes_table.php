@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->morphs('belongTo');
             $table->string('type');
-            $table->string('code');
+            $table->string('code')->unique();
             $table->timestamp('expire_at')->nullable();
             $table->timestamps();
         });

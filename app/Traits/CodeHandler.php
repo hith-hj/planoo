@@ -8,6 +8,7 @@ use App\Models\Code;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 
 trait CodeHandler
@@ -50,18 +51,36 @@ trait CodeHandler
     ): Code {
         $query = $this->codes() instanceof Builder ?
             $this->codes()->withAttributes([
-                'belongTo_id' => $this->number(),
+                'belongTo_id' => str()->random(8),
                 'belongTo_type' => $this::class,
             ]) :
             $this->codes();
 
-        return $query->updateOrCreate(
-            ['type' => $type],
-            [
-                'code' => $this->generate($type, $length),
-                'expire_at' => $this->expireAt($timeToExpire),
-            ]
-        );
+        $maxAttempts = Setting('max_code_generation_attempts',5);
+        $attempt = 0;
+        while ($attempt < $maxAttempts) {
+            try {
+                $attempt++;
+
+                return $query->updateOrCreate(
+                    ['type' => $type],
+                    [
+                        'code' => $this->generate($type, $length),
+                        'expire_at' => $this->expireAt($timeToExpire),
+                    ]
+                );
+            } catch (QueryException $e) {
+                $isUniqueViolation = in_array($e->getCode(), [23000, 23005])
+                    || str_contains($e->getMessage(), 'Integrity constraint violation');
+
+                if ($isUniqueViolation && $attempt < $maxAttempts) {
+                    continue;
+                }
+                throw $e;
+            }
+        }
+
+        Truthy(true, "Could not generate a unique code after {$maxAttempts} attempts.");
     }
 
     /**
@@ -73,9 +92,7 @@ trait CodeHandler
             return $param->delete();
         }
 
-        $query = $this->codes()
-            ->where('type', $param)
-            ->orWhere('id', $param);
+        $query = $this->codes()->where('type', $param)->orWhere('id', $param);
         if ($query->exists()) {
             return $query->delete();
         }
@@ -83,29 +100,26 @@ trait CodeHandler
         return false;
     }
 
-    private function generate(string $type, int $length): int
-    {
-        $query = $this->codes();
-        for ($i = 0; $i < 10; $i++) {
-            $code = $this->number($length);
-            if (
-                mb_strlen((string) $code) === $length &&
-                ! $query->where([['type', $type], ['code', $code]])->exists()
-            ) {
-                break;
-            }
-        }
-
-        return (int) $code;
-    }
-
-    private function number(int $length = 5): int
+    private function generate(string $type, int $length = 6)
     {
         Truthy($length <= 3, 'min code Length is 3.');
         $min = (int) pow(10, $length - 1);
-        $max = (int) (pow(10, $length) - 1);
+        $max = (int) pow(10, $length) - 1;
 
-        return random_int($min, $max);
+        $existingCodes = $this->codes()
+            ->where('type', $type)
+            ->pluck('code')
+            ->toArray();
+
+        for ($i = 0; $i < 100; $i++) {
+            $code = random_int($min, $max);
+
+            if (! in_array($code, $existingCodes, true)) {
+                return $code;
+            }
+        }
+
+        Truthy(true, "Failed to generate a unique {$length}-digit code after 100 attempts");
     }
 
     private function expireAt(?string $timeToExpire): Carbon
@@ -117,7 +131,6 @@ trait CodeHandler
         if (! in_array($unit, ['s', 'm', 'h', 'd'])) {
             return now();
         }
-
         $units = ['s' => 'second', 'm' => 'minute', 'h' => 'hour', 'd' => 'day'];
 
         return now()->add((string) $units[$unit], (int) $value);
