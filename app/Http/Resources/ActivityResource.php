@@ -27,20 +27,20 @@ final class ActivityResource extends JsonResource
             'price' => $this->price,
             'session_duration' => $this->session_duration,
             'rate' => $this->rate,
-            ...$this->exrtas(),
+            ...$this->extras(),
         ];
     }
 
-    private function exrtas(): array
+    private function extras(): array
     {
         $isOwner = Auth::id() === $this->user_id;
         $isCustomer = Auth::user() instanceof Customer;
 
         return [
             'details' => $this->when($isOwner, $this->whenLoaded('pivot')),
-            'is_favorite' => (bool) $this->when(
-                ! $isOwner && $isCustomer,
-                count($this->whenLoaded('isFavorite', default: []))
+            'is_favorite' => $this->when(
+                ! $isOwner && $isCustomer && $this->relationLoaded('isFavorite'),
+                fn() => (bool) count($this->isFavorite)
             ),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),

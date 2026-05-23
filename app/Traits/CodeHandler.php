@@ -56,7 +56,7 @@ trait CodeHandler
             ]) :
             $this->codes();
 
-        $maxAttempts = Setting('max_code_generation_attempts',5);
+        $maxAttempts = Setting('max_code_generation_attempts', 5);
         $attempt = 0;
         while ($attempt < $maxAttempts) {
             try {
