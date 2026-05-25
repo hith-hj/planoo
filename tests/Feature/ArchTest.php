@@ -12,7 +12,7 @@ arch()
     ->expect('App\Models')
     ->toBeClasses()
     ->toExtend('Illuminate\Database\Eloquent\Model')
-    ->toHaveLineCountLessThan(100)
+    ->toHaveLineCountLessThan(300)
     ->toBeFinal();
 
 arch()

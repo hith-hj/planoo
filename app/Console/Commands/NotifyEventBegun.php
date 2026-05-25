@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-final class NotifyEventStart extends Command
+final class NotifyEventBegun extends Command
 {
     // app:notifiy-event-start
     protected $signature = 'app:neb {date? : the target date }';

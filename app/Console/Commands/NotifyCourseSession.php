@@ -15,9 +15,9 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 
-final class NotifyCourseCustomer extends Command
+final class NotifyCourseSession extends Command
 {
-    protected $signature = 'app:nccs {date? : The target processing date (YYYY-MM-DD)}';
+    protected $signature = 'app:ncs {date? : The target processing date (YYYY-MM-DD)}';
 
     protected $description = 'Notify course customers about upcoming sessions';
 
@@ -35,7 +35,7 @@ final class NotifyCourseCustomer extends Command
         $dayName = mb_strtolower($targetDate->format('l'));
         $dateString = $targetDate->toDateString();
 
-        $courses = Course::with([
+        $courses = Course::active()->with([
             'user:id',
             'customers' => fn (BelongsToMany $query) => $query->where('is_complete', false),
             'days',
@@ -54,7 +54,13 @@ final class NotifyCourseCustomer extends Command
             DB::transaction(function () use ($course, $day, $dateString, $appointmentService) {
                 $sessionDuration = $this->calculateSessionDurationFromDay($day);
 
-                $this->handleAppointmentConflict($dateString, $day->start, $course, $sessionDuration, $appointmentService);
+                $this->handleAppointmentConflict(
+                    $dateString,
+                    $day->start,
+                    $course,
+                    $sessionDuration,
+                    $appointmentService
+                );
 
                 $appointmentService->create(owner: $course, data: [
                     'date' => $dateString,

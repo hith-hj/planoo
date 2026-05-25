@@ -94,19 +94,24 @@ final class SetSystemSettings extends Command
                 'description' => 'The period after which course cancelation is not allowed (number in hours)',
             ],
             [
+                'name' => 'days_before_course_start',
+                'value' => '0',
+                'description' => 'This controll when the course starting notification is sent',
+            ],
+            [
                 'name' => 'days_before_course_appointment',
                 'value' => '0',
                 'description' => 'This controll when the appointment of the course is created',
             ],
             [
-                'name' => 'days_before_event_appointment',
-                'value' => '0',
-                'description' => 'This controll when the appointment of the event is created',
-            ],
-            [
                 'name' => 'days_before_event_start',
                 'value' => '0',
                 'description' => 'This controll when the event starting notification is sent',
+            ],
+            [
+                'name' => 'days_before_event_appointment',
+                'value' => '0',
+                'description' => 'This controll when the appointment of the event is created',
             ],
             [
                 'name' => 'appointment_cancelation_period',
