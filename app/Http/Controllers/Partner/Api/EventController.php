@@ -46,6 +46,7 @@ final class EventController extends Controller
         app(LocationController::class)->create($request);
         app(TagController::class)->create($request);
         app(MediaController::class)->create($request);
+        $this->services->calculateEventEndDate($event);
 
         return Success(payload: ['event' => $event->toResource()]);
     }

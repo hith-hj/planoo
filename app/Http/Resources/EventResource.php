@@ -52,8 +52,6 @@ final class EventResource extends JsonResource
                 fn() => $this->customers->map(function ($customer) {
                     return [
                         'name' => $customer->name,
-                        'remaining_sessions' => $customer->pivot->remaining_sessions,
-                        'is_complete' => $customer->pivot->is_complete,
                     ];
                 })
             ),

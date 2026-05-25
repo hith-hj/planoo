@@ -151,6 +151,75 @@ final class EventServices
         return $event;
     }
 
+    public function calculateEventEndDate(Event $event): array|bool
+    {
+        $event = $event->load('days');
+        $totalSessionsRequired = (int) $event->event_duration;
+        $weeklySchedule = $event->days;
+        $currentDate = Carbon::parse($event->start_date);
+        $dayMapping =
+        [
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+            'sunday' => 7,
+        ];
+        $processedSchedule = [];
+        foreach ($weeklySchedule as $session) {
+            $dayNum = $dayMapping[mb_strtolower($session['day'])];
+            $processedSchedule[$dayNum] = [
+                'day' => $session['day'],
+                'start' => $session['start'],
+                'end' => $session['end'],
+                'is_overnight' => strcmp($session['end'], $session['start']) < 0,
+            ];
+        }
+        ksort($processedSchedule);
+
+        $generatedSessions = [];
+        $maxIterations = $totalSessionsRequired * 7;
+        $iterations = 0;
+
+        while (count($generatedSessions) < $totalSessionsRequired && $iterations < $maxIterations) {
+            $iterations++;
+            $currentDayOfWeek = $currentDate->dayOfWeekIso;
+
+            // Check if today matches a day in our schedule
+            if (isset($processedSchedule[$currentDayOfWeek])) {
+                $session = $processedSchedule[$currentDayOfWeek];
+                $dateStr = $currentDate->toDateString();
+
+                // Handle midnight rollover
+                $endDateStr = $dateStr;
+                if ($session['is_overnight']) {
+                    $endDateStr = $currentDate->copy()->addDay()->toDateString();
+                }
+
+                $generatedSessions[] = [
+                    'session_number' => count($generatedSessions) + 1,
+                    'day_of_week' => $session['day'],
+                    'start_date' => $dateStr,
+                    'start_time' => $session['start'].':00',
+                    'end_date' => $endDateStr,
+                    'end_time' => $session['end'].':00',
+                ];
+            }
+
+            // increment daays
+            $currentDate->addDay();
+        }
+
+        $data['processed_sessions'] = $generatedSessions;
+        $data['start_date'] = $generatedSessions[0]['start_date'] ?? null;
+        $data['end_date'] = end($generatedSessions)['end_date'] ?? null;
+        $data['event_duration'] = count($generatedSessions);
+
+        return $event->update(['end_date'=>$data['end_date']]);
+    }
+
     private function toBeLoaded()
     {
         return ['days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers'];
@@ -187,5 +256,15 @@ final class EventServices
         $data['end_date'] = $end_date;
 
         return $data;
+    }
+
+    private function getDaysOfWeek(Collection $eventDays): array
+    {
+        $days = [];
+        foreach ($eventDays as $day) {
+            $days[] = $day->day;
+        }
+
+        return $days;
     }
 }
