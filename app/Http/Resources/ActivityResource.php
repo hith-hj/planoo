@@ -40,7 +40,7 @@ final class ActivityResource extends JsonResource
             'details' => $this->when($isOwner, $this->whenLoaded('pivot')),
             'is_favorite' => $this->when(
                 ! $isOwner && $isCustomer && $this->relationLoaded('isFavorite'),
-                fn() => (bool) count($this->isFavorite)
+                fn () => (bool) count($this->isFavorite)
             ),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),

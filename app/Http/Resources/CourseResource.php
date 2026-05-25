@@ -41,7 +41,7 @@ final class CourseResource extends JsonResource
         return [
             'customers' => $this->when(
                 $isOwner && $this->relationLoaded('customers'),
-                fn() => $this->customers->map(function ($customer) {
+                fn () => $this->customers->map(function ($customer) {
                     return [
                         'name' => $customer->name,
                         'remaining_sessions' => $customer->pivot->remaining_sessions,
@@ -51,13 +51,13 @@ final class CourseResource extends JsonResource
             ),
             'is_favorite' => $this->when(
                 ! $isOwner && $isCustomer && $this->relationLoaded('isFavorite'),
-                fn() => (bool) count($this->isFavorite)
+                fn () => (bool) count($this->isFavorite)
             ),
             'is_attending' => $this->when(
                 ! $isOwner && $isCustomer && $this->relationLoaded('isAttending'),
-                fn() => (bool) count($this->isAttending)
+                fn () => (bool) count($this->isAttending)
             ),
-            'details' => $this->when($isOwner && $this->relationLoaded('pivot'), fn() => $this->pivot),
+            'details' => $this->when($isOwner && $this->relationLoaded('pivot'), fn () => $this->pivot),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'location' => LocationResource::make($this->whenLoaded('location')),

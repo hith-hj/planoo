@@ -217,7 +217,7 @@ final class EventServices
         $data['end_date'] = end($generatedSessions)['end_date'] ?? null;
         $data['event_duration'] = count($generatedSessions);
 
-        return $event->update(['end_date'=>$data['end_date']]);
+        return $event->update(['end_date' => $data['end_date']]);
     }
 
     private function toBeLoaded()

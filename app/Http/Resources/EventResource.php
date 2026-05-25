@@ -49,7 +49,7 @@ final class EventResource extends JsonResource
         return [
             'customers' => $this->when(
                 $isOwner && $this->relationLoaded('customers'),
-                fn() => $this->customers->map(function ($customer) {
+                fn () => $this->customers->map(function ($customer) {
                     return [
                         'name' => $customer->name,
                     ];
@@ -57,11 +57,11 @@ final class EventResource extends JsonResource
             ),
             'is_favorite' => $this->when(
                 ! $isOwner && $isCustomer && $this->relationLoaded('isFavorite'),
-                fn() => (bool) count($this->isFavorite)
+                fn () => (bool) count($this->isFavorite)
             ),
             'is_attending' => $this->when(
                 ! $isOwner && $isCustomer && $this->relationLoaded('isAttending'),
-                fn() => (bool) count($this->isAttending)
+                fn () => (bool) count($this->isAttending)
             ),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
