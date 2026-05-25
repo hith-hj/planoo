@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\CourseStatus;
 use App\Models\Course;
 use App\Models\Customer;
 use App\Models\Day;
@@ -123,6 +124,18 @@ describe('Course Controller Tests', function () {
         $customer = Customer::where('phone', '0987654321')->first();
         $customerCourse = $course->customers()->wherePivot('customer_id', $customer->id)->first();
         expect($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
+    });
+
+    it('can attend customer by id for course after course started', function () {
+        $course = Course::factory()->for($this->user, 'user')->create([
+            'start_date' => today()->subDays(2),
+            'status'=>CourseStatus::active->value
+        ]);
+        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => 1]);
+        $res->assertOk();
+        $customerCourse = $course->customers()->wherePivot('customer_id', 1)->first();
+        expect($customerCourse->pivot->remaining_sessions)
+            ->toBe($course->course_duration - $course->appointments()->count());
     });
 
     it('can not attend full course', function () {

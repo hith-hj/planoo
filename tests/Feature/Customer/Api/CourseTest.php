@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\CourseStatus;
 use App\Models\Course;
 
 beforeEach(function () {
@@ -50,6 +51,18 @@ describe('Course Controller Tests', function () {
         $customerCourse = $this->user->courses()->wherePivot('course_id', $course->id)->first();
         expect($this->user->courses()->count())->toBe(1)
             ->and($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
+    });
+
+    it('can attend course after starting', function () {
+        $course = Course::factory()->create([
+            'start_date' => today()->subDays(2),
+            'status'=>CourseStatus::active->value
+        ]);
+        $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
+        $customerCourse = $this->user->courses()->wherePivot('course_id', $course->id)->first();
+        expect($this->user->courses()->count())->toBe(1)
+            ->and($customerCourse->pivot->remaining_sessions)
+            ->toBe($course->course_duration - $course->appointments()->count());
     });
 
     it('can not attend full course', function () {

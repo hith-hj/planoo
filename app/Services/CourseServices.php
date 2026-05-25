@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\CourseDuration;
+use App\Enums\CourseStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Course;
 use App\Models\Customer;
 use App\Models\User;
 use App\Traits\Filters;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -115,11 +117,26 @@ final class CourseServices
         Required($course, 'course');
         Truthy($this->isAttending($customer, $course), 'already attending this course.');
         Truthy($course->is_full, 'course is full');
+        Truthy(
+            ! in_array($course->status, [
+                CourseStatus::pending->value,
+                CourseStatus::active->value,
+            ]),
+            'event is canceled'
+        );
         Truthy(! $course->is_active, 'course is inactive');
 
+        $remaining_session = $course->course_duration;
+
+        if (
+            $course->status === CourseStatus::active->value &&
+            Carbon::parse($course->start_date)->lt(today())
+        ) {
+            $remaining_session = $course->course_duration - $course->appointments()->count();
+        }
         $course->customers()
             ->attach($customer->id, [
-                'remaining_sessions' => $course->course_duration,
+                'remaining_sessions' => $remaining_session,
                 'is_complete' => false,
             ]);
         if ($course->customers()->count() === $course->capacity) {
