@@ -84,4 +84,13 @@ describe('User Controller Tests', function () {
         $this->assertDatabaseCount('courses', 0);
         $this->assertDatabaseCount('events', 0);
     });
+
+    it('toggle partner notification', function () {
+        User::truncate();
+        $user = User::factory()->create(['is_notifiable'=>false]);
+        $this->replaceUser($user);
+        $res = $this->postJson(route('partner.user.toggleNotification'));
+        $res->assertOk();
+        expect($user->fresh()->is_notifiable)->toBe(true);
+    });
 });

@@ -44,6 +44,7 @@ Route::controller(CustomerController::class)
             Route::post('update', 'update')->name('update');
             Route::post('uploadProfileImage', 'uploadProfileImage')->name('uploadProfileImage');
             Route::post('deleteProfileImage', 'deleteProfileImage')->name('deleteProfileImage');
+            Route::post('toggleNotification', 'toggleNotification')->name('toggleNotification');
             Route::delete('delete', 'delete')->name('delete');
         }
     );

@@ -72,4 +72,13 @@ describe('Customer Controller Tests', function () {
         expect($customer->fresh())->toBeNull();
         $this->assertDatabaseCount('customers', 0);
     });
+
+    it('toggle customer notification', function () {
+        Customer::truncate();
+        $customer = Customer::factory()->create(['is_notifiable'=>false]);
+        $this->replaceUser($customer);
+        $res = $this->postJson(route('customer.customer.toggleNotification'));
+        $res->assertOk();
+        expect($customer->fresh()->is_notifiable)->toBe(true);
+    });
 });

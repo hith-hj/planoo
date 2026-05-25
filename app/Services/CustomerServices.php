@@ -123,6 +123,11 @@ final class CustomerServices
         return $media->delete();
     }
 
+    public function toggleNotification(Customer $customer)
+    {
+        return $customer->update(['is_notifiable' => ! $customer->is_notifiable]);
+    }
+
     private function userName(array $data): string
     {
         if (isset($data['name'])) {

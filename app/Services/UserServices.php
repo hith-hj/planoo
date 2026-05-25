@@ -54,4 +54,9 @@ final class UserServices
 
         return $media->delete();
     }
+
+    public function toggleNotification(User $user)
+    {
+        return $user->update(['is_notifiable' => ! $user->is_notifiable]);
+    }
 }
