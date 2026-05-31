@@ -37,7 +37,11 @@ describe('Event Controller Tests', function () {
         $res = $this->getJson("{$this->url}/find?event_id={$event->id}")
             ->assertOk();
 
-        expect($res->json('payload.event.id'))->toBe($event->id);
+        expect($res->json('payload.event.id'))->toBe($event->id)
+         ->and($res->json('payload.event'))->toHaveKeys([
+                'is_favorite',
+                'is_attending'
+            ]);
     });
 
     it('fails to find an event with invalid ID', function () {

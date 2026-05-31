@@ -38,7 +38,11 @@ describe('Course Controller Tests', function () {
         $response = $this->getJson("{$this->url}/find?course_id={$course->id}")
             ->assertOk();
 
-        expect($response->json('payload.course.id'))->toBe($course->id);
+        expect($response->json('payload.course.id'))->toBe($course->id)
+            ->and($response->json('payload.course'))->toHaveKeys([
+                'is_favorite',
+                'is_attending'
+            ]);
     });
 
     it('fails to find an course with invalid ID', function () {

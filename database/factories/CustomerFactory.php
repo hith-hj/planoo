@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\AccountStatus;
+use App\Models\Customer;
+use App\Models\Media;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -34,6 +36,13 @@ final class CustomerFactory extends Factory
                 'password' => 'password',
                 'password_confirmation' => 'password',
             ];
+        });
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (Customer $customer) {
+            Media::factory()->for($customer, 'holder')->create(['name' => 'profile_image']);
         });
     }
 }

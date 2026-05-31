@@ -47,11 +47,18 @@ final class EventResource extends JsonResource
         $isCustomer = Auth::user() instanceof Customer;
 
         return [
+            'attendees' => $this->when(
+                $isOwner && $this->relationLoaded('customers'),
+                fn () => $this->customers->count()
+            ),
             'customers' => $this->when(
                 $isOwner && $this->relationLoaded('customers'),
                 fn () => $this->customers->map(function ($customer) {
                     return [
                         'name' => $customer->name,
+                        'profile_image' => optional($customer->mediaByName('profile_image'), function ($media) {
+                            return MediaResource::make($media);
+                        }),
                     ];
                 })
             ),

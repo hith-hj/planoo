@@ -14,8 +14,12 @@ final class MediaResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray(Request $request): ?array
     {
+        if (is_null($this->resource)) {
+            return null;
+        }
+
         return [
             'id' => $this->id,
             'url' => asset($this->url),

@@ -39,11 +39,18 @@ final class CourseResource extends JsonResource
         $isCustomer = $user instanceof Customer;
 
         return [
+            'attendees' => $this->when(
+                $isOwner && $this->relationLoaded('customers'),
+                fn () => $this->customers->count()
+            ),
             'customers' => $this->when(
                 $isOwner && $this->relationLoaded('customers'),
                 fn () => $this->customers->map(function ($customer) {
                     return [
                         'name' => $customer->name,
+                        'profile_image' => optional($customer->mediaByName('profile_image'), function ($media) {
+                            return MediaResource::make($media);
+                        }),
                         'remaining_sessions' => $customer->pivot->remaining_sessions,
                         'is_complete' => $customer->pivot->is_complete,
                     ];

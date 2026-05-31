@@ -108,6 +108,24 @@ describe('Event Controller Tests', function () {
         expect($event->fresh()->is_active)->toBeTrue();
     });
 
+    it('check event customers information', function () {
+        $event = Event::factory()->for($this->user, 'user')->create();
+        $customer = Customer::factory()->create();
+        $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_id' => $customer->id])->assertOk();
+        $res = $this->getJson("{$this->url}/find?event_id={$event->id}")->assertOk();
+        expect($res->json('payload.event.id'))->toBe($event->id)
+            ->and($res->json('payload.event.attendees'))->toBe($event->customers()->count())
+            ->and($res->json('payload.event.customers'))->toBeArray()
+            ->and($res->json('payload.event.customers.0'))->toHaveKeys([
+                'name',
+                'profile_image',
+            ])
+            ->and($res->json('payload.event'))->not->toHaveKeys([
+                'is_favorite',
+                'is_attending'
+            ]);
+    });
+
     it('can attend customer by id for event', function () {
         $event = Event::factory()->for($this->user, 'user')->create();
         $res = $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_id' => 1]);
@@ -147,5 +165,4 @@ describe('Event Controller Tests', function () {
         $res = $this->postJson("{$this->url}/cancel?event_id={$event->id}", ['customer_id' => 1]);
         $res->assertStatus(400);
     });
-
 });

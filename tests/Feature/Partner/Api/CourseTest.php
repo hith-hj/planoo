@@ -109,6 +109,28 @@ describe('Course Controller Tests', function () {
         expect($course->fresh()->is_active)->toBeTrue();
     });
 
+    it('check course customers information', function () {
+        $course = Course::factory()->for($this->user, 'user')->create();
+        $customer = Customer::factory()->create();
+        $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => $customer->id])->assertOk();
+        $res = $this->getJson("{$this->url}/find?course_id={$course->id}")->assertOk();
+        expect($res->json('payload.course.id'))->toBe($course->id)
+            ->and($res->json('payload.course.attendees'))->toBe($course->customers()->count())
+            ->and($res->json('payload.course.customers'))->toBeArray()
+            ->and($res->json('payload.course.customers.0'))->toHaveKeys([
+                'name',
+                'profile_image',
+                'remaining_sessions',
+                'is_complete',
+            ])
+            ->and($res->json('payload.course'))->not->toHaveKeys([
+                'is_favorite',
+                'is_attending'
+            ])
+
+        ;
+    });
+
     it('can attend customer by id for course', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
         $res = $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => 1]);
@@ -129,7 +151,7 @@ describe('Course Controller Tests', function () {
     it('can attend customer by id for course after course started', function () {
         $course = Course::factory()->for($this->user, 'user')->create([
             'start_date' => today()->subDays(2),
-            'status'=>CourseStatus::active->value
+            'status' => CourseStatus::active->value
         ]);
         $res = $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => 1]);
         $res->assertOk();
