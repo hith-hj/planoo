@@ -19,6 +19,20 @@ describe('Notification Controller Tests', function () {
         expect($res->json('payload.notifications'))->toHaveCount(2);
     });
 
+    it('return true when there are new notifications', function () {
+        Notification::factory(2)->for($this->user, 'holder')->create(['is_viewed' => 0]);
+        $res = $this->getJson("{$this->url}/checkNew")->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['new'])
+            ->and($res->json('payload.new'))->toBe(true);
+    });
+
+    it('return false when there are no new notifications', function () {
+        Notification::factory(2)->for($this->user, 'holder')->create(['is_viewed' => 1]);
+        $res = $this->getJson("{$this->url}/checkNew")->assertOk();
+        expect($res->json('payload'))->toHaveKeys(['new'])
+            ->and($res->json('payload.new'))->toBe(false);
+    });
+
     it('finds a specific notification by ID', function () {
         $notification = Notification::factory()->for($this->user, 'holder')->create();
 
