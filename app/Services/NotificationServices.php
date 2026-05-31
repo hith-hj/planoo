@@ -27,6 +27,11 @@ final class NotificationServices
         return $noti;
     }
 
+    public function checkNew(Notifiable $notifiable): bool
+    {
+        return $notifiable->notifications()->where('is_viewed', 0)->count() > 0;
+    }
+
     public function findByNotifiable(Notifiable $notifiable, int $id): Notification
     {
         Required($id, 'id');

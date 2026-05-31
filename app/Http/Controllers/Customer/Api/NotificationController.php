@@ -23,6 +23,11 @@ final class NotificationController extends Controller
         return Success(payload: ['notifications' => $notis->toResourceCollection()]);
     }
 
+    public function checkNew(Request $request)
+    {
+        return Success(payload: ['new' => $this->services->checkNew($this->getCustomer())]);
+    }
+
     public function find(Request $request): JsonResponse
     {
         $validator = NotificationValidators::find($request->all());

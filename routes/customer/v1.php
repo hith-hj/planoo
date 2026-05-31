@@ -137,6 +137,7 @@ Route::controller(NotificationController::class)
     ->group(
         function (): void {
             Route::get('all', 'all')->name('all');
+            Route::get('checkNew', 'checkNew')->name('checkNew');
             Route::get('find', 'find')->name('find');
             Route::post('view', 'view')->name('view');
             Route::post('clear', 'clear')->name('clear');
