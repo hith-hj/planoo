@@ -30,12 +30,8 @@ return new class extends Migration
             $table->integer('capacity');
             $table->integer('rate')->default(0);
             $table->integer('cancellation_fee')->nullable();
-            $table->timestamp('start_date')->nullable();
-            $table->tinyInteger('status');
+            $table->integer('session_duration');
             $table->timestamps();
-            $table->index(['is_active', 'is_full', 'category_id', 'rate']);
-            $table->index(['is_active', 'is_full', 'category_id', 'price']);
-            $table->index(['is_active', 'is_full', 'course_duration']);
         });
 
         Schema::create('course_customer', function (Blueprint $table) {
