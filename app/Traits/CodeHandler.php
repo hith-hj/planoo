@@ -46,7 +46,6 @@ trait CodeHandler
 
     public function createCode(
         string $type = 'test',
-        int $length = 5,
         ?string $timeToExpire = '15:m'
     ): Code {
         $query = $this->codes() instanceof Builder ?
@@ -57,6 +56,7 @@ trait CodeHandler
             $this->codes();
 
         $maxAttempts = Setting('max_code_generation_attempts', 5);
+        $length = (int) Setting('generated_code_length', 6);
         $attempt = 0;
         while ($attempt < $maxAttempts) {
             try {
