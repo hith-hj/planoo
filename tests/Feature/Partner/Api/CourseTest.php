@@ -122,6 +122,7 @@ describe('Course Controller Tests', function () {
                 'profile_image',
                 'remaining_sessions',
                 'is_complete',
+                'attended_at',
             ])
             ->and($res->json('payload.course'))->not->toHaveKeys([
                 'is_favorite',

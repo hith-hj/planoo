@@ -59,6 +59,7 @@ final class EventResource extends JsonResource
                         'profile_image' => optional($customer->mediaByName('profile_image'), function ($media) {
                             return MediaResource::make($media);
                         }),
+                        'attended_at' => $customer->pivot->created_at,
                     ];
                 })
             ),

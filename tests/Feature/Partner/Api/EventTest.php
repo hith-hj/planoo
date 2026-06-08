@@ -119,6 +119,7 @@ describe('Event Controller Tests', function () {
             ->and($res->json('payload.event.customers.0'))->toHaveKeys([
                 'name',
                 'profile_image',
+                'attended_at',
             ])
             ->and($res->json('payload.event'))->not->toHaveKeys([
                 'is_favorite',

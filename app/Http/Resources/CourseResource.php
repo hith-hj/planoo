@@ -53,6 +53,7 @@ final class CourseResource extends JsonResource
                         }),
                         'remaining_sessions' => $customer->pivot->remaining_sessions,
                         'is_complete' => $customer->pivot->is_complete,
+                        'attended_at' => $customer->pivot->created_at,
                     ];
                 })
             ),
