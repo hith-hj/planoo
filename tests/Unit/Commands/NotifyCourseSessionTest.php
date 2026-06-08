@@ -16,6 +16,8 @@ use function Pest\Laravel\assertDatabaseHas;
 
 beforeEach(function () {
     $this->seed();
+    Carbon::setTestNow(Carbon::parse('2026-05-19')); // Tuesday
+    Appointment::truncate();
 });
 
 describe('test NotifyCourseCustomer Command', function () {

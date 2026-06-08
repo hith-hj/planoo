@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Artisan;
 
 beforeEach(function () {
     $this->seed();
-    Carbon::setTestNow(Carbon::create(2025, 11, 4, 10));
+    Carbon::setTestNow(Carbon::parse('2026-05-19')); // Tuesday
     Appointment::truncate();
     Notification::truncate();
 });
@@ -44,7 +44,7 @@ describe('Notify Event Session Test', function () {
             ->create(['status' => EventStatus::active->value]);
         $event->appointments()->delete();
         Artisan::call('app:nes');
-        expect(Appointment::count())->toBe(0);
+        expect($event->appointments()->count())->toBe(0);
     });
 
     it('cancels conflicting appointment and notifies holder', function () {

@@ -96,7 +96,7 @@ describe('Appointment Controller Tests', function () {
                     'code' => app(CodeServices::class)->createCode(
                         CodesTypes::appointment->name,
                         timeToExpire: '1:m'
-                    ),
+                    )->id,
                 ]
             );
 
@@ -119,9 +119,8 @@ describe('Appointment Controller Tests', function () {
                 'code' => app(CodeServices::class)->createCode(
                     CodesTypes::appointment->name,
                     timeToExpire: '1:m'
-                ),
+                )->id,
             ]);
-
         $response = $this->postJson("{$this->url}/create", $data);
 
         $response->assertOk();
@@ -142,7 +141,7 @@ describe('Appointment Controller Tests', function () {
                 'code' => app(CodeServices::class)->createCode(
                     CodesTypes::appointment->name,
                     timeToExpire: '-10:m'
-                ),
+                )->id,
             ]);
 
         $response = $this->postJson("{$this->url}/create", $data);
@@ -177,7 +176,7 @@ describe('Appointment Controller Tests', function () {
         $appointmentData['code'] = app(CodeServices::class)->createCode(
             CodesTypes::appointment->name,
             timeToExpire: '1:m'
-        );
+        )->id;
 
         $this->postJson("{$this->url}/create", $appointmentData)
             ->assertStatus(400);

@@ -143,6 +143,16 @@ final class SetSystemSettings extends Command
                 'value' => '30',
                 'description' => 'The max duration allowed for an event (number in days)',
             ],
+            [
+                'name' => 'max_code_generation_attempts',
+                'value' => '5',
+                'description' => 'the maximum number of code generation attempts',
+            ],
+            [
+                'name' => 'generated_code_length',
+                'value' => '6',
+                'description' => 'the maximum number of code generation attempts',
+            ],
         ];
     }
 }

@@ -30,10 +30,9 @@ final class CourseValidators extends Validators
             'course_duration' => ['required', 'numeric', new Enum(CourseDuration::class)],
             'capacity' => ['required', 'numeric', 'min:1', "max:{$maxCapacity}"],
             'cancellation_fee' => ['nullable', 'numeric', 'min:1'],
-            'start_date' => ['required', Rule::date()->afterToday(), 'date-format:Y-m-d'],
+            'start_date' => ['required', Rule::when($update === false, [Rule::date()->afterToday()]), 'date-format:Y-m-d'],
             'course_id' => [Rule::when($update, ['required', 'exists:courses,id'])],
         ]);
-
     }
 
     public static function delete(array $data)
