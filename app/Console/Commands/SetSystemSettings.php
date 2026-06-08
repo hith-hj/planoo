@@ -151,7 +151,7 @@ final class SetSystemSettings extends Command
             [
                 'name' => 'generated_code_length',
                 'value' => '6',
-                'description' => 'the maximum number of code generation attempts',
+                'description' => 'the number of generated code digits',
             ],
         ];
     }
