@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Auth\AdminLogin;
+use App\Filament\Pages\AdminLogin;
 use App\Filament\Widgets\AcceptedAppointmentChart;
 use App\Filament\Widgets\AppointmentsChart;
 use App\Filament\Widgets\CanceledAppointmentChart;

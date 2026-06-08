@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Filament\Pages\Auth;
+declare(strict_types=1);
+
+namespace App\Filament\Pages;
 
 use Filament\Auth\Pages\Login;
 use Filament\Schemas\Schema;
 
-class AdminLogin extends Login
+final class AdminLogin extends Login
 {
-	public function form(Schema $schema): Schema
-	{
-		return $schema
-			->components([
-				$this->getEmailFormComponent(),
-				$this->getPasswordFormComponent(),
-				// $this->getRememberFormComponent(),
-			]);
-	}
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getEmailFormComponent(),
+                $this->getPasswordFormComponent(),
+                // $this->getRememberFormComponent(),
+            ]);
+    }
 }
