@@ -29,7 +29,7 @@ final class EventValidators extends Validators
             'capacity' => ['required', 'numeric', 'min:1',  "max:{$maxCapacity}"],
             'admission_fee' => ['nullable', 'numeric', 'min:1'],
             'withdrawal_fee' => ['nullable', 'numeric', 'min:1'],
-            'start_date' => ['required', Rule::date()->afterToday(), 'date-format:Y-m-d'],
+            'start_date' => ['required', Rule::when($update === false, [Rule::date()->afterToday()]), 'date-format:Y-m-d'],
             'event_id' => [Rule::when($update, ['required', 'exists:events,id'])],
 
         ]);
