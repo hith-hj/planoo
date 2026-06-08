@@ -17,7 +17,7 @@ final class SettingsForm
             ->components([
                 TextInput::make('name')
                     ->unique('settings', 'name')
-                    ->disabledOn(Operation::Edit),
+                    ->disabledOn(Operation::Edit->value),
                 TextInput::make('value'),
                 Textarea::make('description'),
             ]);

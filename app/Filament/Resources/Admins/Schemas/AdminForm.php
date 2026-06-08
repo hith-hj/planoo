@@ -25,7 +25,7 @@ final class AdminForm
                 TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => bcrypt($state))
-                    ->disabledOn(Operation::Edit)
+                    ->disabledOn(Operation::Edit->value)
                     ->required(),
                 Select::make('role')
                     ->required()
