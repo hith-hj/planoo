@@ -50,7 +50,7 @@ trait CodeHandler
     ): Code {
         $query = $this->codes() instanceof Builder ?
             $this->codes()->withAttributes([
-                'belongTo_id' => str()->random(8),
+                'belongTo_id' => random_int(10000000, 99999999),
                 'belongTo_type' => $this::class,
             ]) :
             $this->codes();
