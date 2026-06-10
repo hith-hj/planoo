@@ -6,6 +6,7 @@ use App\Http\Controllers\Partner\Api\ActivityController;
 use App\Http\Controllers\Partner\Api\AppointmentController;
 use App\Http\Controllers\Partner\Api\AuthController;
 use App\Http\Controllers\Partner\Api\CourseController;
+use App\Http\Controllers\Partner\Api\CourtController;
 use App\Http\Controllers\Partner\Api\DayController;
 use App\Http\Controllers\Partner\Api\EventController;
 use App\Http\Controllers\Partner\Api\LocationController;
@@ -46,6 +47,19 @@ Route::controller(UserController::class)
             Route::post('uploadProfileImage', 'uploadProfileImage')->name('uploadProfileImage');
             Route::post('deleteProfileImage', 'deleteProfileImage')->name('deleteProfileImage');
             Route::post('toggleNotification', 'toggleNotification')->name('toggleNotification');
+            Route::delete('delete', 'delete')->name('delete');
+        }
+    );
+
+Route::controller(CourtController::class)
+    ->prefix('court')
+    ->name('court.')
+    ->group(
+        function (): void {
+            Route::get('all', 'all')->name('all');
+            Route::get('find', 'find')->name('find');
+            Route::post('create', 'create')->name('create');
+            Route::post('update', 'update')->name('update');
             Route::delete('delete', 'delete')->name('delete');
         }
     );
