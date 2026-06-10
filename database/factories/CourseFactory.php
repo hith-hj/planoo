@@ -31,6 +31,7 @@ final class CourseFactory extends Factory
         return [
             'user_id' => 1,
             'category_id' => 1,
+            'court_id' => 1,
             'name' => fake()->word,
             'description' => fake()->sentence,
             'is_active' => 1,

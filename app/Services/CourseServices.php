@@ -172,7 +172,7 @@ final class CourseServices
 
     private function toBeLoaded()
     {
-        return ['days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers'];
+        return ['court', 'days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers'];
     }
 
     private function isAttending(Customer $customer, Course $course): bool

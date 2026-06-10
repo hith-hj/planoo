@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\CourseStatus;
 use App\Models\Course;
+use App\Models\Court;
 use App\Models\Customer;
 use App\Models\Day;
 use App\Models\Location;
@@ -13,7 +14,6 @@ use App\Models\Tag;
 beforeEach(function () {
     $this->seed();
     $this->user('partner', 'stadium')->api();
-    $this->url = '/api/partner/v1/course';
 });
 
 describe('Course Controller Tests', function () {
@@ -21,7 +21,7 @@ describe('Course Controller Tests', function () {
         $this->user->courses()->delete();
         Course::factory(2)->for($this->user, 'user')->create();
 
-        $response = $this->getJson("{$this->url}/all")->assertOk();
+        $response = $this->getJson(route('partner.course.all'))->assertOk();
 
         expect($response->json('payload.courses'))->toHaveCount(2);
     });
@@ -29,18 +29,21 @@ describe('Course Controller Tests', function () {
     it('finds a specific course by ID', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
 
-        $response = $this->getJson("{$this->url}/find?course_id={$course->id}")
+        $response = $this->getJson(route('partner.course.find', ['course_id' => $course->id]))
             ->assertOk();
 
         expect($response->json('payload.course.id'))->toBe($course->id);
     });
 
     it('fails to find an course with invalid ID', function () {
-        $this->getJson("{$this->url}/find?course_id=422")->assertStatus(422);
+        $this->getJson(route('partner.course.find', ['course_id' => 422]))->assertStatus(422);
     });
 
     it('creates a new course with days, location, media, and tags', function () {
-        $courseData = Course::factory()->for($this->user, 'user')->make()->toArray();
+        $courseData = Course::factory()
+            ->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')
+            ->make()->toArray();
 
         $days = Day::factory()->days();
         $location = Location::factory()->make()->toArray();
@@ -52,7 +55,7 @@ describe('Course Controller Tests', function () {
 
         $payload = array_merge($courseData, ['days' => $days], $location, $media, $tags);
 
-        $response = $this->postJson("{$this->url}/create", $payload);
+        $response = $this->postJson(route('partner.course.create'), $payload);
         $response->assertOk();
 
         expect($response->json('payload.course'))->not->toBeNull();
@@ -61,6 +64,8 @@ describe('Course Controller Tests', function () {
         $createdCourse = Course::with(['tags', 'days', 'medias', 'location'])->find($createdId);
 
         expect($createdCourse->days()->count())->toBe(count($days))
+            ->and($createdCourse->court)->not->toBeNull()
+            ->and($createdCourse->category)->not->toBeNull()
             ->and($createdCourse->location)->not->toBeNull()
             ->and($createdCourse->location->long)->toBe($location['long'])
             ->and($createdCourse->tags)->not->toBeNull()
@@ -68,8 +73,16 @@ describe('Course Controller Tests', function () {
             ->and($createdCourse->medias->count())->toBe(2);
     });
 
+    it('fails to creates a new course with invalid court id ', function () {
+        $courseData = Course::factory()
+            ->for($this->user, 'user')
+            ->make(['court_id' => Court::factory()->create()->id])->toArray();
+        $response = $this->postJson(route('partner.course.create'), $courseData);
+        $response->assertStatus(400);
+    });
+
     it('fails to create an course with invalid data', function () {
-        $this->postJson("{$this->url}/create", [])->assertStatus(422);
+        $this->postJson(route('partner.course.create'), [])->assertStatus(422);
     });
 
     it('updates an existing course', function () {
@@ -78,19 +91,19 @@ describe('Course Controller Tests', function () {
 
         $updatePayload = ['course_id' => $course->id, ...$course->toArray()];
 
-        $response = $this->patchJson("{$this->url}/update", $updatePayload)->assertOk();
+        $response = $this->patchJson(route('partner.course.update'), $updatePayload)->assertOk();
 
         expect($response->json('payload.course.name'))->toBe('tido');
     });
 
     it('fails to update an course with invalid data', function () {
-        $this->patchJson("{$this->url}/update", [])->assertStatus(422);
+        $this->patchJson(route('partner.course.update'), [])->assertStatus(422);
     });
 
     it('deletes an course', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
 
-        $this->deleteJson("{$this->url}/delete", [
+        $this->deleteJson(route('partner.course.delete'), [
             'course_id' => $course->id,
         ])->assertOk();
 
@@ -102,7 +115,7 @@ describe('Course Controller Tests', function () {
             ->for($this->user, 'user')
             ->create(['is_active' => false]);
 
-        $this->postJson("{$this->url}/toggleActivation", [
+        $this->postJson(route('partner.course.toggleActivation'), [
             'course_id' => $course->id,
         ])->assertOk();
 
@@ -112,8 +125,11 @@ describe('Course Controller Tests', function () {
     it('check course customers information', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
         $customer = Customer::factory()->create();
-        $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => $customer->id])->assertOk();
-        $res = $this->getJson("{$this->url}/find?course_id={$course->id}")->assertOk();
+        $this->postJson(
+            route('partner.course.attend', ['course_id' => $course->id]),
+            ['customer_id' => $customer->id]
+        )->assertOk();
+        $res = $this->getJson(route('partner.course.find', ['course_id' => $course->id]))->assertOk();
         expect($res->json('payload.course.id'))->toBe($course->id)
             ->and($res->json('payload.course.attendees'))->toBe($course->customers()->count())
             ->and($res->json('payload.course.customers'))->toBeArray()
@@ -134,7 +150,10 @@ describe('Course Controller Tests', function () {
 
     it('can attend customer by id for course', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
-        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => 1]);
+        $res = $this->postJson(
+            route('partner.course.attend', ['course_id' => $course->id]),
+            ['customer_id' => 1]
+        );
         $res->assertOk();
         $customerCourse = $course->customers()->wherePivot('customer_id', 1)->first();
         expect($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
@@ -142,7 +161,10 @@ describe('Course Controller Tests', function () {
 
     it('can attend customer by phone for course', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
-        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_phone' => '0987654321']);
+        $res = $this->postJson(
+            route('partner.course.attend', ['course_id' => $course->id]),
+            ['customer_phone' => '0987654321']
+        );
         $res->assertOk();
         $customer = Customer::where('phone', '0987654321')->first();
         $customerCourse = $course->customers()->wherePivot('customer_id', $customer->id)->first();
@@ -154,7 +176,10 @@ describe('Course Controller Tests', function () {
             'start_date' => today()->subDays(2),
             'status' => CourseStatus::active->value
         ]);
-        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => 1]);
+        $res = $this->postJson(
+            route('partner.course.attend', ['course_id' => $course->id]),
+            ['customer_id' => 1]
+        );
         $res->assertOk();
         $customerCourse = $course->customers()->wherePivot('customer_id', 1)->first();
         expect($customerCourse->pivot->remaining_sessions)
@@ -163,24 +188,39 @@ describe('Course Controller Tests', function () {
 
     it('can not attend full course', function () {
         $course = Course::factory()->for($this->user, 'user')->create(['is_full' => true]);
-        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => 1]);
+        $res = $this->postJson(
+            route('partner.course.attend', ['course_id' => $course->id]),
+            ['customer_id' => 1]
+        );
         $res->assertStatus(400);
     });
 
     it('can cancel course attend by customer id', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
-        $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => 1]);
-        $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}", ['customer_id' => 1]);
+        $this->postJson(
+            route('partner.course.attend', ['course_id' => $course->id]),
+            ['customer_id' => 1]
+        );
+        $res = $this->postJson(
+            route('partner.course.cancel', ['course_id' => $course->id]),
+            ['customer_id' => 1]
+        );
         $res->assertOk();
         expect($course->customers()->wherePivot('customer_id', 1)->first())->toBeNull();
     });
 
     it('can not cancel course after specific time', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
-        $this->postJson("{$this->url}/attend?course_id={$course->id}", ['customer_id' => 1]);
+        $this->postJson(
+            route('partner.course.attend', ['course_id' => $course->id]),
+            ['customer_id' => 1]
+        );
         $customer = $course->customers()->where('customer_id', 1)->first();
         $customer->pivot->update(['created_at' => now()->subDays(2)]);
-        $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}", ['customer_id' => 1]);
+        $res = $this->postJson(
+            route('partner.course.cancel', ['course_id' => $course->id]),
+            ['customer_id' => 1]
+        );
         $res->assertStatus(400);
     });
 });

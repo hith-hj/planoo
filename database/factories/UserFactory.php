@@ -44,7 +44,7 @@ final class UserFactory extends Factory
             if ($user->account_type === UsersTypes::stadium->name) {
                 $court = Court::factory()->for($user, 'user')->create();
                 Activity::factory()->for($user, 'user')->for($court, 'court')->create();
-                Course::factory()->for($user, 'user')->create();
+                Course::factory()->for($user, 'user')->for($court, 'court')->create();
                 Event::factory()->for($user, 'user')->create();
 
                 return;
