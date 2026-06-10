@@ -8,6 +8,7 @@ use App\Enums\AccountStatus;
 use App\Enums\UsersTypes;
 use App\Models\Activity;
 use App\Models\Course;
+use App\Models\Court;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -40,6 +41,15 @@ final class UserFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (User $user) {
+            if ($user->account_type === UsersTypes::stadium->name) {
+                $court = Court::factory()->for($user, 'user')->create();
+                Activity::factory()->for($user, 'user')->for($court, 'court')->create();
+                Course::factory()->for($user, 'user')->create();
+                Event::factory()->for($user, 'user')->create();
+
+                return;
+            }
+
             Activity::factory()->for($user, 'user')->create();
             Course::factory()->for($user, 'user')->create();
             Event::factory()->for($user, 'user')->create();

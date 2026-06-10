@@ -46,6 +46,11 @@ final class User extends Authenticatable implements JWTSubject, Notifiable
         return [];
     }
 
+    public function courts()
+    {
+        return $this->hasMany(Court::class);
+    }
+
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
