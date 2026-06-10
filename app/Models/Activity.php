@@ -46,6 +46,11 @@ final class Activity extends Model implements Dayable, Locatable, Mediable, Revi
         return $this->belongsTo(User::class);
     }
 
+    public function court(): BelongsTo
+    {
+        return $this->belongsTo(Court::class);
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

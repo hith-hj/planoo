@@ -29,6 +29,7 @@ final class ActivityFactory extends Factory
         return [
             'user_id' => 1,
             'category_id' => 1,
+            'court_id' => 1,
             'name' => fake()->colorName,
             'description' => fake()->paragraph(2),
             'price' => random_int(500, 1000),

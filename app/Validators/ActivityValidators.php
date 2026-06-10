@@ -11,7 +11,7 @@ use Illuminate\Validation\Rules\Enum;
 
 final class ActivityValidators extends Validators
 {
-    public static function find($data)
+    public static function find(array $data)
     {
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],
@@ -22,6 +22,7 @@ final class ActivityValidators extends Validators
     {
         return Validator::make($data, [
             'category_id' => ['required', 'exists:categories,id'],
+            'court_id' => ['required', 'exists:courts,id'],
             'name' => ['required', 'string'],
             'description' => ['required', 'string', 'max:1500'],
             'price' => ['required', 'numeric', 'min:1'],
@@ -30,7 +31,7 @@ final class ActivityValidators extends Validators
         ]);
     }
 
-    public static function delete($data)
+    public static function delete(array $data)
     {
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],

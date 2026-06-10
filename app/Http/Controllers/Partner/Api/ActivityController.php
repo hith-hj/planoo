@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\ActivityServices;
+use App\Services\CourtServices;
 use App\Validators\ActivityValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +36,8 @@ final class ActivityController extends Controller
     public function create(Request $request)
     {
         $validator = ActivityValidators::create($request->all());
+        $court = app(CourtServices::class)->find($validator->safe()->integer('court_id'));
+        Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
         $activity = $this->services->create(
             Auth::user(),
             $validator->safe()->except(['cords', 'days', 'times', 'tags'])
