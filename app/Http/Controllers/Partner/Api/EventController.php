@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\CourtServices;
 use App\Services\CustomerServices;
 use App\Services\EventServices;
 use App\Validators\EventValidators;
@@ -36,6 +37,8 @@ final class EventController extends Controller
     public function create(Request $request)
     {
         $validator = EventValidators::create($request->all());
+        $court = app(CourtServices::class)->find($validator->safe()->integer('court_id'));
+        Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
         $event = $this->services->create(
             Auth::user(),
             $validator->safe()->except(['cords', 'days', 'times', 'tags'])

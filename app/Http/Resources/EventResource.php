@@ -26,6 +26,7 @@ final class EventResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'court' => $this->whenLoaded('court'),
             'category' => $this->whenLoaded('category'),
             'is_active' => $this->is_active,
             'is_full' => $this->is_full,

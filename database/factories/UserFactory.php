@@ -45,7 +45,7 @@ final class UserFactory extends Factory
                 $court = Court::factory()->for($user, 'user')->create();
                 Activity::factory()->for($user, 'user')->for($court, 'court')->create();
                 Course::factory()->for($user, 'user')->for($court, 'court')->create();
-                Event::factory()->for($user, 'user')->create();
+                Event::factory()->for($user, 'user')->for($court, 'court')->create();
 
                 return;
             }

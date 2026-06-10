@@ -66,6 +66,11 @@ final class Event extends Model implements Dayable, Locatable, Mediable, Reviewa
         return $this->belongsTo(User::class);
     }
 
+    public function court(): BelongsTo
+    {
+        return $this->belongsTo(Court::class);
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

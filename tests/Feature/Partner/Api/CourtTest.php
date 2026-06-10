@@ -88,6 +88,6 @@ test('partner cannot delete a court that has linked siblings', function ($siblin
     $this->assertDatabaseHas('courts', ['id' => $courtToDelete->id]);
 })->with([
     'has activities' => ['activities', Activity::class],
-    // 'has courses'    => ['courses', Course::class],
-    // 'has events'     => ['events', Event::class],
+    'has courses'    => ['courses', Course::class],
+    'has events'     => ['events', Event::class],
 ]);

@@ -23,6 +23,7 @@ final class EventValidators extends Validators
 
         return Validator::make($data, [
             'category_id' => ['required', 'exists:categories,id'],
+            'court_id' => ['required', 'exists:courts,id'],
             'name' => ['required', 'string'],
             'description' => ['required', 'string', 'max:1500'],
             'event_duration' => ['required', 'numeric', 'min:1', "max:{$maxDuration}"],

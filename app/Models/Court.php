@@ -37,8 +37,8 @@ final class Court extends Model
 
     public function hasSiblings(): bool
     {
-        return $this->activities()->exists();
-        // || $this->courses()->exists()
-        // || $this->events()->exists();
+        return $this->activities()->exists()
+        || $this->courses()->exists()
+        || $this->events()->exists();
     }
 }

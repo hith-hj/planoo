@@ -39,6 +39,7 @@ final class EventFactory extends Factory
         return [
             'user_id' => 1,
             'category_id' => 1,
+            'court_id' => 1,
             'name' => fake()->name,
             'description' => fake()->sentence,
             'is_active' => 1,
