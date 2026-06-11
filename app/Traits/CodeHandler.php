@@ -76,7 +76,7 @@ trait CodeHandler
                 if ($isUniqueViolation && $attempt < $maxAttempts) {
                     continue;
                 }
-                Truthy(true, "code generation went wrong");
+                Truthy(true, 'code generation went wrong');
             }
         }
 
