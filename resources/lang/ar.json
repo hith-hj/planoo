@@ -234,5 +234,6 @@
 	"code generation limit reached":"تم بلوغ الحد المسموح لتوليد الرمز",
 	"validation failed":"عملية تحقق خطأ",
 	"unauthorized request":"طلب غير مسموح",
-	"not found":"غير موجود"
+	"not found":"غير موجود",
+	"activities":"نشاطات"
 }
