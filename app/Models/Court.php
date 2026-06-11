@@ -35,7 +35,7 @@ final class Court extends Model
         return $this->hasMany(Event::class);
     }
 
-    public function hasSiblings(): bool
+    public function hasChildren(): bool
     {
         return $this->activities()->exists()
         || $this->courses()->exists()

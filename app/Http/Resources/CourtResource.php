@@ -20,6 +20,17 @@ final class CourtResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            ...$this->extras(),
+        ];
+    }
+
+    private function extras(): array
+    {
+        return [
+            'activities' => ActivityResource::collection($this->whenLoaded('activities')),
+            'courses' => CourseResource::collection($this->whenLoaded('courses')),
+            'events' => EventResource::collection($this->whenLoaded('events')),
+            'medias' => MediaResource::collection($this->whenLoaded('medias')),
         ];
     }
 }

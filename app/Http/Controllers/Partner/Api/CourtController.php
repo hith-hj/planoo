@@ -78,7 +78,7 @@ final class CourtController extends Controller
         }
         /** @var Court $court */
         $court = $courts->find($validator->safe()->integer('court_id'));
-        if ($court->hasSiblings()) {
+        if ($court->hasChildren()) {
             return Error('Court has children can not be deleted');
         }
         $this->services->delete($court);
