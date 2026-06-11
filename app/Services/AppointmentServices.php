@@ -66,9 +66,9 @@ final class AppointmentServices
 
     public function find(int $id)
     {
-        Required($id, 'Appointment id');
+        Required($id, 'appointment id');
         $appointment = Appointment::find($id);
-        NotFound($appointment, 'Appointment');
+        NotFound($appointment, 'appointment');
 
         return $appointment->load($this->ToBeLoaded());
     }
@@ -86,7 +86,7 @@ final class AppointmentServices
             ->findByObject($owner, $data['day_id'])
             ->only(['day', 'start', 'end']);
         $dayOfSelectedDate = Carbon::parse($data['date'])->format('l');
-        Truthy($day['day'] !== mb_strtolower($dayOfSelectedDate), "Selected date don't match selected day");
+        Truthy($day['day'] !== mb_strtolower($dayOfSelectedDate), "selected date don't match selected day");
         $appointments = Appointment::owner($owner::class, $owner->id)
             ->where('date', $data['date'])
             ->get(['date', 'time', 'session_duration']);
@@ -134,7 +134,7 @@ final class AppointmentServices
         return ['code' => $code->id, 'day' => $day['day'], 'date' => $data['date'], 'slots' => $slots];
     }
 
-    public function checkAppointmentExists(array $data): bool
+    public function checkAppointmentExists(object $owner, array $data): bool
     {
         $data = checkAndCastData($data, [
             'date' => 'string',
@@ -144,7 +144,8 @@ final class AppointmentServices
         $start = Carbon::parse($data['time']);
         $end = $start->copy()->addMinutes($data['session_duration']);
 
-        return Appointment::conflict($data['date'], $start->toTimeString('minute'), $end->toTimeString('minute'))
+        return Appointment::owner($owner::class, $owner->id)
+            ->conflict($data['date'], $start->toTimeString('minute'), $end->toTimeString('minute'))
             ->exists();
     }
 
@@ -184,7 +185,7 @@ final class AppointmentServices
         return true;
     }
 
-    public function getAppointmentIfExists(array $data): ?Appointment
+    public function getAppointmentIfExists(object $owner, array $data): ?Appointment
     {
         $data = checkAndCastData($data, [
             'date' => 'string',
@@ -194,12 +195,13 @@ final class AppointmentServices
         $start_time = Carbon::parse($data['time']);
         $end_time = (clone $start_time)->addMinutes($data['session_duration']);
 
-        return Appointment::where([
-            ['status', AppointmentStatus::accepted->value],
-            ['date', $data['date']],
-            ['time', '<', $end_time->toTimeString('minute')],
-            ['end_at', '>', $start_time->toTimeString('minute')],
-        ])->first();
+        return Appointment::owner($owner::class, $owner->id)
+            ->where([
+                ['status', AppointmentStatus::accepted->value],
+                ['date', $data['date']],
+                ['time', '<', $end_time->toTimeString('minute')],
+                ['end_at', '>', $start_time->toTimeString('minute')],
+            ])->first();
     }
 
     public function create(object $owner, array $data, ?Customer $customer = null): Appointment

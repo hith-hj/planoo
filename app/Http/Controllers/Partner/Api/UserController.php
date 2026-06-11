@@ -65,6 +65,6 @@ final class UserController extends Controller
         $user = $this->services->get(Auth::id());
         $this->services->toggleNotification($user);
 
-        return Success('Notification Settings updates');
+        return Success('notification settings updates');
     }
 }

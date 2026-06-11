@@ -63,7 +63,7 @@ final class NotificationController extends Controller
             return Success();
         }
 
-        return Error(msg: __('main.un authorized'), code: 403);
+        return Error(msg: 'un authorized', code: 403);
     }
 
     public function clear()

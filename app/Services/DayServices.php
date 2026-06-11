@@ -120,6 +120,6 @@ final class DayServices
 
     private function checkCanCreateDay(Dayable $dayable)
     {
-        Truthy($dayable->days()->count() >= 7, 'Only 7 days allowed');
+        Truthy($dayable->days()->count() >= 7, 'only 7 days allowed');
     }
 }

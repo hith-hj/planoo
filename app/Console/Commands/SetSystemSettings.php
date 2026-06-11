@@ -150,7 +150,7 @@ final class SetSystemSettings extends Command
             ],
             [
                 'name' => 'generated_code_length',
-                'value' => '6',
+                'value' => '5',
                 'description' => 'the number of generated code digits',
             ],
         ];

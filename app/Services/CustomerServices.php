@@ -38,7 +38,7 @@ final class CustomerServices
     {
         Required($id, 'customer id');
         $customer = Customer::find($id);
-        NotFound($customer, 'Not Found');
+        NotFound($customer, 'customer');
 
         return $customer;
     }

@@ -28,7 +28,7 @@ trait CodeHandler
     public function code(string $type): ?Code
     {
         $code = $this->codes()->where('type', $type)->first();
-        Truthy($code === null, "Code[{$type}] not Found");
+        Truthy($code === null, 'code type not found');
 
         return $code;
     }
@@ -39,7 +39,7 @@ trait CodeHandler
     public function codeById(int $id): ?Code
     {
         $code = $this->codes()->find($id);
-        Truthy($code === null, "Code[{$id}] not Found");
+        Truthy($code === null, 'code id not found');
 
         return $code;
     }
@@ -50,13 +50,13 @@ trait CodeHandler
     ): Code {
         $query = $this->codes() instanceof Builder ?
             $this->codes()->withAttributes([
-                'belongTo_id' => str()->random(8),
+                'belongTo_id' => random_int(10000000, 99999999),
                 'belongTo_type' => $this::class,
             ]) :
             $this->codes();
 
         $maxAttempts = Setting('max_code_generation_attempts', 5);
-        $length = (int) Setting('generated_code_length', 6);
+        $length = (int) Setting('generated_code_length', 5);
         $attempt = 0;
         while ($attempt < $maxAttempts) {
             try {
@@ -76,11 +76,11 @@ trait CodeHandler
                 if ($isUniqueViolation && $attempt < $maxAttempts) {
                     continue;
                 }
-                throw $e;
+                Truthy(true, 'code generation limit reached');
             }
         }
 
-        Truthy(true, "Could not generate a unique code after {$maxAttempts} attempts.");
+        Truthy(true, 'code generation error');
     }
 
     /**

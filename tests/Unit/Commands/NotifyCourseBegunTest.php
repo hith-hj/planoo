@@ -107,7 +107,9 @@ describe('Notify Course Begun Test', function () {
             'is_complete' => false,
         ]);
 
-        $conflict = Appointment::factory()->create([
+        $conflict = Appointment::factory()
+        ->for($course, 'holder')
+        ->create([
             'date' => Carbon::now()->toDateString(),
             'time' => '10:00',
             'status' => AppointmentStatus::accepted->value,

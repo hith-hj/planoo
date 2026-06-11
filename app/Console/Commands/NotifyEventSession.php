@@ -91,7 +91,7 @@ final class NotifyEventSession extends Command
         int $sessionDuration,
         AppointmentServices $appointmentService
     ): void {
-        $appointment = $appointmentService->getAppointmentIfExists([
+        $appointment = $appointmentService->getAppointmentIfExists($event, [
             'date' => $date,
             'session_duration' => $sessionDuration,
             'time' => $day->start,
