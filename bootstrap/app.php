@@ -32,18 +32,18 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') && $request->wantsJson()) {
                 return match (true) {
                     $e instanceof AuthenticationException => Error(
-                        msg: 'Unauthorized Request.',
+                        msg: 'unauthorized request',
                         code: Response::HTTP_UNAUTHORIZED
                     ),
 
                     $e instanceof ValidationException => Error(
-                        msg: 'Validation failed.',
+                        msg: 'validation failed',
                         code: Response::HTTP_UNPROCESSABLE_ENTITY,
                         payload: ['errors' => $e->errors()]
                     ),
 
                     $e instanceof NotFoundHttpException => Error(
-                        msg: "Not found: {$e->getMessage()}",
+                        msg: $e->getMessage(),
                         code: Response::HTTP_NOT_FOUND
                     ),
 

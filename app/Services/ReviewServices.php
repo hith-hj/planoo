@@ -49,7 +49,7 @@ final class ReviewServices
             if (abs(now()->diffInSeconds($review->created_at) / 3600) > 24) {
                 return $this->update($reviewable, $review, $data);
             }
-            Truthy(true, 'reviews editing allowed after 24 hours ');
+            Truthy(true, 'reviews editing allowed after 24 hours');
 
         }
         $review = $reviewable->createReview($customer, $data);

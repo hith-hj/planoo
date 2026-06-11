@@ -65,6 +65,6 @@ final class CustomerController extends Controller
         $customer = $this->services->get(Auth::id());
         $this->services->toggleNotification($customer);
 
-        return Success('Notification Settings updates');
+        return Success('notification settings updates');
     }
 }

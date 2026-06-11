@@ -19,7 +19,7 @@ final class AuthController extends Controller
         $this->services->create($validator->safe()->all());
 
         return Success(
-            msg: __('registerd'),
+            msg: 'registerd',
             code: 201
         );
     }
@@ -29,7 +29,7 @@ final class AuthController extends Controller
         $validator = UserAuthValidators::verify($request->all());
         $this->services->verify($validator);
 
-        return Success(msg: __('verified'));
+        return Success(msg: 'verified');
     }
 
     public function login(Request $request)
@@ -50,7 +50,7 @@ final class AuthController extends Controller
         $clear_token = $request->has('clear_token') && $request->boolean('clear_token') === true ? true : false;
         $this->services->logout($clear_token);
 
-        return Success(msg: __('logout'));
+        return Success(msg: 'logout');
     }
 
     public function forgetPassword(Request $request)
@@ -59,7 +59,7 @@ final class AuthController extends Controller
 
         $this->services->forgetPassword($validator);
 
-        return Success(msg: __('code sent'));
+        return Success(msg: 'code sent');
     }
 
     public function resetPassword(Request $request)
@@ -68,7 +68,7 @@ final class AuthController extends Controller
 
         $this->services->resetPassword($validator);
 
-        return Success(msg: __('password updated'));
+        return Success(msg: 'password updated');
     }
 
     public function resendCode(Request $request)
@@ -76,7 +76,7 @@ final class AuthController extends Controller
         $validator = UserAuthValidators::resendCode($request->all());
         $this->services->resendCode($validator);
 
-        return Success(msg: __('code sent'));
+        return Success(msg: 'code sent');
     }
 
     public function changePassword(Request $request)
@@ -84,6 +84,6 @@ final class AuthController extends Controller
         $validator = UserAuthValidators::changePassword($request->all());
         $this->services->changePassword($validator);
 
-        return Success(msg: __('updated'));
+        return Success(msg: 'updated');
     }
 }
