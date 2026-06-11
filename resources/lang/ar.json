@@ -233,5 +233,6 @@
 	"code generation went wrong":"حدث خطأ في عملية توليد الرمز",
 	"code generation limit reached":"تم بلوغ الحد المسموح لتوليد الرمز",
 	"validation failed":"عملية تحقق خطأ",
-	"unauthorized request":"طلب غير مسموح"
+	"unauthorized request":"طلب غير مسموح",
+	"not found":"غير موجود"
 }
