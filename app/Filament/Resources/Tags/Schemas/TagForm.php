@@ -18,7 +18,8 @@ final class TagForm
                 TextInput::make('name')
                     ->required(),
                 FileUpload::make('icon')
-                    ->label('Upload Category Icon')
+                    ->required()
+                    ->label('Upload Tag Icon')
                     ->acceptedFileTypes(['image/png'])
                     ->imageEditor()
                     ->maxSize(100)
