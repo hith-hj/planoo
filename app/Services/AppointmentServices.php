@@ -66,9 +66,9 @@ final class AppointmentServices
 
     public function find(int $id)
     {
-        Required($id, 'Appointment id');
+        Required($id, 'appointment id');
         $appointment = Appointment::find($id);
-        NotFound($appointment, 'Appointment');
+        NotFound($appointment, 'appointment');
 
         return $appointment->load($this->ToBeLoaded());
     }
@@ -86,7 +86,7 @@ final class AppointmentServices
             ->findByObject($owner, $data['day_id'])
             ->only(['day', 'start', 'end']);
         $dayOfSelectedDate = Carbon::parse($data['date'])->format('l');
-        Truthy($day['day'] !== mb_strtolower($dayOfSelectedDate), "Selected date don't match selected day");
+        Truthy($day['day'] !== mb_strtolower($dayOfSelectedDate), "selected date don't match selected day");
         $appointments = Appointment::owner($owner::class, $owner->id)
             ->where('date', $data['date'])
             ->get(['date', 'time', 'session_duration']);
