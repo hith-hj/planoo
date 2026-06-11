@@ -18,6 +18,7 @@ final class TagForm
                 TextInput::make('name')
                     ->required(),
                 FileUpload::make('icon')
+                    ->required()
                     ->label('Upload Category Icon')
                     ->acceptedFileTypes(['image/png'])
                     ->imageEditor()
