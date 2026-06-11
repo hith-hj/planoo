@@ -19,7 +19,7 @@ final class TagForm
                     ->required(),
                 FileUpload::make('icon')
                     ->required()
-                    ->label('Upload Category Icon')
+                    ->label('Upload Tag Icon')
                     ->acceptedFileTypes(['image/png'])
                     ->imageEditor()
                     ->maxSize(100)
