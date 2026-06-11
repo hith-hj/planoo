@@ -79,7 +79,7 @@ final class AppointmentController extends Controller
 
         $activity = app(ActivityServices::class)
             ->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
-        if ($this->services->checkAppointmentExists($validator->safe()->all())) {
+        if ($this->services->checkAppointmentExists($activity, $validator->safe()->all())) {
             return Error('Appointment just got booked');
         }
         $customer = app(CustomerServices::class)->getCustomer($validator->safe()->all());

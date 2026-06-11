@@ -101,7 +101,9 @@ describe('test NotifyCourseCustomer Command', function () {
             'end' => '20:00',
         ]);
         Appointment::truncate();
-        $conflict = Appointment::factory()->create([
+        $conflict = Appointment::factory()
+        ->for($course, 'holder')
+        ->create([
             'date' => Carbon::now()->toDateString(),
             'time' => '10:00',
             'status' => AppointmentStatus::accepted->value,

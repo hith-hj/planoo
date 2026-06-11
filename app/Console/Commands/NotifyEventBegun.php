@@ -105,7 +105,7 @@ final class NotifyEventBegun extends Command
     private function handleAppointmentConflict(string $date, Day $day, Event $event): void
     {
         $appointment = app(AppointmentServices::class)
-            ->getAppointmentIfExists([
+            ->getAppointmentIfExists($event, [
                 'date' => $date,
                 'session_duration' => $this->sessionDurationInMinutes($day),
                 'time' => $day->start,

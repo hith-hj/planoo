@@ -49,13 +49,15 @@ describe('Notify Event Session Test', function () {
 
     it('cancels conflicting appointment and notifies holder', function () {
         $user = User::factory()->create();
-        Event::factory()
+        $event = Event::factory()
             ->hasDays(['day' => 'tuesday', 'start' => '10:00', 'end' => '12:00'])
             ->create([
                 'user_id' => $user->id,
                 'status' => EventStatus::active->value,
             ]);
-        $conflict = Appointment::factory()->create([
+        $conflict = Appointment::factory()
+        ->for($event, 'holder')
+        ->create([
             'status' => AppointmentStatus::accepted->value,
             'date' => Carbon::now()->toDateString(),
             'time' => '10:00',

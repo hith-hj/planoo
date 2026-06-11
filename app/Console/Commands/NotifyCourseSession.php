@@ -112,7 +112,7 @@ final class NotifyCourseSession extends Command
         int $session_duration,
         AppointmentServices $appointmentService
     ): void {
-        $appointment = $appointmentService->getAppointmentIfExists([
+        $appointment = $appointmentService->getAppointmentIfExists($course, [
             'date' => $date,
             'session_duration' => $session_duration,
             'time' => $time,

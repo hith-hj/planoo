@@ -97,7 +97,9 @@ describe('Notify Event Start Test', function () {
                 'status' => EventStatus::pending->value,
             ]);
 
-        $conflict = Appointment::factory()->create([
+        $conflict = Appointment::factory()
+        ->for($event, 'holder')
+        ->create([
             'date' => Carbon::now()->toDateString(),
             'time' => '10:00',
             'status' => AppointmentStatus::accepted->value,

@@ -78,7 +78,7 @@ final class AppointmentController extends Controller
         app(CodeServices::class)->deleteCode($code);
 
         $activity = app(ActivityServices::class)->find($validator->safe()->integer('activity_id'));
-        if ($this->services->checkAppointmentExists($validator->safe()->all())) {
+        if ($this->services->checkAppointmentExists($activity, $validator->safe()->all())) {
             return Error('appointment just got booked');
         }
 
