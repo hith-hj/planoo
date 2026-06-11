@@ -9,6 +9,7 @@ enum SectionsTypes: int
     case activity = 1;
     case course = 2;
     case event = 3;
+    case court = 4;
 
     public static function values()
     {
