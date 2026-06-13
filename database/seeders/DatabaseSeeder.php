@@ -33,11 +33,13 @@ final class DatabaseSeeder extends Seeder
 
     public function createAdmin()
     {
-        Admin::factory()->create([
-            'name' => 'S_Ad',
-            'email' => 'S_Ad@admin.com',
-            'role' => AdminsRoles::super->value,
-        ]);
+        if (DB::table('admins')->count() === 0) {
+            Admin::factory()->create([
+                'name' => 'S_Ad',
+                'email' => 'S_Ad@admin.com',
+                'role' => AdminsRoles::super->value,
+            ]);
+        }
     }
 
     private function createCategories()
