@@ -15,7 +15,7 @@ final class ActivityValidators extends Validators
     {
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],
-        ]);
+        ], self::messages());
     }
 
     public static function create(array $data, bool $update = false)
@@ -27,13 +27,33 @@ final class ActivityValidators extends Validators
             'price' => ['required', 'numeric', 'min:1'],
             'session_duration' => ['required', 'numeric', new Enum(SessionDuration::class)],
             'activity_id' => [Rule::when($update, ['required', 'exists:activities,id'])],
-        ]);
+        ], self::messages());
     }
 
     public static function delete($data)
     {
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],
-        ]);
+        ], self::messages());
+    }
+
+    /**
+     * Get the activity validation translation messages.
+     */
+    private static function messages(): array
+    {
+        return [
+            'activity_id.required' => __('activity.activity_id.required'),
+            'activity_id.exists' => __('activity.activity_id.exists'),
+            'category_id.required' => __('activity.category_id.required'),
+            'category_id.exists' => __('activity.category_id.exists'),
+            'name.required' => __('activity.name.required'),
+            'description.required' => __('activity.description.required'),
+            'description.max' => __('activity.description.max'),
+            'price.required' => __('activity.price.required'),
+            'price.numeric' => __('activity.price.numeric'),
+            'price.min' => __('activity.price.min'),
+            'session_duration.required' => __('activity.session_duration.required'),
+        ];
     }
 }

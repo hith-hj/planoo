@@ -233,6 +233,7 @@
 	"code generation limit reached":"code generation limit reached",
 	"location exists":"location exists",
 	"validation failed":"validation failed",
-	"unauthorized request":"unauthorized request"
+	"unauthorized request":"unauthorized request",
+	"courses":"courses"
 	
 }
