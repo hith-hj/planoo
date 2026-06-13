@@ -235,5 +235,6 @@
 	"validation failed":"عملية تحقق خطأ",
 	"unauthorized request":"طلب غير مسموح",
 	"not found":"غير موجود",
-	"activities":"نشاطات"
+	"activities":"نشاطات",
+	"courses":"صفوف"
 }
