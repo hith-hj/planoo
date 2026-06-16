@@ -22,10 +22,15 @@ final class EventServices
         int $page = 1,
         int $perPage = 10,
         array $filters = [],
-        array $orderBy = []
+        array $orderBy = [],
+        mixed $query = null
     ) {
-        $query = Event::query();
-        $query->with($this->toBeLoaded());
+        if ($query === null) {
+            $query = Event::query();
+            $query->with($this->toBeLoaded());
+        } else {
+            $query->with([...$this->toBeLoaded(), 'isFavorite', 'isAttending']);
+        }
 
         $this->applyFilters($query, $filters, [
             'is_active' => [true, false],
@@ -158,15 +163,15 @@ final class EventServices
         $weeklySchedule = $event->days;
         $currentDate = Carbon::parse($event->start_date);
         $dayMapping =
-        [
-            'monday' => 1,
-            'tuesday' => 2,
-            'wednesday' => 3,
-            'thursday' => 4,
-            'friday' => 5,
-            'saturday' => 6,
-            'sunday' => 7,
-        ];
+            [
+                'monday' => 1,
+                'tuesday' => 2,
+                'wednesday' => 3,
+                'thursday' => 4,
+                'friday' => 5,
+                'saturday' => 6,
+                'sunday' => 7,
+            ];
         $processedSchedule = [];
         foreach ($weeklySchedule as $session) {
             $dayNum = $dayMapping[mb_strtolower($session['day'])];
@@ -218,6 +223,11 @@ final class EventServices
         $data['event_duration'] = count($generatedSessions);
 
         return $event->update(['end_date' => $data['end_date']]);
+    }
+
+    public function getCustomerQuery(Customer $customer)
+    {
+        return $customer->events();
     }
 
     private function toBeLoaded()

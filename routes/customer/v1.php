@@ -114,6 +114,7 @@ Route::controller(EventController::class)
     ->group(
         function (): void {
             Route::post('all', 'all')->name('all');
+            Route::post('attended', 'attended')->name('attended');
             Route::get('find', 'find')->name('find');
             Route::post('attend', 'attend')->name('attend');
             Route::post('cancel', 'cancel')->name('cancel');

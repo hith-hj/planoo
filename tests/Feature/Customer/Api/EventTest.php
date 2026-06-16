@@ -20,6 +20,20 @@ describe('Event Controller Tests', function () {
         expect($res->json('payload.events'))->toHaveCount(2);
     });
 
+    it('returns attended events for the customer', function () {
+        Event::truncate();
+        $event = Event::factory()->create();
+        $this->postJson("{$this->url}/attend?event_id={$event->id}")->assertOk();
+
+        $res = $this->postJson("{$this->url}/attended");
+        $res->assertOk();
+        expect($res->json('payload.events'))->toHaveCount(1)
+            ->and($res->json('payload.events.0'))->toHaveKeys([
+                'is_attending',
+                'is_favorite',
+            ]);
+    });
+
     it('returns paginated events ', function () {
         Event::truncate();
         Event::factory(2)->create();
@@ -38,7 +52,7 @@ describe('Event Controller Tests', function () {
             ->assertOk();
 
         expect($res->json('payload.event.id'))->toBe($event->id)
-         ->and($res->json('payload.event'))->toHaveKeys([
+            ->and($res->json('payload.event'))->toHaveKeys([
                 'is_favorite',
                 'is_attending'
             ]);
@@ -76,5 +90,4 @@ describe('Event Controller Tests', function () {
         $res = $this->postJson("{$this->url}/cancel?event_id={$event->id}");
         $res->assertStatus(400);
     });
-
 });

@@ -34,6 +34,28 @@ final class EventController extends Controller
         ]);
     }
 
+    public function attended(Request $request)
+    {
+        $query = $this->services->getCustomerQuery(Auth::user());
+        $page = $request->integer('page', 1);
+        $perPage = $request->integer('perPage', 10);
+        $filters = $request->input('filters', []);
+        $orderBy = $request->input('orderBy', []);
+        $events = $this->services->allByFilter(
+            $page,
+            $perPage,
+            $filters,
+            $orderBy,
+            $query
+        );
+
+        return Success(payload: [
+            'page' => $page,
+            'perPage' => $perPage,
+            'events' => $events->toResourceCollection(),
+        ]);
+    }
+
     public function find(Request $request)
     {
         $validator = EventValidators::find($request->all());
