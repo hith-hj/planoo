@@ -21,6 +21,19 @@ describe('Course Controller Tests', function () {
         expect($response->json('payload.courses'))->toHaveCount(2);
     });
 
+    it('returns all attended courses for customer', function () {
+        Course::truncate();
+        $course = Course::factory()->create();
+        $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
+        $response = $this->postJson("{$this->url}/attended")->assertOk();
+        expect($response->json('payload.courses'))->toHaveCount(1)
+        ->and($response->json('payload.courses.0'))->toHaveKeys([
+            'customer',
+            'is_attending',
+            'is_favorite',
+        ]);
+    });
+
     it('returns paginated courses ', function () {
         Course::truncate();
         Course::factory(2)->create();

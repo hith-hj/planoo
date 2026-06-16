@@ -57,6 +57,15 @@ final class CourseResource extends JsonResource
                     ];
                 })
             ),
+            'customer' => $this->when(
+                $isCustomer && $this->relationLoaded('isAttending') && count($this->isAttending) > 0,
+                function () {
+                    return [
+                        'remaining_sessions' => $this->pivot->remaining_sessions,
+                        'is_complete' => $this->pivot->is_complete,
+                    ];
+                }
+            ),
             'is_favorite' => $this->when(
                 ! $isOwner && $isCustomer && $this->relationLoaded('isFavorite'),
                 fn () => (bool) count($this->isFavorite)
