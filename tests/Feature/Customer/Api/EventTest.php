@@ -55,7 +55,23 @@ describe('Event Controller Tests', function () {
             ->and($res->json('payload.event'))->toHaveKeys([
                 'is_favorite',
                 'is_attending'
-            ]);
+            ])
+            ->and($res->json('payload.event.is_attending'))->toBeFalse();
+    });
+
+    it('finds attended event by ID', function () {
+        $event = Event::factory()->create();
+        $this->postJson("{$this->url}/attend?event_id={$event->id}")->assertOk();
+
+        $res = $this->getJson("{$this->url}/find?event_id={$event->id}")
+            ->assertOk();
+
+        expect($res->json('payload.event.id'))->toBe($event->id)
+            ->and($res->json('payload.event'))->toHaveKeys([
+                'is_favorite',
+                'is_attending'
+            ])
+            ->and($res->json('payload.event.is_attending'))->toBeTrue();
     });
 
     it('fails to find an event with invalid ID', function () {

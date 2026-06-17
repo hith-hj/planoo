@@ -27,11 +27,11 @@ describe('Course Controller Tests', function () {
         $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
         $response = $this->postJson("{$this->url}/attended")->assertOk();
         expect($response->json('payload.courses'))->toHaveCount(1)
-        ->and($response->json('payload.courses.0'))->toHaveKeys([
-            'customer',
-            'is_attending',
-            'is_favorite',
-        ]);
+            ->and($response->json('payload.courses.0'))->toHaveKeys([
+                'customer',
+                'is_attending',
+                'is_favorite',
+            ]);
     });
 
     it('returns paginated courses ', function () {
@@ -55,7 +55,23 @@ describe('Course Controller Tests', function () {
             ->and($response->json('payload.course'))->toHaveKeys([
                 'is_favorite',
                 'is_attending'
-            ]);
+            ])
+            ->and($response->json('payload.course.is_attending'))->toBeFalse();
+
+    });
+
+    it('finds a attended course by ID', function () {
+        $course = Course::factory()->create();
+        $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
+
+        $response = $this->getJson("{$this->url}/find?course_id={$course->id}")
+            ->assertOk();
+        expect($response->json('payload.course.id'))->toBe($course->id)
+            ->and($response->json('payload.course'))->toHaveKeys([
+                'is_favorite',
+                'is_attending'
+            ])
+            ->and($response->json('payload.course.is_attending'))->toBeTrue();
     });
 
     it('fails to find an course with invalid ID', function () {
@@ -73,7 +89,7 @@ describe('Course Controller Tests', function () {
     it('can attend course after starting', function () {
         $course = Course::factory()->create([
             'start_date' => today()->subDays(2),
-            'status'=>CourseStatus::active->value
+            'status' => CourseStatus::active->value
         ]);
         $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
         $customerCourse = $this->user->courses()->wherePivot('course_id', $course->id)->first();
@@ -103,5 +119,4 @@ describe('Course Controller Tests', function () {
         $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}");
         $res->assertStatus(400);
     });
-
 });
