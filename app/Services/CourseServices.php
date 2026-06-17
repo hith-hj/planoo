@@ -37,6 +37,7 @@ final class CourseServices
             'is_active' => [true, false],
             'is_full' => [true, false],
             'course_duration' => CourseDuration::values(),
+            'start_date' => [],
             'category_id' => [],
         ]);
 
