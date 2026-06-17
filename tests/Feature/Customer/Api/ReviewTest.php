@@ -34,6 +34,16 @@ describe('Review Controller Tests', function () {
             ->and($res->json('payload.review.content'))->toBe($rev['content']);
     });
 
+    it('creates a review without content', function () {
+        $this->activity->reviews()->delete();
+        $rev = Review::factory()->for($this->customer, 'customer')->make()->toArray();
+        $rev['content'] = null;
+        $res = $this->postJson("$this->url/create/activity/{$this->activity->id}", $rev);
+        $res->assertOk();
+        expect($res->json('payload.review'))->not->toBeNull()
+            ->and($res->json('payload.review.content'))->toBeNull();
+    });
+
     it('cant update a review for same activity before 24 hour has passed', function () {
         $this->activity->reviews()->delete();
         $rev = Review::factory()->for($this->customer, 'customer')->make()->toArray();

@@ -15,12 +15,9 @@ final class EventResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $end_date = $this->start_date;
-        if ($this->event_duration > 1) {
-            $end_date = Carbon::createFromDate($this->start_date)
-                ->addDays($this->event_duration)
-                ->toDateString();
-        }
+        $endDate = $this->event_duration > 1
+            ? Carbon::parse($this->start_date)->addDays($this->event_duration)->toDateString()
+            : $this->start_date;
 
         return [
             'id' => $this->id,
@@ -35,42 +32,45 @@ final class EventResource extends JsonResource
             'withdrawal_fee' => $this->withdrawal_fee,
             'event_duration' => $this->event_duration,
             'start_date' => $this->start_date,
-            'end_date' => $end_date,
+            'end_date' => $this->end_date,
             'rate' => $this->rate,
             'status' => EventStatus::from($this->status)->name,
-            ...$this->exrtas(),
+            ...$this->extras(),
         ];
     }
 
-    private function exrtas(): array
+    private function extras(): array
     {
-        $isOwner = Auth::id() === $this->user_id;
-        $isCustomer = Auth::user() instanceof Customer;
+        $user = Auth::user();
+        $isOwner = $user?->id === $this->user_id;
+        $isCustomer = $user instanceof Customer;
+
+        $showOwnerData = $isOwner && $this->relationLoaded('customers');
+        $showCustomerData = ! $isOwner && $isCustomer;
 
         return [
             'attendees' => $this->when(
-                $isOwner && $this->relationLoaded('customers'),
+                $showOwnerData,
                 fn () => $this->customers->count()
             ),
             'customers' => $this->when(
-                $isOwner && $this->relationLoaded('customers'),
-                fn () => $this->customers->map(function ($customer) {
-                    return [
-                        'name' => $customer->name,
-                        'profile_image' => optional($customer->mediaByName('profile_image'), function ($media) {
-                            return MediaResource::make($media);
-                        }),
-                        'attended_at' => $customer->pivot->created_at,
-                    ];
-                })
+                $showOwnerData,
+                fn () => $this->customers->map(fn ($customer) => [
+                    'name' => $customer->name,
+                    'profile_image' => optional(
+                        $customer->mediaByName('profile_image'),
+                        fn ($media) => MediaResource::make($media)
+                    ),
+                    'attended_at' => $customer->pivot?->created_at,
+                ])
             ),
             'is_favorite' => $this->when(
-                ! $isOwner && $isCustomer && $this->relationLoaded('isFavorite'),
-                fn () => (bool) count($this->isFavorite)
+                $showCustomerData && $this->relationLoaded('isFavorite'),
+                fn () => $this->isFavorite->isNotEmpty()
             ),
             'is_attending' => $this->when(
-                ! $isOwner && $isCustomer && $this->relationLoaded('isAttending'),
-                fn () => (bool) count($this->isAttending)
+                $showCustomerData && $this->relationLoaded('isAttending'),
+                fn () => $this->isAttending->isNotEmpty()
             ),
             'days' => DayResource::collection($this->whenLoaded('days')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),

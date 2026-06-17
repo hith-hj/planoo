@@ -41,7 +41,7 @@ final class ReviewServices
         Required($data, 'data');
         checkAndCastData($data, [
             'rate' => 'int',
-            'content' => 'string',
+            'content' => 'string|null',
         ]);
 
         $review = $reviewable->reviews()->where('customer_id', $customer->id)->first();

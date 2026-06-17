@@ -23,15 +23,21 @@ final class CourseServices
         int $page = 1,
         int $perPage = 10,
         array $filters = [],
-        array $orderBy = []
+        array $orderBy = [],
+        mixed $query = null,
     ) {
-        $query = Course::query();
-        $query->with($this->toBeLoaded());
+        if ($query === null) {
+            $query = Course::query();
+            $query->with($this->toBeLoaded());
+        } else {
+            $query->with([...$this->toBeLoaded(), 'isFavorite', 'isAttending']);
+        }
 
         $this->applyFilters($query, $filters, [
             'is_active' => [true, false],
             'is_full' => [true, false],
             'course_duration' => CourseDuration::values(),
+            'start_date' => [],
             'category_id' => [],
         ]);
 
@@ -168,6 +174,11 @@ final class CourseServices
         );
 
         return $course;
+    }
+
+    public function getCustomerQuery(Customer $customer)
+    {
+        return $customer->courses();
     }
 
     private function toBeLoaded()
