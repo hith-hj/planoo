@@ -29,6 +29,24 @@ return [
         'min' => 'The password must be at least :min characters.',
         'confirmed' => 'The password confirmation does not match.',
     ],
+
+    'email' => [
+        'required' => 'The email is required.',
+        'email' => 'The Email must be a valid email address.',
+        'unique' => 'This email address is already registered.',
+    ],
+
+    'gender' => [
+        'required' => 'Gender is required.',
+        'in' => 'The selected gender is invalid.',
+    ],
+
+    'birthdate' => [
+        'required' => 'The Birthdate is required.',
+        'date' => 'The date must strictly follow the format: YYYY-MM-DD.',
+        'before_or_equal' => 'Age must be older than '.Setting('minimum_customer_age', 14),
+    ],
+
     'firebase_token' => [
         'required' => 'The Firebase device token is required.',
     ],

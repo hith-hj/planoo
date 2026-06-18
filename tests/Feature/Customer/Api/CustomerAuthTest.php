@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\CodesTypes;
 use App\Models\Customer;
+use App\Models\Media;
 use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {
@@ -19,6 +20,25 @@ describe('CustomerAuth Controller test', function () {
         $res = $this->postJson(route('customer.register'), $data);
         $res->assertOk();
         $this->assertDatabaseCount('customers', 1);
+    });
+
+    it('registers_a_customer_with_profile_image',function(){
+        Customer::truncate();
+        $data = Customer::factory()->password()->make()->toArray();
+        $data['profile_image'] = Media::factory()->fakeFile('kosa.jpeg');
+        $res = $this->postJson(route('customer.register'), $data);
+        $res->assertOk();
+        $this->assertDatabaseCount('customers', 1);
+    });
+
+    it('fails_to_registers_a_customer_yonger_that_14',function(){
+        Customer::truncate();
+        $data = Customer::factory()->password()->make()->toArray();
+        $data['birthdate'] = now()->format('Y-m-d');
+        $data['profile_image'] = Media::factory()->fakeFile('kosa.jpeg');
+        $res = $this->postJson(route('customer.register'), $data);
+        $res->assertStatus(422);
+        expect($res->json('payload.errors'))->toHaveKeys(['birthdate']);
     });
 
     it('fails_to_registers_a_customer', function () {
@@ -75,7 +95,19 @@ describe('CustomerAuth Controller test', function () {
         ]);
         expect($res->status())->toBe(200);
         expect($res->json('payload'))->toHaveKeys(['customer', 'token'])
-            ->and($customer->fresh()->firebase_token)->toBe('new token');
+            ->and($customer->fresh()->firebase_token)->toBe('new token')
+            ->and($res->json('payload.customer'))->not->toBeNull()
+            ->and($res->json('payload.customer'))->toHaveKeys([
+                'name',
+                'email',
+                'gender',
+                'birthdate',
+                'status',
+                'is_verified',
+                'is_notifiable',
+                'is_active',
+                'profile_image',
+            ]);
     });
 
     it('prevent_unverified_customer_login', function () {

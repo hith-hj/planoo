@@ -26,6 +26,9 @@ final class CustomerAuthServices
         $customer = Customer::create([
             'name' => $data['name'],
             'phone' => $data['phone'],
+            'email' => $data['email'],
+            'gender' => $data['gender'],
+            'birthdate' => $data['birthdate'],
             'firebase_token' => $data['firebase_token'],
             'password' => bcrypt($data['password']),
             'status' => AccountStatus::fresh->value,

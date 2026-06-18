@@ -10,10 +10,19 @@ final class CustomerAuthValidators extends Validators
 {
     public static function register(array $data)
     {
+        $minCustomerAge = Setting('minimum_customer_age', 14);
+
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'unique:customers'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:customers'],
+            'gender' => ['required', 'in:male,female'],
+            'birthdate' => [
+                'required',
+                'date',
+                'before_or_equal:'.now()->subYears($minCustomerAge)->format('Y-m-d'),
+            ],
             'firebase_token' => ['required'],
         ], self::messages());
     }
@@ -85,6 +94,17 @@ final class CustomerAuthValidators extends Validators
             'password.required' => __('customer.password.required'),
             'password.min' => __('customer.password.min'),
             'password.confirmed' => __('customer.password.confirmed'),
+
+            'email.required' => __('customer.email.required'),
+            'email.email' => __('customer.email.email'),
+            'email.unique' => __('customer.email.unique'),
+
+            'gender.required' => __('customer.gender.required'),
+            'gender.in' => __('customer.gender.in'),
+
+            'birthdate.required' => __('customer.birthdate.required'),
+            'birthdate.date' => __('customer.birthdate.date'),
+            'birthdate.before_or_equal' => __('customer.birthdate.before_or_equal'),
 
             'firebase_token.required' => __('customer.firebase_token.required'),
 
