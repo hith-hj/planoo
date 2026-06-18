@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 final class CustomerValidators extends Validators
 {
@@ -22,10 +23,15 @@ final class CustomerValidators extends Validators
         ], self::messages());
     }
 
-    public static function profileImage(array $data)
+    public static function profileImage(array $data, bool $optional = false)
     {
         return Validator::make($data, [
-            'profile_image' => ['required', 'image', 'mimetypes:image/jpeg,image/png', 'max:1024'],
+            'profile_image' => [
+                Rule::when($optional === false, ['required']),
+                'image',
+                'mimetypes:image/jpeg,image/png',
+                'max:1024',
+            ],
         ], self::messages());
     }
 

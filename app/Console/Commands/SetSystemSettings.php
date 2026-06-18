@@ -153,6 +153,11 @@ final class SetSystemSettings extends Command
                 'value' => '5',
                 'description' => 'the number of generated code digits',
             ],
+            [
+                'name' => 'minimum_customer_age',
+                'value' => '14',
+                'description' => 'the minimum age required for customer to register',
+            ],
         ];
     }
 }

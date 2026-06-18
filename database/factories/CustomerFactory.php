@@ -16,11 +16,16 @@ final class CustomerFactory extends Factory
 {
     public function definition(): array
     {
+        $minCustomerAge = Setting('minimum_customer_age', 14);
+
         return [
             'name' => fake()->name,
             'password' => bcrypt('password'),
             'phone' => fake()->regexify("(09)[1-9]{1}\d{7}"),
             'status' => AccountStatus::fresh->value,
+            'email' => fake()->email,
+            'gender' => fake()->randomElement(['male', 'female']),
+            'birthdate' => fake()->dateTimeBetween(endDate: now()->subYears($minCustomerAge))->format('Y-m-d'),
             'firebase_token' => str()->random(32),
             'verified_by' => 'phone',
             'verified_at' => now(),
