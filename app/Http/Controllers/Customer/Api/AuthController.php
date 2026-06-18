@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Customer\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Services\CustomerAuthServices;
+use App\Services\CustomerServices;
 use App\Validators\CustomerAuthValidators;
+use App\Validators\CustomerValidators;
 use Illuminate\Http\Request;
 
 final class AuthController extends Controller
@@ -16,7 +19,12 @@ final class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = CustomerAuthValidators::register($request->all());
-        $this->services->create($validator->safe()->all());
+        /** @var Customer $customer */
+        $customer = $this->services->create($validator->safe()->all());
+        $customerValidator = CustomerValidators::profileImage($request->all(), true);
+        if ($request->has('profile_image') && $customerValidator->safe()->has('profile_image')) {
+            app(CustomerServices::class)->uploadProfileImage($customer, $customerValidator->safe()->all());
+        }
 
         return Success();
     }
