@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Enums\NotificationTypes;
+use App\Jobs\ResourceConflictDetectorJob;
 use App\Models\Event;
 
 final class EventObserver
@@ -14,7 +15,10 @@ final class EventObserver
      */
     public function created(Event $event): void
     {
-        //
+        ResourceConflictDetectorJob::dispatch(
+            'event',
+            $event->id
+        );
     }
 
     /**
