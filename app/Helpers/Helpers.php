@@ -154,36 +154,6 @@ if (! function_exists('Falsy')) {
     }
 }
 
-if (! function_exists('getModel')) {
-    /**
-     * Retrieve an Eloquent model instance based on type and id.
-     *
-     * If type or id are not provided, they will be retrieved from the request.<br>
-     * if any of the fields is not present in the request exception will be thrown.<br>
-     * The function validates the model type, ensures the class exists,<br>
-     * and confirms the model belongs to the authenticated user.<br>
-     *
-     *
-     * @throws Illuminate\Validation\ValidationException
-     * @throws NotFoundHttpException
-     */
-    function getModel(?string $owner_type = null, ?int $owner_id = null): Taggable|Dayable|Mediable|Locatable|Reviewable|Model
-    {
-        $id = $owner_id ?? (int) request('owner_id');
-        $type = $owner_type ?? request('owner_type');
-        Truthy(is_null($type) || is_null($id), 'failed to retrieve model');
-        Truthy(! in_array($type, SectionsTypes::names()), sprintf('%s : %s', __('invalid model type'), "{$type}"));
-        $type = ucfirst($type);
-        $class = "App\\Models\\{$type}";
-        Truthy(! class_exists($class), sprintf('%s : %s', __('class does not exist'), "{$class}"));
-        $model = $class::find($id);
-        NotFound($model, sprintf('%s : %s', __('model not found'), "{$type} - {$id}"));
-        Truthy((int) $model->user_id !== (int) Auth::id(), 'unauthorized access');
-
-        return $model;
-    }
-}
-
 if (! function_exists('getModelGlobal')) {
     /**
      * Retrieve an Eloquent model instance based on type and id.
@@ -207,6 +177,16 @@ if (! function_exists('getModelGlobal')) {
         Truthy(! class_exists($class), sprintf('%s : %s', __('class does not exist'), "{$class}"));
         $model = $class::find($id);
         NotFound($model, sprintf('%s : %s', __('model not found'), "{$type} - {$id}"));
+
+        return $model;
+    }
+}
+
+if (! function_exists('getModel')) {
+    function getModel(?string $owner_type = null, ?int $owner_id = null): Taggable|Dayable|Mediable|Locatable|Reviewable|Model
+    {
+        $model = getModelGlobal($owner_type, $owner_id);
+        Truthy((int) $model->user_id !== (int) Auth::id(), 'unauthorized access');
 
         return $model;
     }
