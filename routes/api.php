@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\LabelController;
+use App\Http\Controllers\WhatsAppWebhooksController;
 use App\Http\Middleware\Auth\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -34,3 +35,10 @@ Route::middleware([JwtMiddleware::class, 'throttle:api'])->group(function () {
         });
     });
 });
+
+Route::controller(WhatsAppWebhooksController::class)
+    ->prefix('webhooks')
+    ->group(function () {
+        Route::get('whatsapp', 'verify');
+        Route::post('whatsapp', 'handle');
+    });

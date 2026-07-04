@@ -10,11 +10,11 @@ use Exception;
 
 trait VerificationHandler
 {
-    public function verify(string $codeType = CodesTypes::verification->name, string $by = 'fcm'): static
+    public function verify(string $codeType = CodesTypes::verification->name, string $by = 'whatsapp'): static
     {
         $this->checkFields();
         $this->checkMethods();
-        $code = $this->createCode(type: $codeType, timeToExpire: '15:m');
+        $code = $this->createCode(type: $codeType.':'.$by, timeToExpire: '15:m');
         $this->update([
             'verified_at' => null,
             'verified_by' => $by,
@@ -43,18 +43,18 @@ trait VerificationHandler
     private function checkFields()
     {
         if (count(array_diff(['verified_at', 'verified_by'], array_keys($this->toArray()))) !== 0) {
-            throw new Exception(class_basename($this::class).' missing verification fields');
+            throw new Exception(class_basename($this::class) . ' missing verification fields');
         }
     }
 
     private function checkMethods()
     {
         if (! method_exists($this, 'code')) {
-            throw new Exception(class_basename($this::class).' missing codes Handler');
+            throw new Exception(class_basename($this::class) . ' missing codes Handler');
         }
 
         if (! method_exists($this, 'notify')) {
-            throw new Exception(class_basename($this::class).' missing notifications Handler');
+            throw new Exception(class_basename($this::class) . ' missing notifications Handler');
         }
     }
 }
