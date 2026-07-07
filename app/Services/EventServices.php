@@ -37,6 +37,7 @@ final class EventServices
             'is_full' => [true, false],
             'start_date' => [],
             'category_id' => [],
+            'court_id' => [],
         ]);
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'admission_fee', 'event_duration']);

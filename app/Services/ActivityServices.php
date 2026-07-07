@@ -28,6 +28,7 @@ final class ActivityServices
             'is_active' => [true, false],
             'session_duration' => SessionDuration::values(),
             'category_id' => [],
+            'court_id' => [],
             'name' => [],
         ]);
 
