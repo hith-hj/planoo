@@ -39,6 +39,7 @@ final class CourseServices
             'course_duration' => CourseDuration::values(),
             'start_date' => [],
             'category_id' => [],
+            'court_id' => [],
         ]);
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'price']);
