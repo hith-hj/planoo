@@ -248,7 +248,7 @@ describe('CustomerAuth Controller test', function () {
 
     it('can change password ', function () {
         $customer = Customer::factory()->create();
-        $res = $this->replaceUser($customer)->postJson(route('customer.changePassword'), [
+        $res = $this->replaceUser($customer,true)->postJson(route('customer.changePassword'), [
             'old_password' => 'password',
             'new_password' => 'new_password',
             'new_password_confirmation' => 'new_password',
