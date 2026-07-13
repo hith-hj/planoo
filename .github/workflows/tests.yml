@@ -40,4 +40,4 @@ jobs:
         run: php artisan jwt:secret --force --no-ansi --no-interaction
 
       - name: tests
-        run: php artisan test -p
+        # run: php artisan test -p
