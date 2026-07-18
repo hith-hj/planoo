@@ -36,6 +36,24 @@ final class CourtServices
         return $court->load($this->toBeLoaded());
     }
 
+    public function all(int $page = 1, int $perPage = 10)
+    {
+        $query = Court::with($this->toBeLoaded());
+        $courts = $query->paginate($perPage, ['*'], 'page', $page);
+        NotFound($courts, 'court');
+
+        return $courts;
+    }
+
+    public function search(string $name)
+    {
+        Required($name, 'name');
+        $court = Court::whereLike('name', $name)->get();
+        NotFound($court, 'court');
+
+        return $court->load($this->toBeLoaded());
+    }
+
     public function create(User $user, array $data): Court
     {
         Required($data, 'court data');
