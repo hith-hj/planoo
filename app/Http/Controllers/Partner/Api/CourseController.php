@@ -60,6 +60,7 @@ final class CourseController extends Controller
             Auth::user(),
             $validator->safe()->integer('course_id')
         );
+        Truthy($validator->safe()->input('court_id') !== $course->court_id, 'invalid operation');
 
         $this->services->update(
             Auth::user(),
