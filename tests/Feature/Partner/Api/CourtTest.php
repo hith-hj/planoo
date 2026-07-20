@@ -15,6 +15,20 @@ beforeEach(function () {
 });
 
 describe('Court controller tests', function () {
+    test('partner check if has courts return false', function () {
+        $this->user->courts()->delete();
+        $response = $this->getJson(route('partner.court.hasCourt'));
+        $response->assertStatus(200);
+        expect($response->json('payload.hasCourt'))->toBeFalse();
+    });
+
+    test('partner check if has courts return true', function () {
+        Court::factory()->count(3)->for($this->user, 'user')->create();
+        $response = $this->getJson(route('partner.court.hasCourt'));
+        $response->assertStatus(200);
+        expect($response->json('payload.hasCourt'))->toBeTrue();
+    });
+
     test('partner can list all their courts', function () {
         Court::factory()->count(3)->for($this->user, 'user')->create();
 

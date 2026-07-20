@@ -80,6 +80,11 @@ final class CourtServices
         return $court->update(['is_active' => ! $court->is_active]);
     }
 
+    public function hasCourt(User $user): bool
+    {
+        return $user->courts()->count() > 0;
+    }
+
     private function toBeLoaded(): array
     {
         return ['activities', 'courses', 'events'];
