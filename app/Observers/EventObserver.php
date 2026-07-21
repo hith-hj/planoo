@@ -26,7 +26,10 @@ final class EventObserver
      */
     public function updated(Event $event): void
     {
-        //
+        ResourceConflictDetectorJob::dispatch(
+            'event',
+            $event->id
+        );
     }
 
     /**

@@ -18,6 +18,15 @@ final class Day extends Model
         'is_active' => true,
     ];
 
+    protected static function booted()
+    {
+        self::updated(function ($day) {
+            if ($day->holder) {
+                $day->holder->touch();
+            }
+        });
+    }
+
     protected function casts()
     {
         return [

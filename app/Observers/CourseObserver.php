@@ -26,7 +26,10 @@ final class CourseObserver
      */
     public function updated(Course $course): void
     {
-        //
+        ResourceConflictDetectorJob::dispatch(
+            'course',
+            $course->id
+        );
     }
 
     /**

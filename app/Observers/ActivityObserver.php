@@ -37,7 +37,10 @@ final class ActivityObserver
      */
     public function updated(Activity $activity): void
     {
-        //
+        ResourceConflictDetectorJob::dispatch(
+            'activity',
+            $activity->id
+        );
     }
 
     /**
