@@ -36,10 +36,12 @@ abstract class TestCase extends BaseTestCase
         return $this;
     }
 
-    final public function replaceUser($user)
+    final public function replaceUser($user, bool $is_customer = false)
     {
         $this->user = $user;
-
+        if($is_customer){
+            auth()->shouldUse('customer:api');
+        }
         return $this->api();
     }
 
@@ -71,7 +73,7 @@ abstract class TestCase extends BaseTestCase
     private function customer()
     {
         $this->user = Customer::factory()->create();
-
+        auth()->shouldUse('customer:api');
         return $this;
     }
 }

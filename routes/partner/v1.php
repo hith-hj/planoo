@@ -61,6 +61,7 @@ Route::controller(CourtController::class)
             Route::post('create', 'create')->name('create');
             Route::post('update', 'update')->name('update');
             Route::delete('delete', 'delete')->name('delete');
+            Route::get('hasCourt', 'hasCourt')->name('hasCourt');
         }
     );
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Customer\Api\ActivityController;
 use App\Http\Controllers\Customer\Api\AppointmentController;
 use App\Http\Controllers\Customer\Api\AuthController;
 use App\Http\Controllers\Customer\Api\CourseController;
+use App\Http\Controllers\Customer\Api\CourtController;
 use App\Http\Controllers\Customer\Api\CustomerController;
 use App\Http\Controllers\Customer\Api\EventController;
 use App\Http\Controllers\Customer\Api\FavoriteController;
@@ -58,6 +59,17 @@ Route::controller(LocationController::class)
             Route::post('create', 'create')->name('create');
             Route::patch('update', 'update')->name('update');
             Route::delete('delete', 'delete')->name('delete');
+        }
+    );
+
+Route::controller(CourtController::class)
+    ->prefix('court')
+    ->name('court.')
+    ->group(
+        function (): void {
+            Route::get('all', 'all')->name('all');
+            Route::get('find', 'find')->name('find');
+            Route::get('search', 'search')->name('search');
         }
     );
 

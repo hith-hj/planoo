@@ -61,6 +61,7 @@ final class EventController extends Controller
             Auth::user(),
             $validator->safe()->integer('event_id')
         );
+        Truthy($validator->safe()->input('court_id') !== $event->court_id, 'invalid operation');
 
         $this->services->update(
             Auth::user(),

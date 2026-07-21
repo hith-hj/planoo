@@ -85,4 +85,9 @@ final class CourtController extends Controller
 
         return Success(msg: 'court deleted');
     }
+
+    public function hasCourt(Request $request)
+    {
+        return Success(payload: ['hasCourt' => $this->services->hasCourt(Auth::user())]);
+    }
 }

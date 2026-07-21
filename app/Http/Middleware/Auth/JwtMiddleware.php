@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Middleware\Auth;
 
 use Closure;
-use Exception;
 use Illuminate\Http\Request;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -23,17 +22,21 @@ final class JwtMiddleware
         try {
             $guard = null;
 
-            if ($request->is('*api/partner/*')) {
+            if ($request->is('api/partner/*') || str_contains($request->getPathInfo(), 'api/partner')) {
                 $guard = 'partner:api';
-            } elseif ($request->is('*api/customer/*')) {
+            } elseif ($request->is('api/customer/*') || str_contains($request->getPathInfo(), 'api/customer')) {
                 $guard = 'customer:api';
             } else {
-                throw new Exception('Invalid route guard', 422);
+                return Error(msg: 'Invalid route guard', code: 422);
             }
+
             auth()->shouldUse($guard);
             $user = JWTAuth::parseToken()->authenticate();
+            if (! $user) {
+                return Error(msg: 'User Not Found', code: 416);
+            }
         } catch (JWTException $e) {
-            return Error(msg: "Invaid Token: {$e->getMessage()}", code: 401);
+            return Error(msg: "Invalid Token: {$e->getMessage()}", code: 401);
         }
 
         return $next($request);

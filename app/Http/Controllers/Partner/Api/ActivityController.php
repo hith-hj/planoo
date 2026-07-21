@@ -59,6 +59,7 @@ final class ActivityController extends Controller
             Auth::user(),
             $validator->safe()->integer('activity_id')
         );
+        Truthy($validator->safe()->input('court_id') !== $activity->court_id, 'invalid operation');
         // TODO: check if the activity has any appointment prevent update ad diactivate
         $this->services->update(
             Auth::user(),
