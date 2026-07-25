@@ -51,9 +51,9 @@
             </a>
 
             <!-- Join Button -->
-            <a href="#apps" class="hidden sm:inline-block bg-teal hover:bg-tealhover text-white font-bold py-3 px-6 rounded-full transition-colors">
+            {{-- <a href="#apps" class="hidden sm:inline-block bg-teal hover:bg-tealhover text-white font-bold py-3 px-6 rounded-full transition-colors">
                 {{ __('Download App') }}
-            </a>
+            </a> --}}
 
             <!-- Mobile Menu Icon -->
             <button id="mobile-menu-btn" class="lg:hidden text-purple p-2">
