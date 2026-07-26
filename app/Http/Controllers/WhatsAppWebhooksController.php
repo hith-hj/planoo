@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class WhatsAppWebhooksController extends Controller
+final class WhatsAppWebhooksController extends Controller
 {
     /**
      * 1. Meta Webhook Verification (GET Request)
@@ -22,11 +25,13 @@ class WhatsAppWebhooksController extends Controller
 
         if ($mode === 'subscribe' && $token === $localToken) {
             Log::info('WhatsApp Webhook successfully verified.');
+
             // Meta explicitly expects a raw string response of the challenge variable with a 200 code
             return response($challenge, 200)->header('Content-Type', 'text/plain');
         }
 
         Log::warning('WhatsApp Webhook verification failed. Invalid token.');
+
         return response('Unauthorized', 403);
     }
 
@@ -40,7 +45,7 @@ class WhatsAppWebhooksController extends Controller
 
         defer(function () use ($payload) {
             try {
-                if (!isset($payload['entry'][0]['changes'][0]['value'])) {
+                if (! isset($payload['entry'][0]['changes'][0]['value'])) {
                     return;
                 }
 
@@ -51,7 +56,7 @@ class WhatsAppWebhooksController extends Controller
                     foreach ($value['statuses'] as $status) {
                         Log::info('WhatsApp Message Status Processed:', [
                             'wamid' => $status['id'],
-                            'status' => $status['status']
+                            'status' => $status['status'],
                         ]);
                         $payload = Cache::get("wa_msg_{$status['id']}");
 
@@ -65,14 +70,14 @@ class WhatsAppWebhooksController extends Controller
                         if (($message['type'] ?? '') === 'text') {
                             Log::info('WhatsApp incoming Message Processed:', [
                                 'from' => $message['from'],
-                                'body' => $message['text']['body']
+                                'body' => $message['text']['body'],
                             ]);
                             // Execute chatbot or notification logic here
                         }
                     }
                 }
-            } catch (\Exception $e) {
-                Log::error('Error processing WhatsApp Webhook: ' . $e->getMessage());
+            } catch (Exception $e) {
+                Log::error('Error processing WhatsApp Webhook: '.$e->getMessage());
             }
         });
 
