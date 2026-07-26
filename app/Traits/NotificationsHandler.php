@@ -6,19 +6,15 @@ namespace App\Traits;
 
 use App\Enums\NotificationTypes;
 use App\Models\Notification;
+use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Facades\Log;
-use Kreait\Firebase\Exception\MessagingException;
-use Kreait\Firebase\Factory as FcmFactory;
-use Kreait\Firebase\Messaging\AndroidConfig;
-use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Messaging\MessageData;
-use Kreait\Firebase\Messaging\Notification as FcmNotification;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 trait NotificationsHandler
 {
+    use FCMHandler;
+    use SMSHandler;
     use WhatsappHandler;
 
     private string $title = '';
@@ -43,7 +39,7 @@ trait NotificationsHandler
         $this->title = $title;
         $this->body = $body;
         $this->data = $data;
-        $this->className = class_basename($this::class) . "[{$this->id}]";
+        $this->className = class_basename($this::class)."[{$this->id}]";
         if (app()->environment(['testing', 'local'])) {
             $this->store(['result' => 'testing notification']);
             Log::info("Notification {$this->className} : {$this->body}");
@@ -83,121 +79,56 @@ trait NotificationsHandler
 
     private function fcm(): bool
     {
-        if ($this->firebase_token === null) {
-            Log::error("No FCM token on {$this->className}");
-
-            return true;
-        }
-        $factory = (new FcmFactory)->withServiceAccount($this->getFCMCredentials());
-        $messaging = $factory->createMessaging();
-        $notification = ['title' => $this->title, 'body' => $this->body];
-        $message = CloudMessage::new()->toToken($this->firebase_token)
-            ->withNotification(FcmNotification::fromArray($notification))
-            ->withAndroidConfig($this->getFCMAndroidConfig())
-            ->withData(MessageData::fromArray($this->data));
-
         try {
-            $res = $messaging->send($message);
+            $res = $this->sendFCM($this->fcmToken(), $this->title, $this->body, $this->data);
             $this->store(['result' => $res]);
 
             return true;
-        } catch (MessagingException) {
+        } catch (Exception $e) {
+            Log::error("FCM notification error {$e->getMessage()}");
+
             return false;
         }
-    }
-
-    private function getFCMCredentials(): string
-    {
-        Truthy(! file_exists(storage_path('app/fcm.json')), 'Missing firebase config file');
-
-        return storage_path('app/fcm.json');
-    }
-
-    private function getFCMAndroidConfig(): object
-    {
-        return AndroidConfig::fromArray([
-            'ttl' => '1800s',
-            'priority' => 'high',
-            'notification' => [
-                'icon' => 'stock_ticker_update',
-                'color' => '#f45342',
-                'sound' => 'default',
-            ],
-        ]);
     }
 
     private function whatsapp(): bool
     {
-        if ($this->phone === null) {
-            Log::error("No phone number on {$this->className}");
-
-            return true;
-        }
-
         try {
-            $response = $this->waTemplet(
-                to: $this->getPhoneNumberForWhatsapp(),
-                components: $this->getWhatsappMessageComponents()
-            );
-            $notification = $this->store(['result' => ['wamid' => $response->json('messages.0.id'),]]);
+            $res = $this->sendWA($this->phone(), $this->body, $this->data);
+            $notification = $this->store(['result' => ['wamid' => $res->json('messages.0.id')]]);
             $payload = [
                 'id' => $this->id,
-                'wamid' => $response->json('messages.0.id'),
-                'phone' => $this->phone,
+                'wamid' => $res->json('messages.0.id'),
+                'phone' => $this->phone(),
                 'code' => $this->data['code'],
                 'notification_id' => $notification->id,
             ];
-            Cache::add("wa_msg_{$response->json('messages.0.id')}", $payload, now()->addMinutes(10));
+            Cache::add("wa_msg_{$res->json('messages.0.id')}", $payload, now()->addMinutes(10));
 
             return true;
-        } catch (RequestException $e) {
+        } catch (Exception $e) {
+            Log::error("Whatsapp message error {$e->getMessage()}");
+
             return false;
         }
     }
 
-    private function getPhoneNumberForWhatsapp(): string
+    private function sms($language = 'english'): bool
     {
-        $number = (string) $this->phone;
-        if (str_contains($number, '+')) {
-            return substr($number, 0, 1);
-        }
-        if (str_contains($number, '00')) {
-            return substr($number, 0, 2);
-        }
-        return $number;
-    }
+        try {
+            $res = $this->sendSMS(
+                phone: $this->phone(),
+                code: $this->data['code'],
+                language: $language,
+            );
+            $this->store(['result' => ['status' => 'send', 'sms_req_id' => $res->body()]]);
 
-    private function getWhatsappMessageComponents(): array
-    {
-        return [
-            // 1. Map the code to {{1}} in the body text
-            [
-                'type' => 'body',
-                'parameters' => [
-                    [
-                        'type' => 'text',
-                        'text' => $this->body
-                    ]
-                ]
-            ],
-            // 2. Map the code to the "Copy Code" button url suffix parameter
-            [
-                'type' => 'button',
-                'sub_type' => 'url',
-                'index' => '0', // Refers to the first button in your template layout
-                'parameters' => [
-                    [
-                        'type' => 'text',
-                        'text' => $this->data['code']
-                    ]
-                ]
-            ]
-        ];
-    }
+            return true;
+        } catch (Exception $e) {
+            Log::error("SMS message error {$e->getMessage()}");
 
-    private function sms(): bool
-    {
-        return true;
+            return false;
+        }
     }
 
     private function email(): bool
@@ -219,5 +150,25 @@ trait NotificationsHandler
             ]),
             'is_viewed' => false,
         ]);
+    }
+
+    private function phone(): mixed
+    {
+        if ($this->phone !== null) {
+            return $this->phone;
+        }
+        Log::error("No phone number on {$this->className}");
+
+        return null;
+    }
+
+    private function fcmToken(): mixed
+    {
+        if ($this->firebase_token !== null) {
+            return $this->firebase_token;
+        }
+        Log::error("No FCM token on {$this->className}");
+
+        return null;
     }
 }

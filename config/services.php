@@ -42,4 +42,10 @@ return [
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
         'version' => env('WHATSAPP_VERSION', 'v20.0'),
     ],
+
+    'syriatel' => [
+        'user_name' => env('SYRIATEL_USER_NAME'),
+        'password' => env('SYRIATEL_PASSWORD'),
+        'sender' => env('SYRIATEL_SENDER'),
+    ],
 ];
