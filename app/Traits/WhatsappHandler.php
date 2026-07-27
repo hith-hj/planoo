@@ -14,41 +14,18 @@ trait WhatsappHandler
 
     protected string $waBaseUrl;
 
-    /**
-     * Internal abstraction for making the HTTP Call
-     */
-    protected function waRequest(array $payload): Response
-    {
-        $this->setSettings();
-        $response = Http::withToken($this->waToken)
-            ->acceptJson()
-            ->asJson()
-            ->post($this->waBaseUrl, $payload);
-
-        if ($response->failed()) {
-            Log::error('WhatsApp API Failure', [
-                'status' => $response->status(),
-                'body' => $response->json(),
-            ]);
-
-            $response->throw();
-        }
-
-        return $response;
-    }
-
     public function sendWA(string $phone, string $body = '', array $data = [], string $template = 'template')
     {
         Truthy($phone === null, 'wa phone is missing');
 
         return match ($template) {
             'template' => $this->waTemplet(
-                to: $this->getPhoneNumberForWA($phone),
+                to: globalPhone($phone),
                 components: $this->getWAMessageComponents($body, $data)
             ),
             'text' => $this->waText(
-                $this->getPhoneNumberForWA($phone),
-                $this->body
+                to: globalPhone($phone),
+                text: $this->body
             )
         };
     }
@@ -108,18 +85,6 @@ trait WhatsappHandler
         $this->waBaseUrl = "https://facebook.com/{$config['version']}/{$config['phone_number_id']}/messages";
     }
 
-    private function getPhoneNumberForWA(?string $number = null): string
-    {
-        if (str_contains($number, '+')) {
-            return mb_substr($number, 0, 1);
-        }
-        if (str_contains($number, '00')) {
-            return mb_substr($number, 0, 2);
-        }
-
-        return $number;
-    }
-
     private function getWAMessageComponents(string $body = '', array $data = []): array
     {
         if (empty($data)) {
@@ -150,5 +115,28 @@ trait WhatsappHandler
                 ],
             ],
         ];
+    }
+
+    /**
+     * Internal abstraction for making the HTTP Call
+     */
+    private function waRequest(array $payload): Response
+    {
+        $this->setSettings();
+        $response = Http::withToken($this->waToken)
+            ->acceptJson()
+            ->asJson()
+            ->post($this->waBaseUrl, $payload);
+
+        if ($response->failed()) {
+            Log::error('WhatsApp API Failure', [
+                'status' => $response->status(),
+                'body' => $response->json(),
+            ]);
+
+            $response->throw();
+        }
+
+        return $response;
     }
 }

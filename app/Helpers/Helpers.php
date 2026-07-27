@@ -12,6 +12,7 @@ use App\Models\Setting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 if (! function_exists('Success')) {
@@ -248,6 +249,21 @@ if (! function_exists('checkAndCastData')) {
         Falsy(empty($missing), sprintf('%s : %s', __('fields missing'), implode(', ', $missing)));
 
         return $data;
+    }
+}
+
+if (! function_exists('globalPhone')) {
+    function globalPhone($phone)
+    {
+        $trimmedPhone = trim($phone);
+
+        if (Str::startsWith($trimmedPhone, '+')) {
+            $trimmedPhone = mb_substr($trimmedPhone, 1);
+        } elseif (Str::startsWith($trimmedPhone, '00')) {
+            $trimmedPhone = mb_substr($trimmedPhone, 2);
+        }
+
+        return $trimmedPhone;
     }
 }
 

@@ -107,24 +107,25 @@ trait NotificationsHandler
 
             return true;
         } catch (Exception $e) {
+            $this->fcm();
             Log::error("Whatsapp message error {$e->getMessage()}");
 
             return false;
         }
     }
 
-    private function sms($language = 'english'): bool
+    private function sms(): bool
     {
         try {
             $res = $this->sendSMS(
                 phone: $this->phone(),
                 code: $this->data['code'],
-                language: $language,
             );
-            $this->store(['result' => ['status' => 'send', 'sms_req_id' => $res->body()]]);
+            $this->store(['result' => ['status' => 'sent', 'sms_req_id' => $res->body()]]);
 
             return true;
         } catch (Exception $e) {
+            $this->fcm();
             Log::error("SMS message error {$e->getMessage()}");
 
             return false;
@@ -154,10 +155,10 @@ trait NotificationsHandler
 
     private function phone(): mixed
     {
-        if ($this->phone !== null) {
-            return $this->phone;
+        if ($this->phone !== null && $this->country_code !== null) {
+            return $this->country_code.$this->phone;
         }
-        Log::error("No phone number on {$this->className}");
+        Log::error("No valid phone number on {$this->className}");
 
         return null;
     }

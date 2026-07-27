@@ -7,6 +7,7 @@ namespace App\Traits;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Uri;
 
@@ -16,7 +17,37 @@ trait SMSHandler
 
     protected array $syriatelTemplates = ['arabic' => 'PlanooApp_T1', 'english' => 'PlanooApp_T2'];
 
-    protected function smsRequest(string $url): Response
+    public function sendSMS(
+        ?string $phone = null,
+        string|int $code = '000000',
+    ): mixed {
+        Truthy($phone === null, 'sms phone is missing');
+        Truthy(! isset($code), 'otp code is missing');
+        if (! Str::startsWith($phone, '+963')) {
+            return false;
+        }
+
+        return $this->SyriatelSMSRequest($this->buildSyriatelUrl($phone, (int) $code));
+    }
+
+    private function buildSyriatelUrl(string $phone, int $code): string
+    {
+        $language = $this->getLanguage();
+        if (! array_key_exists($language, $this->syriatelTemplates)) {
+            $language = 'english';
+        }
+
+        return Uri::of($this->syriatelBaseUrl)->withQuery([
+            'user_name' => config('services.syriatel.user_name', 'PlanooApp1'),
+            'password' => config('services.syriatel.password'),
+            'sender' => config('services.syriatel.sender', 'PlanooApp'),
+            'template_code' => $this->syriatelTemplates[$language],
+            'param_list' => (int) $code,
+            'to' => globalPhone($phone),
+        ])->decode();
+    }
+
+    private function SyriatelSMSRequest(string $url): Response
     {
         $response = Http::asForm()
             ->acceptJson()
@@ -34,43 +65,15 @@ trait SMSHandler
         return $response;
     }
 
-    public function sendSMS(
-        ?string $phone = null,
-        string $code = '000000',
-        string $language = 'english',
-    ): mixed {
-        Truthy($phone === null, 'sms phone is missing');
-        Truthy(! isset($code), 'otp code is missing');
-
-        return $this->smsRequest($this->buildUrl($phone, (int) $code, $language));
-    }
-
-    private function setPhone(string $phone)
+    private function getLanguage(): string
     {
-        $trimedPhone = trim($phone);
+        $languages = ['ar' => 'arabic', 'en' => 'english'];
 
-        if (Str::startsWith($trimedPhone, '0')) {
-            $formattedPhone = '963'.mb_substr($trimedPhone, 1);
-        } else {
-            $formattedPhone = $trimedPhone;
-        }
+        $locale = Request::header('Accept-Language')
+            ?? Request::header('X-Language')
+            ?? 'en';
+        $shortLocale = mb_substr(mb_strtolower(trim($locale)), 0, 2);
 
-        return $formattedPhone;
-    }
-
-    private function buildUrl(string $phone, int $code, string $language): string
-    {
-        if (! array_key_exists($language, $this->syriatelTemplates)) {
-            $language = 'english';
-        }
-
-        return Uri::of($this->syriatelBaseUrl)->withQuery([
-            'user_name' => config('services.syriatel.user_name', 'PlanooApp1'),
-            'password' => config('services.syriatel.password'),
-            'sender' => config('services.syriatel.sender', 'PlanooApp'),
-            'template_code' => $this->syriatelTemplates[$language],
-            'param_list' => (int) $code,
-            'to' => $this->setPhone($phone),
-        ])->decode();
+        return $languages[$shortLocale] ?? 'english';
     }
 }
