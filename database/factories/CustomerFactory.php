@@ -17,11 +17,22 @@ final class CustomerFactory extends Factory
     public function definition(): array
     {
         $minCustomerAge = Setting('minimum_customer_age', 14);
+        $randomCountryCode = fake()->randomElement(array_keys(countryCodesLengths()));
+        $allowedLengths = countryCodesLengths($randomCountryCode);
+
+        // 3. Resolve the length if it's an array (variable length)
+        $targetLength = is_array($allowedLengths)
+            ? fake()->randomElement($allowedLengths)
+            : $allowedLengths;
+
+        // 4. Build a string of '#' characters equal to the chosen length
+        $mask = str_repeat('#', $targetLength);
 
         return [
             'name' => fake()->name,
             'password' => bcrypt('password'),
-            'phone' => fake()->regexify("(09)[1-9]{1}\d{7}"),
+            'country_code' => $randomCountryCode,
+            'phone' => fake()->unique()->numerify($mask),
             'status' => AccountStatus::fresh->value,
             'email' => fake()->email,
             'gender' => fake()->randomElement(['male', 'female']),

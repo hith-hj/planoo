@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use App\Enums\SessionDuration;
+use App\Rules\ValidPhoneLength;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -32,7 +33,11 @@ final class AppointmentValidators extends Validators
             'time' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
             'notes' => ['nullable', 'string', 'max:500'],
             'customer_id' => ['sometimes', 'required', 'exists:customers,id', 'required_without:customer_phone'],
-            'customer_phone' => ['sometimes', 'regex:/^09[1-9]{1}\d{7}$/', 'required_without:customer_id'],
+            'customer_phone' => [
+                'sometimes',
+                new ValidPhoneLength($data['country_code'] ?? '+963'),
+                'required_without:customer_id',
+            ],
         ], self::messages());
     }
 
