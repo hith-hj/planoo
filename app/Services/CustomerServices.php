@@ -30,6 +30,7 @@ final class CustomerServices
         $data['name'] = $this->userName($data);
         $data['password'] = $data['phone'];
         $data['firebase_token'] = 'not-set';
+        $data['country_code'] = '+963';
 
         return $this->create($data);
     }
@@ -55,6 +56,7 @@ final class CustomerServices
         /** @var Customer $customer */
         $customer = Customer::create([
             'name' => $this->userName($data),
+            'country_code' => $data['country_code'],
             'phone' => $data['phone'],
             'password' => bcrypt($data['password']),
             'status' => AccountStatus::fresh->value,

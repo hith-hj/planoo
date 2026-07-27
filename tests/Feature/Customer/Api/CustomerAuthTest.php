@@ -22,7 +22,7 @@ describe('CustomerAuth Controller test', function () {
         $this->assertDatabaseCount('customers', 1);
     });
 
-    it('registers_a_customer_with_profile_image',function(){
+    it('registers_a_customer_with_profile_image', function () {
         Customer::truncate();
         $data = Customer::factory()->password()->make()->toArray();
         $data['profile_image'] = Media::factory()->fakeFile('kosa.jpeg');
@@ -31,7 +31,7 @@ describe('CustomerAuth Controller test', function () {
         $this->assertDatabaseCount('customers', 1);
     });
 
-    it('fails_to_registers_a_customer_yonger_that_14',function(){
+    it('fails_to_registers_a_customer_yonger_that_14', function () {
         Customer::truncate();
         $data = Customer::factory()->password()->make()->toArray();
         $data['birthdate'] = now()->format('Y-m-d');
@@ -49,12 +49,13 @@ describe('CustomerAuth Controller test', function () {
     });
 
     it('verifies_customer_successfully', function () {
-        $customer = Customer::factory()->create(['phone' => '0912345678']);
+        $customer = Customer::factory()->create();
         $customer->createCode(CodesTypes::verification->name);
         $code = $customer->code(CodesTypes::verification->name)->code;
         expect($code)->not->toBeNull()->and($code)->toBeInt();
 
         $res = $this->postJson(route('customer.verify'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'code' => $code,
         ]);
@@ -66,6 +67,7 @@ describe('CustomerAuth Controller test', function () {
         $customer = Customer::factory()->create();
         $customer->createCode(CodesTypes::verification->name);
         $res = $this->postJson(route('customer.verify'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'code' => 00000,
         ]);
@@ -74,8 +76,9 @@ describe('CustomerAuth Controller test', function () {
     });
 
     it('allow_verified_customer_login', function () {
-        $customer = Customer::factory()->create(['phone' => '0911112222']);
+        $customer = Customer::factory()->create();
         $res = $this->postJson(route('customer.login'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'password' => 'password',
             'firebase_token' => $customer->firebase_token,
@@ -85,9 +88,10 @@ describe('CustomerAuth Controller test', function () {
     });
 
     it('allow_verified_customer_login_to_update_token', function () {
-        $customer = Customer::factory()->create(['phone' => '0911112222']);
+        $customer = Customer::factory()->create();
         $customer->update(['firebase_token' => null]);
         $res = $this->postJson(route('customer.login'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'password' => 'password',
             'firebase_token' => 'new token',
@@ -112,11 +116,11 @@ describe('CustomerAuth Controller test', function () {
 
     it('prevent_unverified_customer_login', function () {
         $customer = Customer::factory()->create([
-            'phone' => '0911112222',
             'verified_at' => null,
         ]);
 
         $res = $this->postJson(route('customer.login'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'password' => 'password',
             'firebase_token' => $customer->firebase_token,
@@ -126,7 +130,8 @@ describe('CustomerAuth Controller test', function () {
 
     it('fails_to_login_with_invalid_credentials', function () {
         $res = $this->postJson(route('customer.login'), [
-            'phone' => '0912345678',
+            'country_code' => '+963',
+            'phone' => '912345678',
             'password' => 'wrongpassword',
             'firebase_token' => 'wrong token',
         ]);
@@ -135,8 +140,9 @@ describe('CustomerAuth Controller test', function () {
     });
 
     it('fails_to_login_with_incorrect_credentials', function () {
-        $customer = Customer::factory()->create(['phone' => '0911112222']);
+        $customer = Customer::factory()->create();
         $res = $this->postJson(route('customer.login'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'password' => 'wrongpassword',
             'firebase_token' => $customer->firebase_token,
@@ -167,7 +173,10 @@ describe('CustomerAuth Controller test', function () {
     it('can resend verification code if customer if not verified', function () {
         $customer = Customer::factory()->create(['verified_at' => null, 'verified_by' => null]);
         expect($customer->codes()->count())->toBe(0);
-        $this->postJson(route('customer.resendCode'), ['phone' => $customer->phone])->assertOk();
+        $this->postJson(route('customer.resendCode'), [
+            'country_code' => $customer->country_code,
+            'phone' => $customer->phone,
+        ])->assertOk();
         expect($customer->verified_at)->toBeNull()
             ->and($customer->codes()->count())->toBe(1)
             ->and($customer->code(CodesTypes::verification->name))->not->ToBeNull();
@@ -175,7 +184,10 @@ describe('CustomerAuth Controller test', function () {
 
     it('can\'t resend verification code if customer if verified', function () {
         $customer = Customer::factory()->create();
-        $res = $this->postJson(route('customer.resendCode'), ['phone' => $customer->phone]);
+        $res = $this->postJson(route('customer.resendCode'), [
+            'country_code' => $customer->country_code,
+            'phone' => $customer->phone,
+        ]);
         $res->assertStatus(400);
         expect($customer->fresh()->verified_at)->not->toBeNull()
             ->and($customer->codes()->count())->toBe(0);
@@ -185,6 +197,7 @@ describe('CustomerAuth Controller test', function () {
         $customer = Customer::factory()->create();
         expect($customer->codes()->count())->toBe(0);
         $this->postJson(route('customer.forgetPassword'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'firebase_token' => $customer->firebase_token,
         ])->assertOk();
@@ -197,12 +210,14 @@ describe('CustomerAuth Controller test', function () {
         $customer = Customer::factory()->create();
         expect($customer->codes()->count())->toBe(0);
         $this->postJson(route('customer.forgetPassword'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'firebase_token' => $customer->firebase_token,
         ])->assertOk();
         expect($customer->fresh()->verified_at)->toBeNull();
         $code = $customer->code(CodesTypes::password->name);
         $this->postJson(route('customer.resetPassword'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'firebase_token' => $customer->firebase_token,
             'password' => 'password',
@@ -218,10 +233,12 @@ describe('CustomerAuth Controller test', function () {
         $customer = Customer::factory()->create();
         expect($customer->codes()->count())->toBe(0);
         $this->postJson(route('customer.forgetPassword'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'firebase_token' => $customer->firebase_token,
         ])->assertOk();
         $this->postJson(route('customer.resetPassword'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'firebase_token' => $customer->firebase_token,
             'password' => 'password',
@@ -234,10 +251,12 @@ describe('CustomerAuth Controller test', function () {
         $customer = Customer::factory()->create();
         expect($customer->codes()->count())->toBe(0);
         $this->postJson(route('customer.forgetPassword'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'firebase_token' => $customer->firebase_token,
         ])->assertOk();
         $this->postJson(route('customer.resetPassword'), [
+            'country_code' => $customer->country_code,
             'phone' => $customer->phone,
             'firebase_token' => 'invalid_token',
             'password' => 'password',
@@ -248,7 +267,7 @@ describe('CustomerAuth Controller test', function () {
 
     it('can change password ', function () {
         $customer = Customer::factory()->create();
-        $res = $this->replaceUser($customer,true)->postJson(route('customer.changePassword'), [
+        $res = $this->replaceUser($customer, true)->postJson(route('customer.changePassword'), [
             'old_password' => 'password',
             'new_password' => 'new_password',
             'new_password_confirmation' => 'new_password',

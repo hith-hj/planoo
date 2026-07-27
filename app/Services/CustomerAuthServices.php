@@ -25,6 +25,7 @@ final class CustomerAuthServices
         /** @var Customer $customer */
         $customer = Customer::create([
             'name' => $data['name'],
+            'country_code' => $data['country_code'],
             'phone' => $data['phone'],
             'email' => $data['email'],
             'gender' => $data['gender'],
@@ -54,7 +55,7 @@ final class CustomerAuthServices
 
     public function login(Validator $validator): array
     {
-        $credentials = $validator->safe()->only(['phone', 'password']);
+        $credentials = $validator->safe()->only(['country_code', 'phone', 'password']);
         if (! Auth::attempt($credentials)) {
             throw new Exception(__('invalid credentials'));
         }
@@ -153,7 +154,10 @@ final class CustomerAuthServices
 
     private function getCustomer($validator): Customer
     {
-        $customer = Customer::where('phone', $validator->safe()->input('phone'))->first();
+        $customer = Customer::where([
+            ['country_code', $validator->safe()->input('country_code')],
+            ['phone', $validator->safe()->input('phone')],
+        ])->first();
         NotFound($customer);
 
         return $customer;

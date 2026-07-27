@@ -92,7 +92,7 @@ describe('Appointment Controller Tests', function () {
                 $activity,
                 [
                     'time' => '10:30',
-                    'customer_phone' => '0987654321',
+                    'customer_phone' => '987654321',
                     'code' => app(CodeServices::class)->createCode(
                         CodesTypes::appointment->name,
                         timeToExpire: '1:m'
