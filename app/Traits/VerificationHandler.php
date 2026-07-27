@@ -10,7 +10,7 @@ use Exception;
 
 trait VerificationHandler
 {
-    public function verify(string $codeType = CodesTypes::verification->name, string $by = 'fcm'): static
+    public function verify(string $codeType = CodesTypes::verification->name, string $by = 'sms'): static
     {
         $this->checkFields();
         $this->checkMethods();
