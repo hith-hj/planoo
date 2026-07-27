@@ -26,12 +26,13 @@ describe('UserAuth Controller test', function () {
     });
 
     it('verifies_user_successfully', function () {
-        $user = User::factory()->create(['phone' => '0912345678']);
+        $user = User::factory()->create();
         $user->createCode(CodesTypes::verification->name);
         $code = $user->code(CodesTypes::verification->name)->code;
         expect($code)->not->toBeNull()->and($code)->toBeInt();
 
         $res = $this->postJson(route('partner.verify'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'code' => $code,
         ]);
@@ -42,6 +43,7 @@ describe('UserAuth Controller test', function () {
         $user = User::factory()->create();
         $user->createCode(CodesTypes::verification->name);
         $res = $this->postJson(route('partner.verify'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'code' => 00000,
         ]);
@@ -50,8 +52,9 @@ describe('UserAuth Controller test', function () {
     });
 
     it('allow_verified_user_login', function () {
-        $user = User::factory()->create(['phone' => '0911112222']);
+        $user = User::factory()->create();
         $res = $this->postJson(route('partner.login'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'password' => 'password',
             'firebase_token' => $user->firebase_token,
@@ -62,9 +65,10 @@ describe('UserAuth Controller test', function () {
     });
 
     it('allow_verified_user_login_to_update_token', function () {
-        $user = User::factory()->create(['phone' => '0911112222']);
-        $user->update(['firebase_token'=>null]);
+        $user = User::factory()->create();
+        $user->update(['firebase_token' => null]);
         $res = $this->postJson(route('partner.login'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'password' => 'password',
             'firebase_token' => 'new token',
@@ -72,16 +76,14 @@ describe('UserAuth Controller test', function () {
         ]);
         expect($res->status())->toBe(200);
         expect($res->json('payload'))->toHaveKeys(['user', 'token'])
-        ->and($user->fresh()->firebase_token)->toBe('new token');
+            ->and($user->fresh()->firebase_token)->toBe('new token');
     });
 
     it('prevent_unverified_user_login', function () {
-        $user = User::factory()->create([
-            'phone' => '0911112222',
-            'verified_at' => null,
-        ]);
+        $user = User::factory()->create(['verified_at' => null,]);
 
         $res = $this->postJson(route('partner.login'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'password' => 'password',
             'firebase_token' => $user->firebase_token,
@@ -92,7 +94,8 @@ describe('UserAuth Controller test', function () {
 
     it('fails_to_login_with_invalid_credentials', function () {
         $res = $this->postJson(route('partner.login'), [
-            'phone' => '0912345678',
+            'country_code' => '+963',
+            'phone' => '912345678',
             'password' => 'wrongpassword',
             'firebase_token' => 'wrong_firebase_token',
         ]);
@@ -101,8 +104,9 @@ describe('UserAuth Controller test', function () {
     });
 
     it('fails_to_login_with_incorrect_credentials', function () {
-        $user = User::factory()->create(['phone' => '0911112222']);
+        $user = User::factory()->create();
         $res = $this->postJson(route('partner.login'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'password' => 'wrongpassword',
             'firebase_token' => $user->firebase_token,
@@ -133,7 +137,10 @@ describe('UserAuth Controller test', function () {
     it('can resend verification code if user if not verified', function () {
         $user = User::factory()->create(['verified_at' => null, 'verified_by' => null]);
         expect($user->codes()->count())->toBe(0);
-        $this->postJson(route('partner.resendCode'), ['phone' => $user->phone])->assertOk();
+        $this->postJson(route('partner.resendCode'), [
+            'country_code' => $user->country_code,
+            'phone' => $user->phone
+        ])->assertOk();
         expect($user->verified_at)->toBeNull()
             ->and($user->codes()->count())->toBe(1)
             ->and($user->code(CodesTypes::verification->name))->not->ToBeNull();
@@ -141,7 +148,10 @@ describe('UserAuth Controller test', function () {
 
     it('can\'t resend verification code if user if verified', function () {
         $user = User::factory()->create();
-        $res = $this->postJson(route('partner.resendCode'), ['phone' => $user->phone]);
+        $res = $this->postJson(route('partner.resendCode'), [
+            'country_code' => $user->country_code,
+            'phone' => $user->phone
+        ]);
         $res->assertStatus(400);
         expect($user->fresh()->verified_at)->not->toBeNull()
             ->and($user->codes()->count())->toBe(0);
@@ -151,6 +161,7 @@ describe('UserAuth Controller test', function () {
         $user = User::factory()->create();
         expect($user->codes()->count())->toBe(0);
         $this->postJson(route('partner.forgetPassword'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'firebase_token' => $user->firebase_token,
         ])->assertOk();
@@ -163,12 +174,14 @@ describe('UserAuth Controller test', function () {
         $user = User::factory()->create();
         expect($user->codes()->count())->toBe(0);
         $this->postJson(route('partner.forgetPassword'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'firebase_token' => $user->firebase_token,
         ])->assertOk();
         expect($user->fresh()->verified_at)->toBeNull();
         $code = $user->code(CodesTypes::password->name);
         $this->postJson(route('partner.resetPassword'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'firebase_token' => $user->firebase_token,
             'password' => 'password',
@@ -184,10 +197,12 @@ describe('UserAuth Controller test', function () {
         $user = User::factory()->create();
         expect($user->codes()->count())->toBe(0);
         $this->postJson(route('partner.forgetPassword'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'firebase_token' => $user->firebase_token,
         ])->assertOk();
         $this->postJson(route('partner.resetPassword'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'firebase_token' => $user->firebase_token,
             'password' => 'password',
@@ -200,10 +215,12 @@ describe('UserAuth Controller test', function () {
         $user = User::factory()->create();
         expect($user->codes()->count())->toBe(0);
         $this->postJson(route('partner.forgetPassword'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'firebase_token' => $user->firebase_token,
         ])->assertOk();
         $this->postJson(route('partner.resetPassword'), [
+            'country_code' => $user->country_code,
             'phone' => $user->phone,
             'firebase_token' => 'invalid_token',
             'password' => 'password',

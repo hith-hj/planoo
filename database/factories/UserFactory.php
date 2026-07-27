@@ -21,10 +21,24 @@ final class UserFactory extends Factory
 {
     public function definition(): array
     {
+        $randomCountryCode = fake()->randomElement(array_keys(countryCodesLengths()));
+        $allowedLengths = countryCodesLengths($randomCountryCode);
+
+        // 3. Resolve the length if it's an array (variable length)
+        $targetLength = is_array($allowedLengths)
+            ? fake()->randomElement($allowedLengths)
+            : $allowedLengths;
+
+        // 4. Build a string of '#' characters equal to the chosen length
+        $mask = str_repeat('#', $targetLength);
+
         return [
             'name' => fake()->firstName,
             'email' => fake()->unique()->email,
-            'phone' => fake()->regexify("(09)[1-9]{1}\d{7}"),
+            // 'phone' => fake()->regexify("(09)[1-9]{1}\d{7}"),
+            'country_code' => $randomCountryCode,
+            'phone' => fake()->unique()->numerify($mask),
+
             'password' => bcrypt('password'),
             'firebase_token' => Str::random(64),
             'verified_by' => 'phone',

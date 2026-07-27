@@ -250,3 +250,74 @@ if (! function_exists('checkAndCastData')) {
         return $data;
     }
 }
+
+if (! function_exists('countryCodesLengths')) {
+    function countryCodesLengths(?string $code = null): int|array
+    {
+        $list = [
+            '+1' => 10,           // USA, Canada, and NANP countries (3-digit area code + 7-digit local)
+            '+7' => 10,           // Russia, Kazakhstan
+            '+20' => [9, 10],       // Egypt
+            '+27' => 9,            // South Africa
+            '+30' => 10,           // Greece
+            '+31' => 9,            // Netherlands
+            '+32' => [8, 9],       // Belgium
+            '+33' => 9,            // France
+            '+34' => 9,            // Spain
+            '+36' => 9,            // Hungary
+            '+39' => [9, 10],      // Italy
+            '+40' => 9,            // Romania
+            '+41' => 9,            // Switzerland
+            '+43' => [4, 5, 6, 7, 8, 9, 10, 11, 12, 13], // Austria (highly variable)
+            '+44' => [9, 10],      // United Kingdom
+            '+45' => 8,            // Denmark
+            '+46' => [7, 8, 9],    // Sweden
+            '+47' => 8,            // Norway
+            '+48' => 9,            // Poland
+            '+49' => [10, 11, 12, 13], // Germany
+            '+51' => 9,            // Peru
+            '+52' => 10,           // Mexico
+            '+54' => 10,           // Argentina
+            '+55' => [10, 11],     // Brazil
+            '+56' => 9,            // Chile
+            '+57' => 10,           // Colombia
+            '+60' => [7, 8, 9],    // Malaysia
+            '+61' => 9,            // Australia
+            '+62' => [9, 10, 11],  // Indonesia
+            '+63' => 10,           // Philippines
+            '+64' => [8, 9, 10],   // New Zealand
+            '+65' => 8,            // Singapore
+            '+66' => 9,            // Thailand
+            '+81' => [9, 10],      // Japan
+            '+82' => [9, 10],      // South Korea
+            '+84' => [9, 10],      // Vietnam
+            '+86' => 11,           // China
+            '+90' => 10,           // Turkey
+            '+91' => 10,           // India
+            '+92' => 10,           // Pakistan
+            '+93' => 9,            // Afghanistan
+            '+94' => 9,            // Sri Lanka
+            '+95' => [8, 9, 10],   // Myanmar
+            '+961' => [7, 8],       // Lebanon
+            '+962' => [8, 9],       // Jordan
+            '+963' => 9,            // Syria
+            '+964' => 10,           // Iraq
+            '+965' => 8,            // Kuwait
+            '+966' => 9,            // Saudi Arabia
+            '+967' => 9,            // Yemen
+            '+968' => 8,            // Oman
+            '+971' => 9,            // UAE (Standard mobile/fixed with area code, e.g., 50XXXXXXX)
+            '+972' => 9,            // Israel
+            '+973' => 8,            // Bahrain
+            '+974' => 8,            // Qatar
+            '+98' => 10,           // Iran
+            '+994' => 9,            // Azerbaijan
+        ];
+
+        if ($code !== null && array_key_exists($code, $list)) {
+            return $list[$code];
+        }
+
+        return $list;
+    }
+}

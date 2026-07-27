@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use App\Enums\UsersTypes;
+use App\Rules\ValidPhoneLength;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +16,13 @@ final class UserAuthValidators extends Validators
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'unique:users'],
+            'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
+            'phone' => [
+                'required',
+                'string',
+                'unique:users,phone',
+                new ValidPhoneLength($data['country_code'] ?? null),
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'account_type' => ['required', Rule::in(UsersTypes::cases())],
             'description' => ['required', 'string', 'max:1500'],
@@ -26,7 +33,13 @@ final class UserAuthValidators extends Validators
     public static function verify(array $data)
     {
         return Validator::make($data, [
-            'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'exists:users'],
+            'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
+            'phone' => [
+                'required',
+                'string',
+                'exists:users,phone',
+                new ValidPhoneLength($data['country_code'] ?? null),
+            ],
             'code' => ['required', 'numeric', 'exists:codes,code'],
         ], self::messages());
     }
@@ -34,7 +47,13 @@ final class UserAuthValidators extends Validators
     public static function login(array $data)
     {
         return Validator::make($data, [
-            'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'exists:users'],
+            'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
+            'phone' => [
+                'required',
+                'string',
+                'exists:users,phone',
+                new ValidPhoneLength($data['country_code'] ?? null),
+            ],
             'password' => ['required', 'string', 'min:8'],
             'firebase_token' => ['required'],
         ], self::messages());
@@ -43,7 +62,13 @@ final class UserAuthValidators extends Validators
     public static function forgetPassword(array $data)
     {
         return Validator::make($data, [
-            'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'exists:users'],
+            'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
+            'phone' => [
+                'required',
+                'string',
+                'exists:users,phone',
+                new ValidPhoneLength($data['country_code'] ?? null),
+            ],
             'firebase_token' => ['required'],
         ], self::messages());
     }
@@ -51,7 +76,13 @@ final class UserAuthValidators extends Validators
     public static function resetPassword(array $data)
     {
         return Validator::make($data, [
-            'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'exists:users'],
+            'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
+            'phone' => [
+                'required',
+                'string',
+                'exists:users,phone',
+                new ValidPhoneLength($data['country_code'] ?? null),
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'code' => ['required', 'numeric', 'exists:codes,code'],
             'firebase_token' => ['required'],
@@ -61,7 +92,13 @@ final class UserAuthValidators extends Validators
     public static function resendCode(array $data)
     {
         return Validator::make($data, [
-            'phone' => ['required', 'regex:/^09[1-9]{1}\d{7}$/', 'exists:users'],
+            'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
+            'phone' => [
+                'required',
+                'string',
+                'exists:users,phone',
+                new ValidPhoneLength($data['country_code'] ?? null),
+            ],
         ], self::messages());
     }
 

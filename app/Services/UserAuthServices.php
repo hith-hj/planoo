@@ -27,6 +27,7 @@ final class UserAuthServices
             'name' => $data['name'],
             'account_type' => $data['account_type'],
             'email' => $data['email'],
+            'country_code' => $data['country_code'],
             'phone' => $data['phone'],
             'firebase_token' => $data['firebase_token'],
             'description' => $data['description'],
@@ -54,7 +55,7 @@ final class UserAuthServices
 
     public function login(Validator $validator): array
     {
-        $credentials = $validator->safe()->only(['phone', 'password']);
+        $credentials = $validator->safe()->only(['country_code', 'phone', 'password']);
         if (! Auth::attempt($credentials)) {
             throw new Exception(__('invalid credentials'));
         }
@@ -155,7 +156,10 @@ final class UserAuthServices
 
     private function getUser($validator): User
     {
-        $user = User::where('phone', $validator->safe()->input('phone'))->first();
+        $user = User::where([
+            ['country_code', $validator->safe()->input('country_code')],
+            ['phone', $validator->safe()->input('phone')],
+        ])->first();
         NotFound($user, 'user');
 
         return $user;
