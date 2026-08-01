@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(LabelController::class)
     ->prefix('label')
-    ->middleware(['throttle:10,1'])
+    ->middleware(['throttle:50,1'])
     ->group(
         function (): void {
             Route::get('tags', 'tags');

@@ -33,8 +33,8 @@ return [
         'max' => 'Capacity cannot exceed our facility rules limit of :max.',
     ],
     'cancellation_fee' => [
-        'numeric' => 'The cancellation fee requires a positive numerical amount.',
-        'min' => 'Fees must equal or surpass :min.',
+        'numeric' => 'Cancellation fee requires a positive numerical amount.',
+        'min' => 'Cancellation fees must equal or greater than :min.',
     ],
     'start_date' => [
         'required' => 'A launch date schedule is mandatory.',
