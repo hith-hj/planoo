@@ -10,7 +10,7 @@ use Exception;
 
 trait VerificationHandler
 {
-    public function verify(string $codeType = CodesTypes::verification->name, string $by = 'sms'): static
+    public function verify(string $codeType = CodesTypes::verification->name, string $by = 'fcm'): static
     {
         $this->checkFields();
         $this->checkMethods();
@@ -19,7 +19,7 @@ trait VerificationHandler
             'verified_at' => null,
             'verified_by' => $by,
         ]);
-        $by = $this->country_code === '+963' ? 'sms' : 'whatsapp';
+        $by = $this->country_code === '+963' ? 'sms' : 'fcm';
         $this->notify(
             title: "$codeType code",
             body: "Your code: $code->code, expire at {$code->expire_at->format('Y-m-d H:i')}",

@@ -253,7 +253,7 @@ if (! function_exists('checkAndCastData')) {
 }
 
 if (! function_exists('globalPhone')) {
-    function globalPhone($phone)
+    function globalPhone(string $phone)
     {
         $trimmedPhone = trim($phone);
 
