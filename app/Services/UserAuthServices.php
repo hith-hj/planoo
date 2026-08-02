@@ -28,7 +28,7 @@ final class UserAuthServices
             'account_type' => $data['account_type'],
             'email' => $data['email'],
             'country_code' => $data['country_code'],
-            'phone' => $data['phone'],
+            'phone' => formatPhone($data['phone']),
             'firebase_token' => $data['firebase_token'],
             'description' => $data['description'],
             'password' => bcrypt($data['password']),

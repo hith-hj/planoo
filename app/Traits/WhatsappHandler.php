@@ -20,11 +20,11 @@ trait WhatsappHandler
 
         return match ($template) {
             'template' => $this->waTemplet(
-                to: globalPhone($phone),
+                to: formatPhone($phone),
                 components: $this->getWAMessageComponents($body, $data)
             ),
             'text' => $this->waText(
-                to: globalPhone($phone),
+                to: formatPhone($phone),
                 text: $this->body
             )
         };

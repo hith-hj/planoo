@@ -33,10 +33,12 @@ final class AppointmentValidators extends Validators
             'time' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
             'notes' => ['nullable', 'string', 'max:500'],
             'customer_id' => ['sometimes', 'required', 'exists:customers,id', 'required_without:customer_phone'],
+            'country_code' => ['sometimes', 'regex:/^\+[1-9]\d{0,2}$/', 'required_without:customer_id'],
             'customer_phone' => [
                 'sometimes',
-                new ValidPhoneLength($data['country_code'] ?? '+963'),
+                'numeric',
                 'required_without:customer_id',
+                new ValidPhoneLength($data['country_code'] ?? '+963'),
             ],
         ], self::messages());
     }

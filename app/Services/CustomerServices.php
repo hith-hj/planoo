@@ -57,7 +57,7 @@ final class CustomerServices
         $customer = Customer::create([
             'name' => $this->userName($data),
             'country_code' => $data['country_code'],
-            'phone' => $data['phone'],
+            'phone' => formatPhone($data['phone']),
             'password' => bcrypt($data['password']),
             'status' => AccountStatus::fresh->value,
             'firebase_token' => $data['firebase_token'],

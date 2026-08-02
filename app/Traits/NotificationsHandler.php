@@ -156,7 +156,7 @@ trait NotificationsHandler
     private function phone(): mixed
     {
         if ($this->phone !== null && $this->country_code !== null) {
-            return $this->country_code.$this->phone;
+            return $this->country_code.formatPhone($this->phone);
         }
         Log::error("No valid phone number on {$this->className}");
 

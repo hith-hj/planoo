@@ -18,7 +18,7 @@ final class CustomerAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'unique:customers,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -40,7 +40,7 @@ final class CustomerAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:customers,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -54,7 +54,7 @@ final class CustomerAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:customers,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -69,7 +69,7 @@ final class CustomerAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:customers,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -83,7 +83,7 @@ final class CustomerAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:customers,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -99,7 +99,7 @@ final class CustomerAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:customers,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],

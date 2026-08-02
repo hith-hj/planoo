@@ -43,7 +43,7 @@ trait SMSHandler
             'sender' => config('services.syriatel.sender', 'PlanooApp'),
             'template_code' => $this->syriatelTemplates[$language],
             'param_list' => (int) $code,
-            'to' => globalPhone($phone),
+            'to' => formatPhone($phone),
         ])->decode();
     }
 

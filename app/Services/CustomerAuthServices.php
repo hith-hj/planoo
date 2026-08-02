@@ -26,7 +26,7 @@ final class CustomerAuthServices
         $customer = Customer::create([
             'name' => $data['name'],
             'country_code' => $data['country_code'],
-            'phone' => $data['phone'],
+            'phone' => formatPhone($data['phone']),
             'email' => $data['email'],
             'gender' => $data['gender'],
             'birthdate' => $data['birthdate'],

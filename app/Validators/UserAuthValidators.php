@@ -19,7 +19,7 @@ final class UserAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'unique:users,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -36,7 +36,7 @@ final class UserAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:users,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -50,7 +50,7 @@ final class UserAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:users,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -65,7 +65,7 @@ final class UserAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:users,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -79,7 +79,7 @@ final class UserAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:users,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
@@ -95,7 +95,7 @@ final class UserAuthValidators extends Validators
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
             'phone' => [
                 'required',
-                'string',
+                'numeric',
                 'exists:users,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],

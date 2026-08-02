@@ -252,10 +252,10 @@ if (! function_exists('checkAndCastData')) {
     }
 }
 
-if (! function_exists('globalPhone')) {
-    function globalPhone(string $phone)
+if (! function_exists('formatPhone')) {
+    function formatPhone(string $phone)
     {
-        $trimmedPhone = trim($phone);
+        $trimmedPhone = str_replace(' ', '', trim($phone));
 
         if (Str::startsWith($trimmedPhone, '+')) {
             $trimmedPhone = mb_substr($trimmedPhone, 1);
