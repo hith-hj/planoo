@@ -30,7 +30,6 @@ final class CustomerServices
         $data['name'] = $this->userName($data);
         $data['password'] = $data['phone'];
         $data['firebase_token'] = 'not-set';
-        $data['country_code'] = '+963';
 
         return $this->create($data);
     }
@@ -73,9 +72,10 @@ final class CustomerServices
     public function getCustomer(array $data)
     {
         $customer = null;
-        if (isset($data['customer_id']) || isset($data['customer_phone'])) {
-            if (isset($data['customer_phone'])) {
+        if (isset($data['customer_id']) || isset($data['customer_phone'],$data['country_code'])) {
+            if (isset($data['customer_phone'],$data['country_code'])) {
                 $customer = $this->createIfNotExists([
+                    'country_code' => $data['country_code'],
                     'phone' => $data['customer_phone'],
                 ]);
             }

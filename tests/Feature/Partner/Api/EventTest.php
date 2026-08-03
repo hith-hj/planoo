@@ -40,9 +40,9 @@ describe('Event Controller Tests', function () {
 
     it('creates a new event with days, location, media, and tags', function () {
         $eventData = Event::factory()
-        ->for($this->user, 'user')
-        ->for($this->user->courts()->first(), 'court')
-        ->make()->toArray();
+            ->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')
+            ->make()->toArray();
         $days = Day::factory()->days();
         $location = Location::factory()->make()->toArray();
         $media = [
@@ -122,8 +122,8 @@ describe('Event Controller Tests', function () {
     it('check event customers information', function () {
         $event = Event::factory()->for($this->user, 'user')->create();
         $customer = Customer::factory()->create();
-        $this->postJson(route('partner.event.attend',['event_id' => $event->id]), ['customer_id' => $customer->id])->assertOk();
-        $res = $this->getJson(route('partner.event.find',['event_id' => $event->id]))->assertOk();
+        $this->postJson(route('partner.event.attend', ['event_id' => $event->id]), ['customer_id' => $customer->id])->assertOk();
+        $res = $this->getJson(route('partner.event.find', ['event_id' => $event->id]))->assertOk();
 
         expect($res->json('payload.event.id'))->toBe($event->id)
             ->and($res->json('payload.event.attendees'))->toBe($event->customers()->count())
@@ -141,7 +141,7 @@ describe('Event Controller Tests', function () {
 
     it('can attend customer by id for event', function () {
         $event = Event::factory()->for($this->user, 'user')->create();
-        $res = $this->postJson(route('partner.event.attend',['event_id' => $event->id]), ['customer_id' => 1]);
+        $res = $this->postJson(route('partner.event.attend', ['event_id' => $event->id]), ['customer_id' => 1]);
         $res->assertOk();
         $customerEvent = $event->customers()->wherePivot('customer_id', 1)->first();
         expect($customerEvent)->not->toBeNull();
@@ -149,16 +149,19 @@ describe('Event Controller Tests', function () {
 
     it('can attend customer by phone for event', function () {
         $event = Event::factory()->for($this->user, 'user')->create();
-        $res = $this->postJson(route('partner.event.attend',['event_id' => $event->id]), ['customer_phone' => '0987654321']);
+        $res = $this->postJson(route('partner.event.attend', ['event_id' => $event->id]), [
+            'country_code' => '+963',
+            'customer_phone' => '987654321',
+        ]);
         $res->assertOk();
-        $customer = Customer::where('phone', '0987654321')->first();
+        $customer = Customer::where([['phone', '987654321'],['country_code','+963']])->first();
         $customerEvent = $event->customers()->wherePivot('customer_id', $customer->id)->first();
         expect($customerEvent)->not->toBeNull();
     });
 
     it('can not attend full event', function () {
         $event = Event::factory()->for($this->user, 'user')->create(['is_full' => true]);
-        $res = $this->postJson(route('partner.event.attend',['event_id' => $event->id]), ['customer_id' => 1]);
+        $res = $this->postJson(route('partner.event.attend', ['event_id' => $event->id]), ['customer_id' => 1]);
 
         $res->assertStatus(400);
     });
@@ -166,7 +169,7 @@ describe('Event Controller Tests', function () {
     it('can cancel event attend by customer id', function () {
         $event = Event::factory()->for($this->user, 'user')->create();
         $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_id' => 1]);
-        $res = $this->postJson(route('partner.event.cancel',['event_id' => $event->id]), ['customer_id' => 1]);
+        $res = $this->postJson(route('partner.event.cancel', ['event_id' => $event->id]), ['customer_id' => 1]);
 
         $res->assertOk();
         expect($event->customers()->wherePivot('customer_id', 1)->first())->toBeNull();
@@ -174,10 +177,10 @@ describe('Event Controller Tests', function () {
 
     it('can not cancel event after specifc time', function () {
         $event = Event::factory()->for($this->user, 'user')->create();
-        $this->postJson(route('partner.event.attend',['event_id' => $event->id]), ['customer_id' => 1]);
+        $this->postJson(route('partner.event.attend', ['event_id' => $event->id]), ['customer_id' => 1]);
         $customer = $event->customers()->where('customer_id', 1)->first();
         $customer->pivot->update(['created_at' => now()->subDays(2)]);
-        $res = $this->postJson(route('partner.event.cancel',['event_id' => $event->id]), ['customer_id' => 1]);
+        $res = $this->postJson(route('partner.event.cancel', ['event_id' => $event->id]), ['customer_id' => 1]);
         $res->assertStatus(400);
     });
 });

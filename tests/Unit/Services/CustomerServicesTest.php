@@ -8,7 +8,8 @@ use App\Services\CustomerServices;
 beforeEach(function () {
     $this->customerServices = new CustomerServices();
     $this->customerData = [
-        'phone' => '0911111111',
+        'country_code' => '+963',
+        'phone' => '911111111',
         'name' => 'dodge',
     ];
 });

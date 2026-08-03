@@ -92,6 +92,7 @@ describe('Appointment Controller Tests', function () {
                 $activity,
                 [
                     'time' => '10:30',
+                    'country_code' => '+963',
                     'customer_phone' => '987654321',
                     'code' => app(CodeServices::class)->createCode(
                         CodesTypes::appointment->name,

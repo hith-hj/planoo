@@ -163,10 +163,13 @@ describe('Course Controller Tests', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
         $res = $this->postJson(
             route('partner.course.attend', ['course_id' => $course->id]),
-            ['customer_phone' => '0987654321']
+            [
+                'country_code' => '+963',
+                'customer_phone' => '987654321',
+            ]
         );
         $res->assertOk();
-        $customer = Customer::where('phone', '0987654321')->first();
+        $customer = Customer::where([['phone', '987654321'],['country_code','+963']])->first();
         $customerCourse = $course->customers()->wherePivot('customer_id', $customer->id)->first();
         expect($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
     });

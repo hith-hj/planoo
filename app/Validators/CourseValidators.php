@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use App\Enums\CourseDuration;
+use App\Rules\ValidPhoneLength;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -53,11 +54,13 @@ final class CourseValidators extends Validators
                 'exists:customers,id',
                 'required_without:customer_phone',
             ],
+            'country_code' => ['sometimes', 'regex:/^\+[1-9]\d{0,2}$/', 'required_without:customer_id'],
             'customer_phone' => [
                 'sometimes',
-                'regex:/^09[1-9]{1}\d{7}$/',
-                'unique:customers,phone',
+                'numeric',
                 'required_without:customer_id',
+                'required_with:country_code',
+                new ValidPhoneLength($data['country_code'] ?? '+963'),
             ],
         ], self::messages());
     }

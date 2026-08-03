@@ -38,6 +38,7 @@ final class AppointmentValidators extends Validators
                 'sometimes',
                 'numeric',
                 'required_without:customer_id',
+                'required_with:country_code',
                 new ValidPhoneLength($data['country_code'] ?? '+963'),
             ],
         ], self::messages());
