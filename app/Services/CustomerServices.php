@@ -23,7 +23,10 @@ final class CustomerServices
     public function createIfNotExists(array $data): Customer
     {
         $data = checkAndCastData($data, ['phone' => 'string']);
-        $customer = Customer::where('phone', $data['phone'])->first();
+        $customer = Customer::where([
+            ['phone', $data['phone']],
+            ['country_code', $data['country_code']],
+        ])->first();
         if ($customer) {
             return $customer;
         }
@@ -72,8 +75,8 @@ final class CustomerServices
     public function getCustomer(array $data)
     {
         $customer = null;
-        if (isset($data['customer_id']) || isset($data['customer_phone'],$data['country_code'])) {
-            if (isset($data['customer_phone'],$data['country_code'])) {
+        if (isset($data['customer_id']) || isset($data['customer_phone'], $data['country_code'])) {
+            if (isset($data['customer_phone'], $data['country_code'])) {
                 $customer = $this->createIfNotExists([
                     'country_code' => $data['country_code'],
                     'phone' => $data['customer_phone'],
@@ -137,9 +140,9 @@ final class CustomerServices
         }
 
         if (isset($data['phone'])) {
-            return 'usr_'.mb_substr($data['phone'], -5);
+            return 'usr_ph_'.mb_substr($data['phone'], -5);
         }
 
-        return 'usr_'.random_int(10000, 90000);
+        return 'usr_'.random_int(1000000, 9000000);
     }
 }
