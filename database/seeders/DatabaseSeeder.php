@@ -74,14 +74,16 @@ final class DatabaseSeeder extends Seeder
             [
                 'name' => 'fadi partner',
                 'email' => 'fadi.alfrejat@gmail.com',
-                'phone' => '0944102050',
+                'country_code' => '+963',
+                'phone' => '944102050',
                 'account_type' => UsersTypes::stadium->name,
                 'password' => bcrypt('Password123@@'),
             ],
             [
                 'name' => 'test partner',
                 'email' => 'test@partner.com',
-                'phone' => '0911111111',
+                'country_code' => '+963',
+                'phone' => '911111111',
                 'account_type' => UsersTypes::stadium->name,
                 'password' => bcrypt('Mm12345@@'),
             ],

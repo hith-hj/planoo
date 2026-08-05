@@ -31,7 +31,7 @@ final class CustomerServices
             return $customer;
         }
         $data['name'] = $this->userName($data);
-        $data['password'] = $data['phone'];
+        $data['password'] = 'Pass@'.$data['phone'];
         $data['firebase_token'] = 'not-set';
 
         return $this->create($data);
@@ -136,13 +136,13 @@ final class CustomerServices
     private function userName(array $data): string
     {
         if (isset($data['name'])) {
-            return $data['name'];
+            return 'usr_'.$data['name'];
         }
 
         if (isset($data['phone'])) {
             return 'usr_ph_'.mb_substr($data['phone'], -5);
         }
 
-        return 'usr_'.random_int(1000000, 9000000);
+        return 'usr_rd_'.random_int(1000000, 9000000);
     }
 }
