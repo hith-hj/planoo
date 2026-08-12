@@ -2,7 +2,9 @@
 @section('content')
     {{-- hero --}}
     <section id="home" class="">
-        <div class="relative w-full h-screen hero-bg bg-blend-overlay bg-purple flex flex-col justify-center items-center">
+        <div class="relative w-full h-screen bg-cover bg-center bg-blend-overlay bg-purple flex flex-col justify-center items-center"
+             style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
+
             <!-- Hero Text -->
             <h1 class="text-white text-4xl md:text-6xl font-bold mb-8 text-center drop-shadow-md">
                 {{__('Looking for something interesting?')}}
@@ -15,13 +17,11 @@
             <div class="w-full max-w-4xl bg-transparent rounded-lg shadow-xl overflow-hidden">
                 <!-- Tabs -->
                 <div class="flex border-b">
-                    <button class="flex-1 py-4 text-center font-bold text-lg tab-active "
-                        onclick="showTab('court')"
+                    <button class="flex-1 py-4 text-center font-bold text-lg tab-active " data-hometaps="court"
                         id="tab-court">
                       {{__('Find court')}}
                     </button>
-                    <button class="flex-1 py-4 text-center font-bold text-lg tab-inactive"
-                        onclick="showTab('activity')"
+                    <button class="flex-1 py-4 text-center font-bold text-lg tab-inactive" data-hometaps="activity"
                         id="tab-activity">
                       {{__('Find activity')}}
                     </button>
