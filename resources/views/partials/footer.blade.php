@@ -1,4 +1,5 @@
-<footer id="contact" class="hero-bg h-fit md:h-full bg-blend-multiply bg-purple text-white">
+<footer id="contact" class="h-fit md:h-full bg-blend-multiply bg-purple text-white"
+style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
     <div class="flex justify-center items-start py-10">
         <h1 class="text-6xl md:text-9xl font-extrabold text-white uppercase
         [text-shadow:_0_10px_15px_rgba(0,0,0,0.3)]">
