@@ -121,7 +121,7 @@ trait NotificationsHandler
                 phone: $this->phone(),
                 code: $this->data['code'],
             );
-            $this->store(['result' => ['status' => 'sent', 'sms_req_id' => $res->body()]]);
+            $this->store(['result' => ['status' => 'sent', 'response' => $res->body()]]);
 
             return true;
         } catch (Exception $e) {

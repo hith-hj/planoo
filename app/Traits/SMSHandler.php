@@ -27,7 +27,8 @@ trait SMSHandler
             return false;
         }
 
-        return $this->SyriatelSMSRequest($this->buildSyriatelUrl($phone, (int) $code));
+        // return $this->SyriatelSMSRequest($this->buildSyriatelUrl($phone, (int) $code));
+        return $this->SyriaWebhookServer($this->buildSyriatelUrl($phone, (int) $code));
     }
 
     private function buildSyriatelUrl(string $phone, int $code): string
@@ -53,6 +54,24 @@ trait SMSHandler
             ->acceptJson()
             ->post($url);
 
+        if ($response->failed()) {
+            Log::error('SMS API Failure', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            $response->throw();
+        }
+
+        return $response;
+    }
+
+    private function SyriaWebhookServer(string $url): Response
+    {
+        $localServerUrl = 'http://planoo.sy/webhooks.php';
+        $response = Http::asJson()
+            ->acceptJson()
+            ->post($localServerUrl, ['action' => 'msgRequestForward', 'target_url' => $url]);
         if ($response->failed()) {
             Log::error('SMS API Failure', [
                 'status' => $response->status(),
