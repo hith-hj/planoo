@@ -15,11 +15,11 @@ trait VerificationHandler
         $this->checkFields();
         $this->checkMethods();
         $code = $this->createCode(type: $codeType, timeToExpire: '15:m');
+        $by = $this->country_code === '+963' ? 'sms' : 'fcm';
         $this->update([
             'verified_at' => null,
             'verified_by' => $by,
         ]);
-        $by = $this->country_code === '+963' ? 'sms' : 'fcm';
         $this->notify(
             title: "$codeType code",
             body: "Your code: $code->code, expire at {$code->expire_at->format('Y-m-d H:i')}",
