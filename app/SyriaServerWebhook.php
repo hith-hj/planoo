@@ -11,6 +11,24 @@
 declare(strict_types=1);
 header('Content-Type: application/json');
 
+$headers = getallheaders();
+$headers = array_change_key_case($headers, CASE_LOWER);
+
+$webhookHeader = 'x-webhook-token';
+$webhookSecret = "\$2y\$12\$MJWB8ARZ6RW0Wd6F.Ga4/OnhI/q6gCzafQO1f3E5E73J6sj8n22K.";
+
+if (!isset($headers[$webhookHeader])) {
+    http_response_code(400);
+    echo json_encode(['error' => "Missing required header: 'X-Webhook-Token'."]);
+    exit;
+}
+
+if (! hash_equals($webhookSecret,$headers[$webhookHeader])) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized. Invalid token value.']);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Method Not Allowed.']);
