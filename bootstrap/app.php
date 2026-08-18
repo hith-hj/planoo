@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\ApiSecurityHeaders;
 use App\Http\Middleware\Localization;
-use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\WebSecurityHeaders;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
@@ -25,8 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(append: [Localization::class, SecurityHeaders::class]);
-        $middleware->web(append: [Localization::class, SecurityHeaders::class]);
+        $middleware->api(append: [Localization::class, ApiSecurityHeaders::class]);
+        $middleware->web(append: [Localization::class, WebSecurityHeaders::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Exception $e, Request $request) {
