@@ -37,7 +37,7 @@ final class CustomerFactory extends Factory
             'email' => fake()->email,
             'gender' => fake()->randomElement(['male', 'female']),
             'birthdate' => fake()->dateTimeBetween(endDate: now()->subYears($minCustomerAge))->format('Y-m-d'),
-            'firebase_token' => str()->random(32),
+            'firebase_token' => 'fake_'.str()->random(64),
             'verified_by' => 'phone',
             'verified_at' => now(),
             'is_notifiable' => true,
