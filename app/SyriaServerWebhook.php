@@ -15,7 +15,7 @@ $headers = getallheaders();
 $headers = array_change_key_case($headers, CASE_LOWER);
 
 $webhookHeader = 'x-webhook-token';
-$webhookSecret = "\$2y\$12\$JzLr0HOgsHAnPUU5Z5OiiOtJ2xRSxanNOP9GIsZl65DSl0Wwbolei";
+$webhookSecret = "9408b09ac9911f5ce0d668a6a3c30e78ba2602b202168d937e3ad88f54d5a794";
 
 if (!isset($headers[$webhookHeader])) {
     http_response_code(400);
