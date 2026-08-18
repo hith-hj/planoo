@@ -39,7 +39,7 @@ trait NotificationsHandler
         $this->title = $title;
         $this->body = $body;
         $this->data = $data;
-        $this->className = class_basename($this::class)."[{$this->id}]";
+        $this->className = class_basename($this::class) . "[{$this->id}]";
         if (app()->environment(['testing', 'local'])) {
             $this->store(['result' => 'testing notification']);
             Log::info("Notification {$this->className} : {$this->body}");
@@ -156,7 +156,7 @@ trait NotificationsHandler
     private function phone(): mixed
     {
         if ($this->phone !== null && $this->country_code !== null) {
-            return $this->country_code.formatPhone($this->phone);
+            return $this->country_code . formatPhone($this->phone);
         }
         Log::error("No valid phone number on {$this->className}");
 
@@ -166,7 +166,10 @@ trait NotificationsHandler
     private function fcmToken(): mixed
     {
         if ($this->firebase_token !== null) {
-            return $this->firebase_token;
+            if (!str_starts_with($this->firebase_token, 'fake_')) {
+                return $this->firebase_token;
+            }
+            return null;
         }
         Log::error("No FCM token on {$this->className}");
 
