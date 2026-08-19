@@ -24,6 +24,10 @@ return new class extends Migration
             $table->boolean('is_notifiable');
             $table->string('verified_by')->nullable();
             $table->timestamp('verified_at')->nullable();
+            $table->string('country_code');
+            $table->string('gender')->nullable();
+            $table->string('email')->unique()->nullable();
+            $table->date('birthdate')->nullable();
             $table->timestamps();
         });
     }

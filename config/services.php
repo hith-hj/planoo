@@ -49,5 +49,5 @@ return [
         'sender' => env('SYRIATEL_SENDER'),
     ],
 
-    'conflicts_detection' => env('CONFLICTS_DETECTION',false),
+    'conflicts_detection' => env('CONFLICTS_DETECTION', false),
 ];
