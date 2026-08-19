@@ -23,9 +23,11 @@ final class ResourceConflictDetectorJob implements ShouldQueue
     public function handle(): void
     {
         // executes command resource:detect-conflict with resource-type resource-id
-        Artisan::call('resource:detect-conflict', [
-            '--resource-type' => $this->resource_type,
-            '--resource-id' => $this->resource_id,
-        ]);
+        if (config('services.conflicts_detection', false) === true) {
+            Artisan::call('resource:detect-conflict', [
+                '--resource-type' => $this->resource_type,
+                '--resource-id' => $this->resource_id,
+            ]);
+        }
     }
 }

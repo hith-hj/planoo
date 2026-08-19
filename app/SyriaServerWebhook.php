@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * This file is uploaded to planoo.sy server.
  * Located in the httpdocs folder.
@@ -15,15 +14,15 @@ $headers = getallheaders();
 $headers = array_change_key_case($headers, CASE_LOWER);
 
 $webhookHeader = 'x-webhook-token';
-$webhookSecret = "9408b09ac9911f5ce0d668a6a3c30e78ba2602b202168d937e3ad88f54d5a794";
+$webhookSecret = '9408b09ac9911f5ce0d668a6a3c30e78ba2602b202168d937e3ad88f54d5a794';
 
-if (!isset($headers[$webhookHeader])) {
+if (! isset($headers[$webhookHeader])) {
     http_response_code(400);
     echo json_encode(['error' => "Missing required header: 'X-Webhook-Token'."]);
     exit;
 }
 
-if (! hash_equals($webhookSecret,$headers[$webhookHeader])) {
+if (! hash_equals($webhookSecret, $headers[$webhookHeader])) {
     http_response_code(401);
     echo json_encode(['error' => 'Unauthorized. Invalid token value.']);
     exit;

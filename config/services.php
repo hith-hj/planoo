@@ -48,4 +48,6 @@ return [
         'password' => env('SYRIATEL_PASSWORD'),
         'sender' => env('SYRIATEL_SENDER'),
     ],
+
+    'conflicts_detection' => env('CONFLICTS_DETECTION',false),
 ];
