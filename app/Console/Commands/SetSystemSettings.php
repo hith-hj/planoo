@@ -12,8 +12,9 @@ final class SetSystemSettings extends Command
 {
     /**
      * The name and signature of the console command.
+     * app:set-system-settings
      */
-    protected $signature = 'app:set-system-settings {--name=} {--input=} {--description=} {--force}';
+    protected $signature = 'app:sss {--name=} {--input=} {--description=} {--force}';
 
     /**
      * The console command description.
@@ -157,6 +158,11 @@ final class SetSystemSettings extends Command
                 'name' => 'minimum_customer_age',
                 'value' => '14',
                 'description' => 'the minimum age required for customer to register',
+            ],
+            [
+                'name' => 'new_customer_activation_status',
+                'value' => false,
+                'description' => 'this option set activation status of the new customer. allowed values (0,1)',
             ],
         ];
     }
