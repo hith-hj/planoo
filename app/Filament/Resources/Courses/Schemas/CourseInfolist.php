@@ -20,6 +20,8 @@ final class CourseInfolist
                     ->openUrlInNewTab(),
                 TextEntry::make('category.name')
                     ->label('Category'),
+                TextEntry::make('court.name')
+                    ->label('court'),
                 TextEntry::make('name'),
                 IconEntry::make('is_active')
                     ->boolean(),

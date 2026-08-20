@@ -16,6 +16,7 @@ final class CustomerInfolist
         return $schema
             ->components([
                 TextEntry::make('name'),
+                TextEntry::make('country_code'),
                 TextEntry::make('phone'),
                 TextEntry::make('status')
                     ->badge()

@@ -28,6 +28,9 @@ final class UsersTable
                     ->searchable(),
                 TextColumn::make('phone')
                     ->searchable(),
+                TextColumn::make('country_code')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('rate')
                     ->numeric()
                     ->sortable(),

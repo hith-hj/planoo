@@ -18,6 +18,7 @@ final class UserInfolist
                 TextEntry::make('name'),
                 TextEntry::make('account_type'),
                 TextEntry::make('email')->label('Email'),
+                TextEntry::make('country_code'),
                 TextEntry::make('phone'),
                 TextEntry::make('rate')
                     ->numeric(),

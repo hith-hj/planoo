@@ -22,6 +22,9 @@ final class CustomersTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('country_code')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('phone')
                     ->searchable(),
                 TextColumn::make('status')

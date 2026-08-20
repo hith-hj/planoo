@@ -30,6 +30,8 @@ final class ActivitiesTable
                     ->openUrlInNewTab(),
                 TextColumn::make('category.name')
                     ->searchable(),
+                TextColumn::make('court.name')
+                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('session_duration')

@@ -18,6 +18,8 @@ final class EventInfolist
                     ->label('User'),
                 TextEntry::make('category.name')
                     ->label('Category'),
+                TextEntry::make('court.name')
+                    ->label('court'),
                 TextEntry::make('name'),
                 TextEntry::make('description')
                     ->columnSpanFull(),

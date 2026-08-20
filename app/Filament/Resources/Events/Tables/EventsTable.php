@@ -22,6 +22,8 @@ final class EventsTable
                     ->searchable(),
                 TextColumn::make('category.name')
                     ->searchable(),
+                TextColumn::make('court.name')
+                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 IconColumn::make('is_active')
