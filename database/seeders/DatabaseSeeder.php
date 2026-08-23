@@ -28,7 +28,7 @@ final class DatabaseSeeder extends Seeder
 
     public function createSettings()
     {
-        Artisan::call('app:set-system-settings');
+        Artisan::call('app:sss');
     }
 
     public function createAdmin()
