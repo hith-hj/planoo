@@ -33,10 +33,10 @@ final class ActivityController extends Controller
         return Success(payload: ['activity' => $activity->toResource()]);
     }
 
-    public function create(Request $request)
+    public function create(Request $request, CourtServices $courtServices)
     {
         $validator = ActivityValidators::create($request->all());
-        $court = app(CourtServices::class)->find($validator->safe()->integer('court_id'));
+        $court = $courtServices->find($validator->safe()->integer('court_id'));
         Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
         $activity = $this->services->create(
             Auth::user(),

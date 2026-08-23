@@ -19,7 +19,7 @@ final class AuthController extends Controller
         $this->services->create($validator->safe()->all());
 
         return Success(
-            msg: 'registerd',
+            msg: 'registered',
             code: 201
         );
     }

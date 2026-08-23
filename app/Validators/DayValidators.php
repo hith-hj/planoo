@@ -7,17 +7,18 @@ namespace App\Validators;
 use App\Enums\WeekDays;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class DayValidators extends Validators
 {
-    public static function find($data)
+    public static function find(array $data): ValidationResult
     {
         return Validator::make($data, [
             'day_id' => ['required', 'exists:days,id'],
         ], self::messages());
     }
 
-    public static function create($data)
+    public static function create(array $data): ValidationResult
     {
         return Validator::make($data, [
             'day' => ['required', 'string', Rule::in(WeekDays::names())],
@@ -26,7 +27,7 @@ final class DayValidators extends Validators
         ], self::messages());
     }
 
-    public static function createMany($data)
+    public static function createMany(array $data): ValidationResult
     {
         return Validator::make($data, [
             'days' => ['required', 'array', 'min:1'],
@@ -36,7 +37,7 @@ final class DayValidators extends Validators
         ], self::messages());
     }
 
-    public static function update($data)
+    public static function update(array $data): ValidationResult
     {
         return Validator::make($data, [
             'day_id' => ['required', 'exists:days,id'],
@@ -45,7 +46,7 @@ final class DayValidators extends Validators
         ], self::messages());
     }
 
-    public static function delete($data)
+    public static function delete(array $data): ValidationResult
     {
         return Validator::make($data, [
             'day_id' => ['required', 'exists:days,id'],

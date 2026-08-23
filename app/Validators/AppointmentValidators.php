@@ -9,10 +9,11 @@ use App\Rules\ValidPhoneLength;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class AppointmentValidators extends Validators
 {
-    public static function check(array $data)
+    public static function check(array $data): ValidationResult
     {
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],
@@ -22,7 +23,7 @@ final class AppointmentValidators extends Validators
         ], self::messages());
     }
 
-    public static function create(array $data)
+    public static function create(array $data): ValidationResult
     {
         return Validator::make($data, [
             'code' => ['required'],
@@ -44,7 +45,7 @@ final class AppointmentValidators extends Validators
         ], self::messages());
     }
 
-    public static function find(array $data)
+    public static function find(array $data): ValidationResult
     {
         return Validator::make($data, [
             'appointment_id' => ['required', 'exists:appointments,id'],

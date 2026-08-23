@@ -44,7 +44,7 @@ return [
     'birthdate' => [
         'required' => 'The Birthdate is required.',
         'date' => 'The date must strictly follow the format: YYYY-MM-DD.',
-        'before_or_equal' => 'Age must be older than '.Setting('minimum_customer_age', 14),
+        'before_or_equal' => 'Age must be older than '.app_setting('minimum_customer_age', 14),
     ],
 
     'firebase_token' => [

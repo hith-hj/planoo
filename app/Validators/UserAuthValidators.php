@@ -8,10 +8,11 @@ use App\Enums\UsersTypes;
 use App\Rules\ValidPhoneLength;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class UserAuthValidators extends Validators
 {
-    public static function register(array $data)
+    public static function register(array $data): ValidationResult
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
@@ -30,7 +31,7 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function verify(array $data)
+    public static function verify(array $data): ValidationResult
     {
         return Validator::make($data, [
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
@@ -44,7 +45,7 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function login(array $data)
+    public static function login(array $data): ValidationResult
     {
         return Validator::make($data, [
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
@@ -59,7 +60,7 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function forgetPassword(array $data)
+    public static function forgetPassword(array $data): ValidationResult
     {
         return Validator::make($data, [
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
@@ -73,7 +74,7 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function resetPassword(array $data)
+    public static function resetPassword(array $data): ValidationResult
     {
         return Validator::make($data, [
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
@@ -89,7 +90,7 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function resendCode(array $data)
+    public static function resendCode(array $data): ValidationResult
     {
         return Validator::make($data, [
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
@@ -102,7 +103,7 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function changePassword(array $data)
+    public static function changePassword(array $data): ValidationResult
     {
         return Validator::make($data, [
             'old_password' => ['required', 'string', 'min:8'],

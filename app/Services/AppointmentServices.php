@@ -32,7 +32,7 @@ final class AppointmentServices
     ) {
         Required($query, 'query');
         Truthy($paginate === false && count($filters) === 0, 'invalid operation');
-        $query->with($this->ToBeLoaded());
+        $query->with($this->toBeLoaded());
         $this->applyFilters($query, $filters, [
             'status' => AppointmentStatus::values(),
             'session_duration' => SessionDuration::values(),
@@ -54,7 +54,7 @@ final class AppointmentServices
     {
         Required($query, 'query');
         $query->where('status', AppointmentStatus::accepted->value);
-        $query->with($this->ToBeLoaded());
+        $query->with($this->toBeLoaded());
         $this->applyOrderBy($query, $orderBy, ['date', 'time']);
 
         $appointments = $query->get();
@@ -70,7 +70,7 @@ final class AppointmentServices
         $appointment = Appointment::find($id);
         NotFound($appointment, 'appointment');
 
-        return $appointment->load($this->ToBeLoaded());
+        return $appointment->load($this->toBeLoaded());
     }
 
     public function checkAvailableSlots(object $owner, array $data): array
@@ -109,7 +109,8 @@ final class AppointmentServices
             $gapMinutes = $gapStart->diffInMinutes($gapEnd);
 
             if ($gapMinutes >= $duration) {
-                $slots = [...$this->checkAllowedDurations($gapStart, $gapEnd, $duration)];
+                // $slots = [...$this->checkAllowedDurations($gapStart, $gapEnd, $duration)];
+                $slots = array_merge($slots, $this->checkAllowedDurations($gapStart, $gapEnd, $duration));
             }
 
             if ($session['end']->greaterThan($previousEnd)) {
@@ -123,7 +124,7 @@ final class AppointmentServices
             $gapMinutes = $gapStart->diffInMinutes($gapEnd);
 
             if ($gapMinutes >= $duration) {
-                $slots = [...$this->checkAllowedDurations($gapStart, $gapEnd, $duration)];
+                $slots = array_merge($slots, $this->checkAllowedDurations($gapStart, $gapEnd, $duration));
             }
         }
         $code = app(CodeServices::class)->createCode(
@@ -223,7 +224,7 @@ final class AppointmentServices
             'notes' => $data['notes'] ?? null,
         ]);
 
-        return $appointment->load($this->ToBeLoaded());
+        return $appointment->load($this->toBeLoaded());
     }
 
     public function cancel(object $user, Appointment $appointment): bool
@@ -286,7 +287,7 @@ final class AppointmentServices
         return $slots;
     }
 
-    private function ToBeLoaded()
+    private function toBeLoaded()
     {
         return ['customer', 'holder'];
     }
@@ -306,7 +307,7 @@ final class AppointmentServices
     {
         $diff = now()
             ->diffInSeconds($appointment->created_at) / 3600;
-        if (abs($diff) > Setting('appointment_cancelation_period', 1)) {
+        if (abs($diff) > app_setting('appointment_cancelation_period', 1)) {
             return false;
         }
 

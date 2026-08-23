@@ -29,7 +29,7 @@ final class NotifyEventSession extends Command
             $targetDate = Carbon::parse($argumentDate);
             $this->comment("Explicit date provided: {$targetDate->toDateString()}");
         } else {
-            $daysInFuture = (int) Setting('days_before_event_appointment', 0);
+            $daysInFuture = (int) app_setting('days_before_event_appointment', 0);
             $targetDate = Carbon::now()->addDays($daysInFuture);
             $this->comment("No date provided. Using dashboard offset (+{$daysInFuture} days): {$targetDate->toDateString()}");
         }

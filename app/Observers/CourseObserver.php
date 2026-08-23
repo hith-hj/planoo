@@ -15,10 +15,13 @@ final class CourseObserver
      */
     public function created(Course $course): void
     {
-        ResourceConflictDetectorJob::dispatch(
-            'course',
-            $course->id
-        );
+
+        if (config('services.conflicts_detection', false) === true) {
+            ResourceConflictDetectorJob::dispatch(
+                'course',
+                $course->id
+            );
+        }
     }
 
     /**
@@ -26,10 +29,13 @@ final class CourseObserver
      */
     public function updated(Course $course): void
     {
-        ResourceConflictDetectorJob::dispatch(
-            'course',
-            $course->id
-        );
+
+        if (config('services.conflicts_detection', false) === true) {
+            ResourceConflictDetectorJob::dispatch(
+                'course',
+                $course->id
+            );
+        }
     }
 
     /**

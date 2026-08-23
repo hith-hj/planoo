@@ -15,6 +15,12 @@ final class Tag extends Model
 
     public $timestamps = false;
 
+    protected static function booted(): void
+    {
+        self::saved(fn () => cache()->forget('labels.tags'));
+        self::deleted(fn () => cache()->forget('labels.tags'));
+    }
+
     public function activities(): MorphToMany
     {
         return $this->morphedByMany(Activity::class, 'taggable');

@@ -157,7 +157,7 @@ final class EventServices
         return $event;
     }
 
-    public function calculateEventEndDate(Event $event): array|bool
+    public function calculateEventEndDate(Event $event): bool
     {
         $event = $event->load('days');
         $totalSessionsRequired = (int) $event->event_duration;
@@ -214,7 +214,7 @@ final class EventServices
                 ];
             }
 
-            // increment daays
+            // increment days
             $currentDate->addDay();
         }
 
@@ -267,15 +267,5 @@ final class EventServices
         $data['end_date'] = $end_date;
 
         return $data;
-    }
-
-    private function getDaysOfWeek(Collection $eventDays): array
-    {
-        $days = [];
-        foreach ($eventDays as $day) {
-            $days[] = $day->day;
-        }
-
-        return $days;
     }
 }

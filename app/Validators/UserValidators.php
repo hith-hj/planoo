@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class UserValidators extends Validators
 {
-    public static function update(array $data)
+    public static function update(array $data): ValidationResult
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:100'],
@@ -16,7 +17,7 @@ final class UserValidators extends Validators
         ], self::messages());
     }
 
-    public static function profileImage(array $data)
+    public static function profileImage(array $data): ValidationResult
     {
         return Validator::make($data, [
             'profile_image' => ['required', 'image', 'mimetypes:image/jpeg,image/png', 'max:1024'],

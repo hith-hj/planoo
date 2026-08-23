@@ -16,7 +16,7 @@ final class CustomerFactory extends Factory
 {
     public function definition(): array
     {
-        $minCustomerAge = Setting('minimum_customer_age', 14);
+        $minCustomerAge = app_setting('minimum_customer_age', 14);
         $randomCountryCode = fake()->randomElement(array_keys(countryCodesLengths()));
         $allowedLengths = countryCodesLengths($randomCountryCode);
 

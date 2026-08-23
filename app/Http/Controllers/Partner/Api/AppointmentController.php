@@ -27,11 +27,12 @@ final class AppointmentController extends Controller
         $paginate = $request->boolean('paginate', true);
 
         $query = $this->services->getUserQuery(Auth::user(), $ownerType);
+        $perPage = $paginate === false ? $query->count() : $perPage;
         $appointments = $this->services->allByQuery($query, $page, $perPage, $filters, $orderBy, $paginate);
 
         return Success(payload: [
             'page' => $page,
-            'perPage' => $paginate === false ? count($appointments) : $perPage,
+            'perPage' => $perPage,
             'appointments' => $appointments->toResourceCollection(),
         ]);
     }
@@ -59,30 +60,33 @@ final class AppointmentController extends Controller
         ]);
     }
 
-    public function check(Request $request)
+    public function check(Request $request, ActivityServices $activityServices)
     {
         $validator = AppointmentValidators::check($request->all());
-        $activity = app(ActivityServices::class)
-            ->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
+        $activity = $activityServices->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
         $slots = $this->services->checkAvailableSlots($activity, $validator->safe()->all());
 
         return Success(payload: ['slots' => $slots]);
     }
 
-    public function create(Request $request)
-    {
+    public function create(
+        Request $request,
+        ActivityServices $activityServices,
+        CodeServices $codeServices,
+        CustomerServices $customerServices
+    ) {
         $validator = AppointmentValidators::create($request->all());
 
-        $code = app(CodeServices::class)->codeById($validator->safe()->integer('code'));
+        $code = $codeServices->codeById($validator->safe()->integer('code'));
         Truthy(! $code->isValid(), 'Invalid code');
-        app(CodeServices::class)->deleteCode($code);
+        $codeServices->deleteCode($code);
 
-        $activity = app(ActivityServices::class)
+        $activity = $activityServices
             ->findByUser(Auth::user(), $validator->safe()->integer('activity_id'));
         if ($this->services->checkAppointmentExists($activity, $validator->safe()->all())) {
             return Error('appointment just got booked');
         }
-        $customer = app(CustomerServices::class)->getCustomer($validator->safe()->all());
+        $customer = $customerServices->getCustomer($validator->safe()->all());
 
         $appointment = $this->services->create($activity, $validator->safe()->all(), $customer);
 

@@ -60,7 +60,7 @@ final class UserController extends Controller
         return Success('profile image deleted');
     }
 
-    public function toggleNotification(Request $reuest)
+    public function toggleNotification(Request $request)
     {
         $user = $this->services->get(Auth::id());
         $this->services->toggleNotification($user);

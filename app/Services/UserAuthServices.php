@@ -33,7 +33,7 @@ final class UserAuthServices
             'description' => $data['description'],
             'password' => bcrypt($data['password']),
             'status' => AccountStatus::fresh->value,
-            'is_active' => (bool) Setting('new_customer_activation_status', false),
+            'is_active' => (bool) app_setting('new_customer_activation_status', false),
             'is_notifiable' => true,
         ]);
 
@@ -62,10 +62,6 @@ final class UserAuthServices
 
         /** @var User $user */
         $user = Auth::user();
-        if (! Hash::check($validator->safe()->input('password'), $user->password)) {
-            throw new Exception(__('incorrect password'));
-        }
-
         if ($user->verified_at === null) {
             throw new Exception(__('unverified account'));
         }
@@ -129,7 +125,7 @@ final class UserAuthServices
             throw new Exception(__('invalid password'));
         }
 
-        if ($user->password === Hash::make($validator->safe()->input('new_password'))) {
+        if (Hash::check($validator->safe()->input('new_password'), $user->password)) {
             throw new Exception(__('passwords are equals'));
         }
 

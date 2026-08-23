@@ -28,7 +28,7 @@ final class NotifyCourseSession extends Command
         if ($argumentDate) {
             $targetDate = Carbon::parse($argumentDate);
         } else {
-            $daysInFuture = (int) Setting('days_before_course_appointment', 0);
+            $daysInFuture = (int) app_setting('days_before_course_appointment', 0);
             $targetDate = Carbon::now()->addDays($daysInFuture);
         }
 

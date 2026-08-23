@@ -6,6 +6,7 @@ namespace App\Http\Middleware\Auth;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +37,9 @@ final class JwtMiddleware
                 return Error(msg: 'User Not Found', code: 416);
             }
         } catch (JWTException $e) {
-            return Error(msg: "Invalid Token: {$e->getMessage()}", code: 401);
+            Log::error('JWT Error: '.$e->getMessage());
+
+            return Error(msg: 'Token Authentication Error', code: 401);
         }
 
         return $next($request);

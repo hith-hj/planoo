@@ -61,10 +61,6 @@ final class CustomerAuthServices
         }
         /** @var Customer $customer */
         $customer = Auth::user();
-        if (! Hash::check($validator->safe()->input('password'), $customer->password)) {
-            throw new Exception(__('incorrect password'));
-        }
-
         if ($customer->verified_at === null) {
             throw new Exception(__('unverified account'));
         }
@@ -127,7 +123,7 @@ final class CustomerAuthServices
             throw new Exception(__('invalid password'));
         }
 
-        if ($customer->password === Hash::make($validator->safe()->input('new_password'))) {
+        if (Hash::check($validator->safe()->input('new_password'), $customer->password)) {
             throw new Exception(__('passwords are equals'));
         }
 

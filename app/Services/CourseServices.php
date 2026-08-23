@@ -170,7 +170,7 @@ final class CourseServices
         }
         $course->user->notify(
             'Customer Left',
-            'Customer left corse',
+            'Customer left course',
             ['type' => NotificationTypes::course->value, 'course' => $course->id]
         );
 

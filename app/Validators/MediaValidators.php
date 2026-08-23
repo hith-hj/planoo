@@ -6,19 +6,20 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class MediaValidators extends Validators
 {
-    public static function find(array $data)
+    public static function find(array $data): ValidationResult
     {
         return Validator::make($data, [
             'media_id' => ['required', 'exists:media,id'],
         ], self::messages());
     }
 
-    public static function create(array $data): \Illuminate\Validation\Validator
+    public static function create(array $data): ValidationResult
     {
-        $maxMedia = setting('max_media_count', 5);
+        $maxMedia = app_setting('max_media_count', 5);
         $isImage = ($data['type'] ?? null) === 'image';
         $isVideo = ($data['type'] ?? null) === 'video';
 
@@ -35,7 +36,7 @@ final class MediaValidators extends Validators
         ], self::messages());
     }
 
-    public static function update(array $data)
+    public static function update(array $data): ValidationResult
     {
         return Validator::make($data, [
             'media_id' => ['required', 'exists:media,id'],

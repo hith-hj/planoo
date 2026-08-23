@@ -23,12 +23,12 @@ final class ReviewController extends Controller
     }
 
     // should be removed
-    public function create(Request $request)
+    public function create(Request $request, CustomerServices $customerServices)
     {
         return Error('invalid operation');
         $validator = ReviewValidators::createFromUser($request->all());
 
-        $customer = app(CustomerServices::class)->find(1);
+        $customer = $customerServices->find(1);
         $review = $this->review->create(getModel(), $customer, $validator->safe()->all());
 
         return Success(

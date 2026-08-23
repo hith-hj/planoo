@@ -25,7 +25,7 @@ trait Filters
         array $callable = [],
         string $getter = 'get',
         array $columns = ['*'],
-        bool $sql = false,
+        bool $debug = false,
     ): Collection|Model|null {
         Truthy(! in_array($model, SectionsTypes::names()), "invalid model type: {$model}");
         $model = '\App\Models\\'.ucfirst(trim($model));
@@ -43,7 +43,7 @@ trait Filters
             }
         }
 
-        Truthy($sql, $query->toRawSql());
+        Truthy($debug, $query->toRawSql());
         $result = $query->$getter($columns);
 
         NotFound($result, $class);

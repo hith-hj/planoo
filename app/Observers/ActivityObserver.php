@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
-use App\Console\Commands\ResourceConflictDetector;
 use App\Jobs\ResourceConflictDetectorJob;
 use App\Models\Activity;
-use Illuminate\Support\Facades\Artisan;
 
 final class ActivityObserver
 {
@@ -16,20 +14,12 @@ final class ActivityObserver
      */
     public function created(Activity $activity): void
     {
-        // defer(
-        //     fn() => Artisan::call(
-        //         ResourceConflictDetector::class,
-        //         [
-        //             'resource' => 'activity',
-        //             'resource_id' => $activity->id,
-        //         ]
-        //     )
-        // );
-
-        ResourceConflictDetectorJob::dispatch(
-            'activity',
-            $activity->id
-        );
+        if (config('services.conflicts_detection', false) === true) {
+            ResourceConflictDetectorJob::dispatch(
+                'activity',
+                $activity->id
+            );
+        }
     }
 
     /**
@@ -37,10 +27,12 @@ final class ActivityObserver
      */
     public function updated(Activity $activity): void
     {
-        ResourceConflictDetectorJob::dispatch(
-            'activity',
-            $activity->id
-        );
+        if (config('services.conflicts_detection', false) === true) {
+            ResourceConflictDetectorJob::dispatch(
+                'activity',
+                $activity->id
+            );
+        }
     }
 
     /**

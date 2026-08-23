@@ -9,19 +9,20 @@ use App\Rules\ValidPhoneLength;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class CourseValidators extends Validators
 {
-    public static function find(array $data)
+    public static function find(array $data): ValidationResult
     {
         return Validator::make($data, [
             'course_id' => ['required', 'exists:courses,id'],
         ], self::messages());
     }
 
-    public static function create(array $data, bool $update = false)
+    public static function create(array $data, bool $update = false): ValidationResult
     {
-        $maxCapacity = Setting('course_capacity', 30);
+        $maxCapacity = app_setting('course_capacity', 30);
 
         return Validator::make($data, [
             'category_id' => ['required', 'exists:categories,id'],
@@ -37,14 +38,14 @@ final class CourseValidators extends Validators
         ], self::messages());
     }
 
-    public static function delete(array $data)
+    public static function delete(array $data): ValidationResult
     {
         return Validator::make($data, [
             'course_id' => ['required', 'exists:courses,id'],
         ], self::messages());
     }
 
-    public static function attend(array $data)
+    public static function attend(array $data): ValidationResult
     {
         return Validator::make($data, [
             'course_id' => ['required', 'exists:courses,id'],
@@ -65,7 +66,7 @@ final class CourseValidators extends Validators
         ], self::messages());
     }
 
-    public static function cancel(array $data)
+    public static function cancel(array $data): ValidationResult
     {
         return Validator::make($data, [
             'course_id' => ['required', 'exists:courses,id'],

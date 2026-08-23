@@ -30,7 +30,7 @@ final class NotifyCourseBegun extends Command
             $targetDate = Carbon::parse($argumentDate);
             $this->comment("Explicit date provided: {$targetDate->toDateString()}");
         } else {
-            $daysInFuture = (int) Setting('days_before_course_start', 0);
+            $daysInFuture = (int) app_setting('days_before_course_start', 0);
             $targetDate = Carbon::now()->addDays($daysInFuture);
         }
         $courses = Course::pending()->with(['user:id', 'customers', 'days'])

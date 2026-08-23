@@ -34,10 +34,10 @@ final class CourseController extends Controller
         return Success(payload: ['course' => $course->toResource()]);
     }
 
-    public function create(Request $request)
+    public function create(Request $request, CourtServices $courtServices)
     {
         $validator = CourseValidators::create($request->all());
-        $court = app(CourtServices::class)->find($validator->safe()->integer('court_id'));
+        $court = $courtServices->find($validator->safe()->integer('court_id'));
         Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
         $course = $this->services->create(
             Auth::user(),
@@ -95,22 +95,22 @@ final class CourseController extends Controller
         return Success();
     }
 
-    public function attend(Request $request)
+    public function attend(Request $request, CustomerServices $customerServices)
     {
         $validator = CourseValidators::attend($request->all());
         $course = $this->services->findByUser(Auth::user(), $validator->safe()->integer('course_id'));
-        $customer = app(CustomerServices::class)->getCustomer($validator->safe()->except('course_id'));
+        $customer = $customerServices->getCustomer($validator->safe()->except('course_id'));
 
         $this->services->attend($customer, $course);
 
         return Success();
     }
 
-    public function cancel(Request $request)
+    public function cancel(Request $request, CustomerServices $customerServices)
     {
         $validator = CourseValidators::cancel($request->all());
         $course = $this->services->findByUser(Auth::user(), $validator->safe()->integer('course_id'));
-        $customer = app(CustomerServices::class)->getCustomer($validator->safe()->except('course_id'));
+        $customer = $customerServices->getCustomer($validator->safe()->except('course_id'));
 
         $this->services->cancel($customer, $course);
 

@@ -7,20 +7,21 @@ namespace App\Validators;
 use App\Rules\ValidPhoneLength;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class EventValidators extends Validators
 {
-    public static function find(array $data)
+    public static function find(array $data): ValidationResult
     {
         return Validator::make($data, [
             'event_id' => ['required', 'exists:events,id'],
         ], self::messages());
     }
 
-    public static function create(array $data, bool $update = false)
+    public static function create(array $data, bool $update = false): ValidationResult
     {
-        $maxDuration = Setting('event_duration', 30);
-        $maxCapacity = Setting('event_capacity', 30);
+        $maxDuration = app_setting('event_duration', 30);
+        $maxCapacity = app_setting('event_capacity', 30);
 
         return Validator::make($data, [
             'category_id' => ['required', 'exists:categories,id'],
@@ -36,14 +37,14 @@ final class EventValidators extends Validators
         ], self::messages());
     }
 
-    public static function delete(array $data)
+    public static function delete(array $data): ValidationResult
     {
         return Validator::make($data, [
             'event_id' => ['required', 'exists:events,id'],
         ], self::messages());
     }
 
-    public static function attend(array $data)
+    public static function attend(array $data): ValidationResult
     {
         return Validator::make($data, [
             'event_id' => ['required', 'exists:events,id'],
@@ -64,7 +65,7 @@ final class EventValidators extends Validators
         ], self::messages());
     }
 
-    public static function cancel(array $data)
+    public static function cancel(array $data): ValidationResult
     {
         return Validator::make($data, [
             'event_id' => ['required', 'exists:events,id'],

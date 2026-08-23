@@ -193,11 +193,15 @@ if (! function_exists('getModel')) {
     }
 }
 
-if (! function_exists('Setting')) {
-    function Setting(?string $name = null, mixed $default = null)
+if (! function_exists('app_setting')) {
+    function app_setting(?string $name = null, mixed $default = null)
     {
         if ($name !== null) {
-            return Setting::where('name', $name)->first()?->value ?? $default;
+            $cacheKey = 'app_setting.'.$name;
+
+            return cache()->remember($cacheKey, 86400, function () use ($name, $default) {
+                return Setting::where('name', $name)->first()?->value ?? $default;
+            });
         }
 
         return $default;

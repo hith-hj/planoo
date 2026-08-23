@@ -44,8 +44,7 @@ return [
     'birthdate' => [
         'required' => 'تاريخ الميلاد مطلوب.',
         'date' => 'يجب أن يكون التاريخ بالصيغة التالية تمامًا: YYYY-MM-DD.',
-        'before_or_equal' => 'يجب أن يكون التاريخ قبل ١٢ سنة على الأقل.',
-        'before_or_equal' => 'العمر يجب انو يكون اكبر من '.Setting('minimum_customer_age', 14),
+        'before_or_equal' => 'العمر يجب انو يكون اكبر من '.app_setting('minimum_customer_age', 14),
     ],
 
     'firebase_token' => [

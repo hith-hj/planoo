@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\Artisan;
 beforeEach(function () {
     $this->seed();
     Queue::fake();
-
 });
 
 test('creating an activity dispatches the conflict check job', function () {
+    config(['services.conflicts_detection' => true]);
     $court = Court::factory()->create();
-    $activity = Activity::factory()->for($court,'court')->create();
+    $activity = Activity::factory()->for($court, 'court')->create();
 
     Queue::assertPushed(ResourceConflictDetectorJob::class, function ($job) use ($activity) {
         $reflect = new ReflectionClass($job);
@@ -26,17 +26,25 @@ test('creating an activity dispatches the conflict check job', function () {
     });
 });
 
+test('create an activity do not dispatches the conflict check job when conflicts detection is disabled', function () {
+    config(['services.conflicts_detection' => false]);
+    $court = Court::factory()->create();
+    $activity = Activity::factory()->for($court, 'court')->create();
+
+    Queue::assertNotPushed(ResourceConflictDetectorJob::class);
+});
+
 test('detects duplicate schedules successfully', function () {
     $court = Court::factory()->create();
 
-    $event = Event::factory()->for($court,'court')->create();
+    $event = Event::factory()->for($court, 'court')->create();
     $event->days()->create([
         'day'   => 'Monday',
         'start' => '10:00',
         'end'   => '12:00',
     ]);
 
-    $newActivity = Activity::factory()->for($court,'court')->create();
+    $newActivity = Activity::factory()->for($court, 'court')->create();
     $newActivity->days()->create([
         'day'   => 'Monday',
         'start' => '10:00',
@@ -56,14 +64,14 @@ test('detects duplicate schedules successfully', function () {
 test('detects overlapping schedules successfully', function () {
     $court = Court::factory()->create();
 
-    $existingActivity = Activity::factory()->for($court,'court')->create();
+    $existingActivity = Activity::factory()->for($court, 'court')->create();
     $existingActivity->days()->create([
         'day'   => 'Monday',
         'start' => '10:00',
         'end'   => '12:00',
     ]);
 
-    $newActivity = Activity::factory()->for($court,'court')->create();
+    $newActivity = Activity::factory()->for($court, 'court')->create();
     $newActivity->days()->create([
         'day'   => 'Monday',
         'start' => '11:00',
@@ -84,14 +92,14 @@ test('detects overlapping schedules successfully', function () {
 test('confirms a clean schedule when no conflicts exist', function () {
     $court = Court::factory()->create();
 
-    $existingActivity = Activity::factory()->for($court,'court')->create();
+    $existingActivity = Activity::factory()->for($court, 'court')->create();
     $existingActivity->days()->create([
         'day'   => 'Monday',
         'start' => '10:00',
         'end'   => '12:00',
     ]);
 
-    $newActivity = Activity::factory()->for($court,'court')->create();
+    $newActivity = Activity::factory()->for($court, 'court')->create();
     $newActivity->days()->create([
         'day'   => 'Monday',
         'start' => '13:00',
@@ -111,14 +119,14 @@ test('confirms a clean schedule when no conflicts exist', function () {
 test('confirms a clean schedule when no conflicts exist with courses', function () {
     $court = Court::factory()->create();
 
-    $existingActivity = Activity::factory()->for($court,'court')->create();
+    $existingActivity = Activity::factory()->for($court, 'court')->create();
     $existingActivity->days()->create([
         'day'   => 'Monday',
         'start' => '10:00',
         'end'   => '12:00',
     ]);
 
-    $course = Course::factory()->for($court,'court')->create();
+    $course = Course::factory()->for($court, 'court')->create();
     $course->days()->create([
         'day'   => 'Monday',
         'start' => '13:00',

@@ -8,17 +8,18 @@ use App\Enums\SessionDuration;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class ActivityValidators extends Validators
 {
-    public static function find(array $data)
+    public static function find(array $data): ValidationResult
     {
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],
         ], self::messages());
     }
 
-    public static function create(array $data, bool $update = false)
+    public static function create(array $data, bool $update = false): ValidationResult
     {
         return Validator::make($data, [
             'category_id' => ['required', 'exists:categories,id'],
@@ -31,7 +32,7 @@ final class ActivityValidators extends Validators
         ], self::messages());
     }
 
-    public static function delete(array $data)
+    public static function delete(array $data): ValidationResult
     {
         return Validator::make($data, [
             'activity_id' => ['required', 'exists:activities,id'],

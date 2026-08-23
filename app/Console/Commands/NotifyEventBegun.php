@@ -30,7 +30,7 @@ final class NotifyEventBegun extends Command
             $targetDate = Carbon::parse($argumentDate);
             $this->comment("Explicit date provided: {$targetDate->toDateString()}");
         } else {
-            $daysInFuture = (int) Setting('days_before_event_start', 0);
+            $daysInFuture = (int) app_setting('days_before_event_start', 0);
             $targetDate = Carbon::now()->addDays($daysInFuture);
         }
         $events = Event::pending()->with(['user:id', 'customers', 'days'])

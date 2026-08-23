@@ -15,6 +15,12 @@ final class Category extends Model
 
     public $timestamps = false;
 
+    protected static function booted(): void
+    {
+        self::saved(fn () => cache()->forget('labels.categories'));
+        self::deleted(fn () => cache()->forget('labels.categories'));
+    }
+
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);

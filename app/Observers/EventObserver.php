@@ -15,10 +15,12 @@ final class EventObserver
      */
     public function created(Event $event): void
     {
-        ResourceConflictDetectorJob::dispatch(
-            'event',
-            $event->id
-        );
+        if (config('services.conflicts_detection', false) === true) {
+            ResourceConflictDetectorJob::dispatch(
+                'event',
+                $event->id
+            );
+        }
     }
 
     /**
@@ -26,10 +28,12 @@ final class EventObserver
      */
     public function updated(Event $event): void
     {
-        ResourceConflictDetectorJob::dispatch(
-            'event',
-            $event->id
-        );
+        if (config('services.conflicts_detection', false) === true) {
+            ResourceConflictDetectorJob::dispatch(
+                'event',
+                $event->id
+            );
+        }
     }
 
     /**

@@ -6,24 +6,25 @@ namespace App\Validators;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator as ValidationResult;
 
 final class CustomerValidators extends Validators
 {
-    public static function find($data)
+    public static function find(array $data): ValidationResult
     {
         return Validator::make($data, [
             'customer_id' => ['required', 'exists:customers,id'],
         ], self::messages());
     }
 
-    public static function update(array $data)
+    public static function update(array $data): ValidationResult
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:100'],
         ], self::messages());
     }
 
-    public static function profileImage(array $data, bool $optional = false)
+    public static function profileImage(array $data, bool $optional = false): ValidationResult
     {
         return Validator::make($data, [
             'profile_image' => [

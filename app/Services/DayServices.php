@@ -94,7 +94,7 @@ final class DayServices
             }
             if ($od['day'] === $newDay['day']) {
                 if ($newDay['start'] === $od['start'] && $newDay['end'] === $od['end']) {
-                    throw new Exception("Duplicated Day {$od['day']} at {$od['start']}"); // dublication
+                    throw new Exception("Duplicated Day {$od['day']} at {$od['start']}"); // duplication
                 }
                 if ($updateing && isset($newDay['id']) && $newDay['id'] === $od['id']) {
                     continue;
