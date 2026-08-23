@@ -33,7 +33,7 @@ final class UserAuthServices
             'description' => $data['description'],
             'password' => bcrypt($data['password']),
             'status' => AccountStatus::fresh->value,
-            'is_active' => (bool) Setting('new_customer_activation_status',false),
+            'is_active' => (bool) Setting('new_customer_activation_status', false),
             'is_notifiable' => true,
         ]);
 
