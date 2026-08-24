@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Category;
-use App\Models\Course;
-use App\Models\Customer;
+use App\Models\Court;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -21,6 +20,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Category::class);
+            $table->foreignIdFor(Court::class)->nullable();
             $table->string('name');
             $table->text('description');
             $table->boolean('is_active');
@@ -30,17 +30,15 @@ return new class extends Migration
             $table->integer('capacity');
             $table->integer('rate')->default(0);
             $table->integer('cancellation_fee')->nullable();
-            $table->integer('session_duration');
+            $table->timestamp('start_date')->nullable();
+            $table->tinyInteger('status');
             $table->timestamps();
-        });
 
-        Schema::create('course_customer', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(Course::class);
-            $table->foreignIdFor(Customer::class);
-            $table->integer('remaining_sessions');
-            $table->boolean('is_complete')->default(0);
-            $table->timestamps();
+            // indexs
+            $table->index(['is_active', 'is_full', 'category_id', 'rate']);
+            $table->index(['is_active', 'is_full', 'category_id', 'price']);
+            $table->index(['is_active', 'is_full', 'course_duration']);
+            $table->index(['is_active', 'is_full', 'start_date']);
         });
     }
 
@@ -50,6 +48,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('courses');
-        Schema::dropIfExists('course_customer');
     }
 };

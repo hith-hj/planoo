@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\Customer;
+use App\Models\Event;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->string('country_code');
+        Schema::create('customer_event', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Event::class);
+            $table->foreignIdFor(Customer::class);
+            $table->timestamps();
         });
     }
 
@@ -23,8 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->dropColumn('country_code');
-        });
+        Schema::dropIfExists('customer_event');
     }
 };

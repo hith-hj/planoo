@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Category;
+use App\Models\Court;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,6 +20,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Category::class);
+            $table->foreignIdFor(Court::class)->nullable();
             $table->string('name');
             $table->integer('price');
             $table->integer('session_duration');
@@ -26,6 +28,11 @@ return new class extends Migration
             $table->boolean('is_active');
             $table->integer('rate')->default(0);
             $table->timestamps();
+
+            // indexs
+            $table->index(['is_active', 'category_id', 'rate']);
+            $table->index(['is_active', 'category_id', 'price']);
+            $table->index('session_duration');
         });
     }
 

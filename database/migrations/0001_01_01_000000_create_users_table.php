@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('is_notifiable');
             $table->string('verified_by')->nullable();
             $table->timestamp('verified_at')->nullable();
+            $table->string('country_code');
             $table->timestamps();
         });
 
