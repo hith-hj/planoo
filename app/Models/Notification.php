@@ -12,6 +12,21 @@ final class Notification extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'belongTo_type',
+        'belongTo_id',
+        'title',
+        'body',
+        'type',
+        'payload',
+        'is_viewed',
+    ];
+
     protected function casts(): array
     {
         return [

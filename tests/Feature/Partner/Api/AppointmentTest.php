@@ -70,7 +70,16 @@ describe('Appointment Controller Tests', function () {
 
     it('checks available slots for a specific date', function () {
         $activity = $this->user->activities()->inRandomOrder()->first();
-        $data = Appointment::factory()->fakerData(owner: $activity);
+        $day = $activity->days()->first();
+
+        // build a fully deterministic request instead of relying on factory
+        // randomness (random weekday/date pairs made this flaky)
+        $data = [
+            'activity_id' => $activity->id,
+            'day_id' => $day->id,
+            'date' => now()->next(mb_strtolower($day->day))->toDateString(),
+            'session_duration' => 60,
+        ];
 
         $response = $this->postJson("{$this->url}/check", $data);
         $response->assertOk();
@@ -210,7 +219,7 @@ describe('Appointment Controller Tests', function () {
         $appointment = Appointment::factory()
             ->for($this->user->activities()->first(), 'holder')
             ->create();
-        $appointment->update(['created_at' => $appointment->created_at->subHours(2)]);
+        $appointment->forceFill(['created_at' => $appointment->created_at->subHours(2)])->save();
         $response = $this->postJson("{$this->url}/cancel", [
             'appointment_id' => $appointment->id,
         ]);

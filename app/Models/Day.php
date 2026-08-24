@@ -18,6 +18,20 @@ final class Day extends Model
         'is_active' => true,
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'belongTo_type',
+        'belongTo_id',
+        'day',
+        'start',
+        'end',
+        'is_active',
+    ];
+
     protected static function booted()
     {
         self::updated(function ($day) {

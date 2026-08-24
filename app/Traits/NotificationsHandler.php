@@ -134,7 +134,17 @@ trait NotificationsHandler
 
     private function email(): bool
     {
-        return true;
+        // No mailer integration is configured yet: persist the notification
+        // record so the message stays auditable instead of being dropped.
+        try {
+            $this->store(['result' => 'email provider not configured']);
+
+            return true;
+        } catch (Exception $e) {
+            Log::error("Email notification error {$e->getMessage()}");
+
+            return false;
+        }
     }
 
     private function store(array $extra): Notification

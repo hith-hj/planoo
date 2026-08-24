@@ -169,7 +169,7 @@ describe('Appointment Controller Tests', function () {
     it('fails to cancel an appointment created more than one hour', function () {
         $activity = Activity::inRandomOrder()->first();
         $appointment = Appointment::factory()->for($activity, 'holder')->create();
-        $appointment->update(['created_at' => $appointment->created_at->subHours(2)]);
+        $appointment->forceFill(['created_at' => $appointment->created_at->subHours(2)])->save();
         $response = $this->postJson("{$this->url}/cancel", [
             'appointment_id' => $appointment->id,
         ]);

@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('content')->nullable();
             $table->smallInteger('rate')->default(0);
             $table->timestamps();
+
+            $table->index('customer_id', 'reviews_customer_id_index');
         });
     }
 

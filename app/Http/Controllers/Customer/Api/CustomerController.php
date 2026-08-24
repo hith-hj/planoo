@@ -60,7 +60,7 @@ final class CustomerController extends Controller
         return Success('profile image deleted');
     }
 
-    public function toggleNotification(Request $reuest)
+    public function toggleNotification(Request $request)
     {
         $customer = $this->services->get(Auth::id());
         $this->services->toggleNotification($customer);

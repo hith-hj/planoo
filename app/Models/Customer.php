@@ -29,6 +29,27 @@ final class Customer extends Authenticatable implements JWTSubject, Locatable, N
         'is_active' => true,
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'gender',
+        'birthdate',
+        'country_code',
+        'phone',
+        'password',
+        'status',
+        'firebase_token',
+        'is_active',
+        'is_notifiable',
+        'verified_by',
+        'verified_at',
+    ];
+
     protected function casts(): array
     {
         return [

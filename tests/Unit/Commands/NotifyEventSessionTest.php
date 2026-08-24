@@ -39,9 +39,14 @@ describe('Notify Event Session Test', function () {
     });
 
     it('skips events with no matching day', function () {
+        // Pin start_date to a Monday so the factory-generated day can never
+        // randomly land on the target weekday (Tuesday) of the command.
         $event = Event::factory()
             ->hasDays(['day' => 'monday', 'start' => '10:00', 'end' => '12:00'])
-            ->create(['status' => EventStatus::active->value]);
+            ->create([
+                'status' => EventStatus::active->value,
+                'start_date' => Carbon::parse('2026-05-25')->toDateString(), // Monday
+            ]);
         $event->appointments()->delete();
         Artisan::call('app:nes');
         expect($event->appointments()->count())->toBe(0);

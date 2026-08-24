@@ -41,6 +41,28 @@ final class Course extends Model implements Dayable, Locatable, Mediable, Review
         'status' => CourseStatus::pending->value,
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'court_id',
+        'name',
+        'description',
+        'price',
+        'course_duration',
+        'capacity',
+        'cancellation_fee',
+        'start_date',
+        'status',
+        'is_active',
+        'is_full',
+        'rate',
+    ];
+
     protected function casts(): array
     {
         return [

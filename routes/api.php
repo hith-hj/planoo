@@ -38,6 +38,7 @@ Route::middleware([JwtMiddleware::class, 'throttle:api'])->group(function () {
 
 Route::controller(WhatsAppWebhooksController::class)
     ->prefix('webhooks')
+    ->middleware(['throttle:120,1'])
     ->group(function () {
         Route::get('whatsapp', 'verify');
         Route::post('whatsapp', 'handle');

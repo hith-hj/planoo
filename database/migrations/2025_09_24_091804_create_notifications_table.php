@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('body');
             $table->text('payload');
             $table->timestamps();
+
+            $table->index(['belongTo_type', 'belongTo_id'], 'notifications_belongto_index');
         });
     }
 

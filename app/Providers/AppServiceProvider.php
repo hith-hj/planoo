@@ -8,6 +8,7 @@ use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -28,11 +29,24 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
-        Model::unguard();
-        Model::preventLazyLoading(! app()->environment('production'));
+        Model::preventLazyLoading();
+        Model::preventSilentlyDiscardingAttributes(! app()->environment('production'));
+        if (app()->environment('production')) {
+            Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation): void {
+                Log::warning(sprintf(
+                    'Lazy loading violation: %s::%s',
+                    class_basename($model),
+                    $relation
+                ));
+            });
+        }
+
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(250)->by($request->user()?->id ?: $request->ip());
+            return $request->user()
+                ? Limit::perMinute(250)->by('user:'.$request->user()->id)
+                : Limit::perMinute(60)->by('ip:'.$request->ip());
         });
+
         FilamentTimezone::set('Asia/Damascus');
     }
 }

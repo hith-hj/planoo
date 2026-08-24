@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\CustomerServices;
 use App\Services\ReviewServices;
-use App\Validators\ReviewValidators;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 final class ReviewController extends Controller
 {
@@ -22,18 +19,6 @@ final class ReviewController extends Controller
         return Success(payload: ['reviews' => $reviews->toResourceCollection()]);
     }
 
-    // should be removed
-    public function create(Request $request, CustomerServices $customerServices)
-    {
-        return Error('invalid operation');
-        $validator = ReviewValidators::createFromUser($request->all());
-
-        $customer = $customerServices->find(1);
-        $review = $this->review->create(getModel(), $customer, $validator->safe()->all());
-
-        return Success(
-            msg: 'review created',
-            payload: ['review' => $review->toResource()]
-        );
-    }
+    // Note: partners cannot create reviews; only customers review sections.
+    // See App\Http\Controllers\Customer\Api\ReviewController::create.
 }

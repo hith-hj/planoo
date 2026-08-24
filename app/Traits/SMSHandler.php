@@ -68,8 +68,9 @@ trait SMSHandler
 
     private function SyriaWebhookServer(string $url): Response
     {
-        $localServerUrl = 'http://planoo.sy/webhooks.php';
-        $token = hash(algo: 'sha256', data: 'PlanooApp1_webhook_secret');
+        $localServerUrl = (string) config('services.syriatel.webhook_url');
+        $secret = (string) config('services.syriatel.webhook_secret');
+        $token = hash(algo: 'sha256', data: $secret);
         $response = Http::asJson()
             ->withHeaders(['X-Webhook-Token' => $token])
             ->acceptJson()

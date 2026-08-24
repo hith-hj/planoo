@@ -13,6 +13,19 @@ final class Location extends Model
     /** @use HasFactory<\Database\Factories\LocationFactory> */
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'belongTo_type',
+        'belongTo_id',
+        'long',
+        'lat',
+        'name',
+    ];
+
     public function holder(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'belongTo_type', 'belongTo_id');

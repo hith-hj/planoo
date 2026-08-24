@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->string('name')->nullable();
             $table->timestamps();
+
+            $table->index(['belongTo_type', 'belongTo_id', 'name'], 'media_belongto_name_index');
         });
     }
 

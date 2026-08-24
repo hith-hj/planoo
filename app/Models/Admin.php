@@ -14,6 +14,18 @@ final class Admin extends Authenticatable implements FilamentUser
     /** @use HasFactory<\Database\Factories\AdminFactory> */
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+    ];
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;

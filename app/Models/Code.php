@@ -12,6 +12,19 @@ final class Code extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'belongTo_type',
+        'belongTo_id',
+        'type',
+        'code',
+        'expire_at',
+    ];
+
     protected function casts(): array
     {
         return [

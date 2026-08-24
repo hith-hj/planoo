@@ -41,6 +41,29 @@ final class Event extends Model implements Dayable, Locatable, Mediable, Reviewa
         'status' => EventStatus::pending->value,
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'court_id',
+        'name',
+        'description',
+        'event_duration',
+        'capacity',
+        'admission_fee',
+        'withdrawal_fee',
+        'start_date',
+        'end_date',
+        'status',
+        'is_active',
+        'is_full',
+        'rate',
+    ];
+
     protected function casts(): array
     {
         return [

@@ -59,7 +59,7 @@ describe('Review Controller Tests', function () {
             "$this->url/create/activity/{$this->activity->id}",
             $rev
         )->assertOk();
-        Review::find($res->json('payload.review.id'))->update(['created_at' => now()->subDays(3)]);
+        Review::find($res->json('payload.review.id'))->forceFill(['created_at' => now()->subDays(3)])->save();
         $rev['content'] = 'horayyyy';
         $res = $this->postJson("$this->url/create/activity/{$this->activity->id}", $rev);
         $res->assertOk();

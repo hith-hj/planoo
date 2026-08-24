@@ -11,6 +11,17 @@ final class Favorite extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'customer_id',
+        'favoritable_type',
+        'favoritable_id',
+    ];
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

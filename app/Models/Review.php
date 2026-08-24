@@ -14,6 +14,19 @@ final class Review extends Model
     /** @use HasFactory<\Database\Factories\ReviewFactory> */
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'customer_id',
+        'belongTo_type',
+        'belongTo_id',
+        'content',
+        'rate',
+    ];
+
     public function holder(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'belongTo_type', 'belongTo_id');

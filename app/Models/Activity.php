@@ -34,6 +34,23 @@ final class Activity extends Model implements Dayable, Locatable, Mediable, Revi
         'rate' => 0,
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'court_id',
+        'name',
+        'description',
+        'price',
+        'session_duration',
+        'is_active',
+        'rate',
+    ];
+
     protected function casts(): array
     {
         return [

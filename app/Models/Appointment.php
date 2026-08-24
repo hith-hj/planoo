@@ -18,6 +18,25 @@ final class Appointment extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'appointable_type',
+        'appointable_id',
+        'customer_id',
+        'date',
+        'time',
+        'end_at',
+        'session_duration',
+        'price',
+        'status',
+        'notes',
+        'canceled_by',
+    ];
+
     public function holder(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'appointable_type', 'appointable_id');

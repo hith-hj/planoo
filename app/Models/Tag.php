@@ -15,6 +15,16 @@ final class Tag extends Model
 
     public $timestamps = false;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'icon',
+    ];
+
     protected static function booted(): void
     {
         self::saved(fn () => cache()->forget('labels.tags'));

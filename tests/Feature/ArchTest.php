@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\File;
+
 arch()
     ->expect('App')
     ->toUseStrictTypes()
@@ -48,3 +51,25 @@ arch()
 
 arch()->preset()->security();
 arch()->preset()->php();
+
+test('eloquent mass assignment protection is enabled', function () {
+    expect(Model::isUnguarded())->toBeFalse();
+});
+
+test('Model::unguard() is never used in app code', function () {
+    $offenders = collect(File::allFiles(app_path()))
+        ->filter(fn($file) => str_contains((string) file_get_contents($file->getRealPath()), 'Model::unguard'))
+        ->map(fn($file) => $file->getPathname());
+
+    expect($offenders->all())->toBeEmpty();
+});
+
+test('every model declares its fillable attributes', function () {
+    foreach (File::allFiles(app_path('Models')) as $file) {
+        $class = 'App\\Models\\' . $file->getFilenameWithoutExtension();
+        $properties = (new ReflectionClass($class))->getDefaultProperties();
+
+        expect(array_key_exists('fillable', $properties))->toBeTrue("{$class} is missing \$fillable")
+            ->and($properties['fillable'])->toBeArray()->not->toBeEmpty("{$class} has an empty \$fillable");
+    }
+});

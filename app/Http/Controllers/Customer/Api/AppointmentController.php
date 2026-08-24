@@ -15,7 +15,11 @@ use Illuminate\Support\Facades\Auth;
 
 final class AppointmentController extends Controller
 {
-    public function __construct(public AppointmentServices $services) {}
+    public function __construct(
+        public AppointmentServices $services,
+        public ActivityServices $activityServices,
+        public CodeServices $codeServices,
+    ) {}
 
     public function all(Request $request)
     {
@@ -62,7 +66,7 @@ final class AppointmentController extends Controller
     public function check(Request $request)
     {
         $validator = AppointmentValidators::check($request->all());
-        $activity = app(ActivityServices::class)
+        $activity = $this->activityServices
             ->find($validator->safe()->integer('activity_id'));
         $slots = $this->services->checkAvailableSlots($activity, $validator->safe()->all());
 
@@ -73,21 +77,20 @@ final class AppointmentController extends Controller
     {
         $validator = AppointmentValidators::create($request->all());
 
-        $code = app(CodeServices::class)->codeById($validator->safe()->integer('code'));
+        $code = $this->codeServices->codeById($validator->safe()->integer('code'));
         Truthy(! $code->isValid(), 'invalid code');
-        app(CodeServices::class)->deleteCode($code);
+        $this->codeServices->deleteCode($code);
 
-        $activity = app(ActivityServices::class)->find($validator->safe()->integer('activity_id'));
+        $activity = $this->activityServices->find($validator->safe()->integer('activity_id'));
         if ($this->services->checkAppointmentExists($activity, $validator->safe()->all())) {
             return Error('appointment just got booked');
         }
 
-        // if (! $this->services->canCreateAppointment(
-        //     Auth::user(),
-        //     $validator->safe()->all()
-        // )) {
-        //     return Error('You have Appointment at this date');
-        // }
+        // Prevent customers from double booking themselves over an existing
+        // accepted appointment (own appointments + attended events/courses).
+        if (! $this->services->canCreateAppointment(Auth::user(), $validator->safe()->all())) {
+            return Error('You have Appointment at this date');
+        }
 
         $appointment = $this->services->create($activity, $validator->safe()->all(), Auth::user());
 

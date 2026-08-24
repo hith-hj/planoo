@@ -15,6 +15,18 @@ final class Court extends Model
     use HasFactory;
     use MediaHandler;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'name',
+        'description',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

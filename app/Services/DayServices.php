@@ -9,6 +9,7 @@ use App\Models\Day;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 final class DayServices
 {
@@ -70,7 +71,8 @@ final class DayServices
         $oldDays = $dayable->days->toArray();
         $data = $this->formatData($data, $day);
         $this->checkIfAvailable($data, $oldDays, true);
-        $day->update($data);
+        // the id is only used by the conflict check; never mass assign the pk
+        $day->update(Arr::except($data, 'id'));
 
         return $day;
     }

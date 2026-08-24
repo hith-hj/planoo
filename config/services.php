@@ -44,9 +44,11 @@ return [
     ],
 
     'syriatel' => [
-        'user_name' => env('SYRIATEL_USER_NAME'),
+        'user_name' => env('SYRIATEL_USER_NAME', 'PlanooApp1'),
         'password' => env('SYRIATEL_PASSWORD'),
-        'sender' => env('SYRIATEL_SENDER'),
+        'sender' => env('SYRIATEL_SENDER', 'PlanooApp'),
+        'webhook_url' => env('SYRIATEL_WEBHOOK_URL', 'http://planoo.sy/webhooks.php'),
+        'webhook_secret' => env('SYRIATEL_WEBHOOK_SECRET', 'PlanooApp1_webhook_secret'),
     ],
 
     'conflicts_detection' => env('CONFLICTS_DETECTION', false),

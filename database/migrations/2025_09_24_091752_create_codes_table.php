@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->timestamp('expire_at')->nullable();
             $table->timestamps();
+
+            $table->index('expire_at', 'codes_expire_at_index');
         });
     }
 

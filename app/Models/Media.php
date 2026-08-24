@@ -13,6 +13,19 @@ final class Media extends Model
     /** @use HasFactory<\Database\Factories\MediaFactory> */
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'belongTo_type',
+        'belongTo_id',
+        'url',
+        'type',
+        'name',
+    ];
+
     // protected $attributes = ['type' => 'image'];
 
     public function holder(): MorphTo

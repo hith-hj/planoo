@@ -24,6 +24,28 @@ final class User extends Authenticatable implements JWTSubject, Notifiable
 
     protected $attributes = ['rate' => 0];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'account_type',
+        'email',
+        'country_code',
+        'phone',
+        'password',
+        'description',
+        'firebase_token',
+        'status',
+        'rate',
+        'is_active',
+        'is_notifiable',
+        'verified_by',
+        'verified_at',
+    ];
+
     protected function casts(): array
     {
         return [

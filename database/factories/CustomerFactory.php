@@ -45,14 +45,15 @@ final class CustomerFactory extends Factory
         ];
     }
 
+    /**
+     * Plain text password state intended for building registration request
+     * payloads via make()/toArray(); never used with create().
+     */
     public function password()
     {
-        return $this->state(function () {
-            return [
-                'password' => 'password',
-                'password_confirmation' => 'password',
-            ];
-        });
+        return $this->state(fn () => [
+            'password' => 'password',
+        ]);
     }
 
     public function configure()
