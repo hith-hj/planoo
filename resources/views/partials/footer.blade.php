@@ -6,7 +6,7 @@ style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
             {{ __('Questions?') }}
         </h1>
     </div>
-    <div class="container mx-auto px-5 md:px-20 py-12">
+    <div class="container mx-auto px-2 py-12">
         <div class="w-full flex flex-col md:flex-row gap-2 justify-between bg-white/40 text-white p-10 my-5">
             <div class="flex flex-col">
                 <h1 class="text-2xl font-semibold capitalize shadow-2xl">
@@ -22,8 +22,8 @@ style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-8 my-5">
-            <div>
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-4 py-8 my-5">
+            <div class="col-span-3"> 
                 <div class="flex items-center gap-2 mb-4">
                     <div class="group flex flex-col items-start justify-center">
                         <span class="text-4xl font-bold tracking-tight text-teal group-hover:opacity-90">
@@ -35,11 +35,11 @@ style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
                     </div>
                 </div>
                 <p class="text-gray-100 text-sm max-w-sm mb-6 leading-relaxed">
-                    {{ __('We are dedicated to creating vibrant spaces where health, learning, and community come together.') }}
+                    {{ __('PLANOO is a smart platform designed to simplify how you discover, book, and manage services in one place. Whether you are looking for activities, courts, sport courses, or experiences, PLANOO makes it easy to find what you need.') }}
                 </p>
             </div>
 
-            <div>
+            <div class="col-span-1"> 
                 <h4 class="text-lg font-bold text-white mb-6">{{ __('Company') }}</h4>
                 <ul class="space-y-3 text-gray-100 text-sm">
                     <li><a href="#" class="hover:text-gold transition">{{ __('About') }}</a></li>
@@ -49,7 +49,7 @@ style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
                 </ul>
             </div>
 
-            <div>
+            <div class="col-span-1"> 
                 <h4 class="text-lg font-bold text-white mb-6">{{ __('Services') }}</h4>
                 <ul class="space-y-3 text-gray-100 text-sm">
                     <li><a href="#" class="hover:text-gold transition">{{ __('Login') }}</a></li>
@@ -59,7 +59,7 @@ style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
                 </ul>
             </div>
 
-            <div>
+            <div class="col-span-1"> 
                 <h4 class="text-lg font-bold text-white mb-6">{{ __('Customers core') }}</h4>
                 <ul class="space-y-3 text-gray-100 text-sm">
                     <li><a href="#" class="hover:text-gold transition">{{ __('Blog') }}</a></li>
