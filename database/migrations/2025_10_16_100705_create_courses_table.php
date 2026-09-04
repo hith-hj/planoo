@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Models\Category;
-use App\Models\Court;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,10 +16,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('courses', function (Blueprint $table) {
-            $table->ulid('id');
+            $table->ulid('id')->primary();
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Category::class);
-            $table->foreignIdFor(Court::class)->nullable();
+            $table->foreignUlid('court_id')->nullable();
             $table->string('name');
             $table->text('description');
             $table->boolean('is_active');
