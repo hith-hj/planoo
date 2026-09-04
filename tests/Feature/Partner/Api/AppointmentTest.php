@@ -276,11 +276,7 @@ describe('Appointment Controller Tests', function () {
 
         $response = $this->postJson(
             route('partner.appointment.cancel'),
-
-            [
-                '
-                appointment_id' => $appointment->id,
-            ]
+            ['appointment_id' => $appointment->id,]
         )->assertOk();
 
         expect($response->json('payload.appointment'))->not->toBeNull()
@@ -294,11 +290,7 @@ describe('Appointment Controller Tests', function () {
 
         $this->postJson(
             route('partner.appointment.cancel'),
-
-            [
-                '
-                appointment_id' => $appointment->id,
-            ]
+            ['appointment_id' => $appointment->id,]
         )->assertStatus(400);
     });
 
@@ -309,11 +301,7 @@ describe('Appointment Controller Tests', function () {
         $appointment->forceFill(['created_at' => $appointment->created_at->subHours(2)])->save();
         $response = $this->postJson(
             route('partner.appointment.cancel'),
-
-            [
-                '
-                appointment_id' => $appointment->id,
-            ]
+            ['appointment_id' => $appointment->id,]
         );
         $response->assertStatus(400);
     });
