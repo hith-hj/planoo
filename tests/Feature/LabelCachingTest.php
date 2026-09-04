@@ -9,15 +9,13 @@ use Illuminate\Support\Facades\DB;
 beforeEach(function () {
     $this->seed();
     Cache::flush();
-    $this->url = '/api/label/categories';
 });
 
 /**
- * Covers improvement report 5.2 / 10.7: reference data endpoints are cached
- * and must survive raw database changes until invalidation.
+ * Covers improvement report 5.2 
  */
 it('caches the categories payload', function () {
-    $res = $this->getJson($this->url);
+    $res = $this->getJson(route('label.categories'));
     $res->assertOk();
 
     expect(Cache::has('labels.categories'))->toBeTrue();
@@ -25,20 +23,20 @@ it('caches the categories payload', function () {
     // raw insert bypasses model events -> cache must still serve old data
     DB::table('categories')->insert(['name' => 'uncached_sport']);
 
-    $cachedRes = $this->getJson($this->url)->assertOk();
+    $cachedRes = $this->getJson(route('label.categories'))->assertOk();
     $names = collect($cachedRes->json('payload.categories'))->pluck('name');
 
     expect($names)->not->toContain('uncached_sport');
 });
 
 it('invalidates the categories cache when a category is saved', function () {
-    $this->getJson($this->url)->assertOk();
+    $this->getJson(route('label.categories'))->assertOk();
     expect(Cache::has('labels.categories'))->toBeTrue();
 
     Category::create(['name' => 'handball']);
 
     expect(Cache::has('labels.categories'))->toBeFalse();
 
-    $res = $this->getJson($this->url)->assertOk();
+    $res = $this->getJson(route('label.categories'))->assertOk();
     expect(collect($res->json('payload.categories'))->pluck('name'))->toContain('handball');
 });

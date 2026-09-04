@@ -13,7 +13,6 @@ use App\Models\Tag;
 beforeEach(function () {
     $this->seed();
     $this->user('partner', 'stadium')->api();
-    $this->url = '/api/partner/v1/event';
 });
 
 describe('Event Controller Tests', function () {
@@ -171,7 +170,7 @@ describe('Event Controller Tests', function () {
 
     it('can cancel event attend by customer id', function () {
         $event = Event::factory()->for($this->user, 'user')->create();
-        $this->postJson("{$this->url}/attend?event_id={$event->id}", ['customer_id' => 1]);
+        $this->postJson(route('partner.event.attend', ['event_id' => $event->id]), ['customer_id' => 1]);
         $res = $this->postJson(route('partner.event.cancel', ['event_id' => $event->id]), ['customer_id' => 1]);
 
         $res->assertOk();

@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Log;
 
 beforeEach(function () {
     $this->seed();
-    $this->url = '/api/partner/v1/user/get';
 });
 
 /**
@@ -17,7 +16,7 @@ beforeEach(function () {
 it('returns a generic authentication error for a missing token', function () {
     Log::spy();
 
-    $res = $this->getJson($this->url);
+    $res = $this->getJson(route('partner.user.get'));
 
     expect($res->status())->toBe(401)
         ->and($res->json('success'))->toBeFalse()
@@ -30,7 +29,7 @@ it('returns a generic authentication error for a malformed token', function () {
     Log::spy();
 
     $res = $this->withHeaders(['Authorization' => 'Bearer not.a.real.jwt'])
-        ->getJson($this->url);
+        ->getJson(route('partner.user.get'));
 
     expect($res->status())->toBe(401)
         ->and($res->json('message'))->toBe(__('Token Authentication Error'))
@@ -44,7 +43,7 @@ it('authenticates a valid partner token', function () {
     $this->user = $user;
     auth()->shouldUse('partner:api');
 
-    $res = $this->api()->getJson($this->url);
+    $res = $this->api()->getJson(route('partner.user.get'));
 
     expect($res->status())->toBe(200)
         ->and($res->json('success'))->toBeTrue();

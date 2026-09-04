@@ -13,13 +13,7 @@ beforeEach(function () {
 describe('Day Controller tests', function () {
     it('returns all days for a given activity', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
-        $response = $this->getJson(route(
-            'partner.day.all',
-            [
-                'owner_type' => 'activity',
-                'owner_id' => $activity->id,
-            ]
-        ))
+        $response = $this->getJson(route('partner.day.all', ['owner_type' => 'activity', 'owner_id' => $activity->id]))
             ->assertOk();
 
         expect($response->json('payload.days'))->toHaveCount($activity->days()->count());

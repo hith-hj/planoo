@@ -11,14 +11,19 @@ use App\Services\CodeServices;
 beforeEach(function () {
     $this->seed();
     $this->user('customer')->api();
-    $this->url = '/api/customer/v1/appointment';
 });
 
 describe('Appointment Controller Tests', function () {
     it('returns paginated appointments ', function () {
         Appointment::truncate();
         Appointment::factory(2)->for($this->user, 'customer')->create();
-        $res = $this->postJson("{$this->url}/all/activity?page=1&perPage=1");
+        $res = $this->postJson(
+            route(
+                'customer.appointment.all',
+                ['owner_type' => 'activity',]
+            ),
+            ['page' => 1, 'perPage' => 1]
+        );
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'appointments']);
         expect($res->json('payload.appointments'))->toHaveCount(1)
@@ -29,7 +34,12 @@ describe('Appointment Controller Tests', function () {
     it('returns customer accepted appointments using filters without paginate ', function () {
         Appointment::truncate();
         Appointment::factory(2)->for($this->user, 'customer')->create();
-        $res = $this->postJson("{$this->url}/all/activity?paginate=false", ['filters' => ['status' => '0']]);
+        $res = $this->postJson(
+            route('customer.appointment.all', ['owner_type' => 'activity', 'paginate' => false]),
+            [
+                'filters' => ['status' => '0']
+            ]
+        );
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'appointments']);
         expect($res->json('payload.appointments'))->toHaveCount(2);
@@ -38,7 +48,10 @@ describe('Appointment Controller Tests', function () {
     it('returns only customer accepted appointments ', function () {
         Appointment::truncate();
         Appointment::factory(2)->for($this->user, 'customer')->create();
-        $res = $this->postJson("{$this->url}/accepted/activity", ['orderBy' => ['date' => 'desc']]);
+        $res = $this->postJson(
+            route('customer.appointment.accepted', ['owner_type' => 'activity']),
+            ['orderBy' => ['date' => 'desc']]
+        );
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['appointments']);
         expect($res->json('payload.appointments'))->toHaveCount(2);
@@ -51,7 +64,7 @@ describe('Appointment Controller Tests', function () {
         $appointment = Appointment::factory()
             ->for($activity, 'holder')
             ->create();
-        $res = $this->getJson("{$this->url}/find?appointment_id={$appointment->id}");
+        $res = $this->getJson(route('customer.appointment.find', ['appointment_id' => $appointment->id]));
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['appointment']);
         expect($res->json('payload.appointment'))->not->toBeNull()
@@ -62,7 +75,7 @@ describe('Appointment Controller Tests', function () {
     it('cant find appointment by invalid id ', function () {
         Appointment::truncate();
         $appointment = Appointment::factory()->create();
-        $res = $this->getJson("{$this->url}/find?appointment_id=19090");
+        $res = $this->getJson(route('customer.appointment.find', ['appointment_id' => 19090]));
         $res->assertStatus(422);
     });
 
@@ -70,7 +83,7 @@ describe('Appointment Controller Tests', function () {
         $activity = Activity::inRandomOrder()->first();
         $data = Appointment::factory()->fakerData(owner: $activity);
 
-        $response = $this->postJson("{$this->url}/check", $data);
+        $response = $this->postJson(route('customer.appointment.check'), $data);
         $response->assertOk();
         expect($response->json('payload.slots'))->not->toBeNull()
             ->and($response->json('payload.slots'))->toHaveKeys(['day', 'date', 'slots', 'code'])
@@ -78,7 +91,7 @@ describe('Appointment Controller Tests', function () {
     });
 
     it('fails to check slots with invalid data', function () {
-        $this->postJson("{$this->url}/check", [])->assertStatus(422);
+        $this->postJson(route('customer.appointment.check'), [])->assertStatus(422);
     });
 
     it('creates a new appointment for customer', function () {
@@ -91,7 +104,7 @@ describe('Appointment Controller Tests', function () {
                 timeToExpire: '10:m'
             )->id,
         ]);
-        $response = $this->postJson("{$this->url}/create", $data);
+        $response = $this->postJson(route('customer.appointment.create'), $data);
         $response->assertOk();
 
         expect($response->json('payload.appointment'))->not->toBeNull()
@@ -109,12 +122,12 @@ describe('Appointment Controller Tests', function () {
                 timeToExpire: '-10:s'
             )->id,
         ]);
-        $response = $this->postJson("{$this->url}/create", $data);
+        $response = $this->postJson(route('customer.appointment.create'), $data);
         $response->assertStatus(400);
     });
 
     it('fails to create appointment with invalid data', function () {
-        $this->postJson("{$this->url}/create", [])
+        $this->postJson(route('customer.appointment.create'), [])
             ->assertStatus(422);
     });
 
@@ -142,7 +155,7 @@ describe('Appointment Controller Tests', function () {
             timeToExpire: '1:m'
         )->id;
 
-        $this->postJson("{$this->url}/create", $appointmentData)
+        $this->postJson(route('customer.appointment.create'), $appointmentData)
             ->assertStatus(400);
     });
 
@@ -151,7 +164,7 @@ describe('Appointment Controller Tests', function () {
         $appointment = Appointment::factory()->for($activity, 'holder')
             ->create(['status' => AppointmentStatus::accepted->value]);
 
-        $response = $this->postJson("{$this->url}/cancel", [
+        $response = $this->postJson(route('customer.appointment.cancel'), [
             'appointment_id' => $appointment->id,
         ])->assertOk();
 
@@ -164,7 +177,7 @@ describe('Appointment Controller Tests', function () {
         $appointment = Appointment::factory()->for($activity, 'holder')
             ->create(['status' => AppointmentStatus::canceled->value]);
 
-        $this->postJson("{$this->url}/cancel", [
+        $this->postJson(route('customer.appointment.cancel'), [
             'appointment_id' => $appointment->id,
         ])->assertStatus(400);
     });
@@ -173,7 +186,7 @@ describe('Appointment Controller Tests', function () {
         $activity = Activity::inRandomOrder()->first();
         $appointment = Appointment::factory()->for($activity, 'holder')->create();
         $appointment->forceFill(['created_at' => $appointment->created_at->subHours(2)])->save();
-        $response = $this->postJson("{$this->url}/cancel", [
+        $response = $this->postJson(route('customer.appointment.cancel'), [
             'appointment_id' => $appointment->id,
         ]);
         $response->assertStatus(400);

@@ -8,7 +8,6 @@ use App\Models\Course;
 beforeEach(function () {
     $this->seed();
     $this->user('customer')->api();
-    $this->url = '/api/customer/v1/course';
 });
 
 describe('Course Controller Tests', function () {
@@ -16,7 +15,7 @@ describe('Course Controller Tests', function () {
         Course::truncate();
         Course::factory(2)->create();
 
-        $response = $this->postJson("{$this->url}/all")->assertOk();
+        $response = $this->postJson(route('customer.course.all'))->assertOk();
 
         expect($response->json('payload.courses'))->toHaveCount(2);
     });
@@ -24,8 +23,8 @@ describe('Course Controller Tests', function () {
     it('returns all attended courses for customer', function () {
         Course::truncate();
         $course = Course::factory()->create();
-        $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
-        $response = $this->postJson("{$this->url}/attended")->assertOk();
+        $this->postJson(route('customer.course.attend'), ['course_id' => $course->id])->assertOk();
+        $response = $this->postJson(route('customer.course.attended'))->assertOk();
         expect($response->json('payload.courses'))->toHaveCount(1)
             ->and($response->json('payload.courses.0'))->toHaveKeys([
                 'customer',
@@ -37,7 +36,7 @@ describe('Course Controller Tests', function () {
     it('returns paginated courses ', function () {
         Course::truncate();
         Course::factory(2)->create();
-        $res = $this->postJson("{$this->url}/all?page=1&perPage=1");
+        $res = $this->postJson(route('customer.course.all'), ['page' => 1, 'perPage' => 1]);
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'courses']);
         expect($res->json('payload.courses'))->toHaveCount(1)
@@ -48,7 +47,7 @@ describe('Course Controller Tests', function () {
     it('finds a specific course by ID', function () {
         $course = Course::factory()->create();
 
-        $response = $this->getJson("{$this->url}/find?course_id={$course->id}")
+        $response = $this->getJson(route('customer.course.find', ['course_id' => $course->id]))
             ->assertOk();
 
         expect($response->json('payload.course.id'))->toBe($course->id)
@@ -57,14 +56,13 @@ describe('Course Controller Tests', function () {
                 'is_attending'
             ])
             ->and($response->json('payload.course.is_attending'))->toBeFalse();
-
     });
 
     it('finds a attended course by ID', function () {
         $course = Course::factory()->create();
-        $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
+        $this->postJson(route('customer.course.attend'), ['course_id' => $course->id])->assertOk();
 
-        $response = $this->getJson("{$this->url}/find?course_id={$course->id}")
+        $response = $this->getJson(route('customer.course.find', ['course_id' => $course->id]))
             ->assertOk();
         expect($response->json('payload.course.id'))->toBe($course->id)
             ->and($response->json('payload.course'))->toHaveKeys([
@@ -75,12 +73,12 @@ describe('Course Controller Tests', function () {
     });
 
     it('fails to find an course with invalid ID', function () {
-        $this->getJson("{$this->url}/find?course_id=422")->assertStatus(422);
+        $this->getJson(route('customer.course.find', ['course_id' => 422]))->assertStatus(422);
     });
 
     it('can attend course', function () {
         $course = Course::factory()->create();
-        $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
+        $this->postJson(route('customer.course.attend'), ['course_id' => $course->id])->assertOk();
         $customerCourse = $this->user->courses()->wherePivot('course_id', $course->id)->first();
         expect($this->user->courses()->count())->toBe(1)
             ->and($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
@@ -91,7 +89,7 @@ describe('Course Controller Tests', function () {
             'start_date' => today()->subDays(2),
             'status' => CourseStatus::active->value
         ]);
-        $this->postJson("{$this->url}/attend?course_id={$course->id}")->assertOk();
+        $this->postJson(route('customer.course.attend'), ['course_id' => $course->id])->assertOk();
         $customerCourse = $this->user->courses()->wherePivot('course_id', $course->id)->first();
         expect($this->user->courses()->count())->toBe(1)
             ->and($customerCourse->pivot->remaining_sessions)
@@ -100,23 +98,23 @@ describe('Course Controller Tests', function () {
 
     it('can not attend full course', function () {
         $course = Course::factory()->create(['is_full' => true]);
-        $res = $this->postJson("{$this->url}/attend?course_id={$course->id}");
+        $res = $this->postJson(route('customer.course.attend'), ['course_id' => $course->id]);
         $res->assertStatus(400);
     });
 
     it('can cancel course attend', function () {
         $course = Course::factory()->create();
-        $this->postJson("{$this->url}/attend?course_id={$course->id}");
-        $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}");
+        $this->postJson(route('customer.course.attend'), ['course_id' => $course->id]);
+        $res = $this->postJson(route('customer.course.cancel'), ['course_id' => $course->id]);
         $res->assertOk();
     });
 
     it('can not cancel course after specific time', function () {
         $course = Course::factory()->create();
-        $this->postJson("{$this->url}/attend?course_id={$course->id}");
+        $this->postJson(route('customer.course.attend'), ['course_id' => $course->id]);
         $customer = $course->customers()->where('customer_id', $this->user->id)->first();
         $customer->pivot->update(['created_at' => now()->subDays(2)]);
-        $res = $this->postJson("{$this->url}/cancel?course_id={$course->id}");
+        $res = $this->postJson(route('customer.course.cancel'), ['course_id' => $course->id]);
         $res->assertStatus(400);
     });
 });

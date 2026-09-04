@@ -14,18 +14,18 @@ beforeEach(function () {
 
 describe('Customer Controller Tests', function () {
     it('returns authenticated customer information', function () {
-        $response = $this->getJson("{$this->url}/get")->assertOk();
+        $response = $this->getJson(route('customer.customer.get'))->assertOk();
         expect($response->json('payload.customer'))->not->toBeNull();
     });
 
     it('returns 401 for unauthorized customer', function () {
-        $response = $this->clearUser()->getJson("{$this->url}/get");
+        $response = $this->clearUser()->getJson(route('customer.customer.get'));
         $response->assertStatus(401);
     });
 
     it('updates customer information', function () {
         $customerData = Customer::factory()->make()->toArray();
-        $response = $this->postJson("{$this->url}/update", $customerData)
+        $response = $this->postJson(route('customer.customer.update'), $customerData)
             ->assertOk();
 
         expect($response->json('payload.customer.name'))->toBe($customerData['name']);
@@ -35,7 +35,7 @@ describe('Customer Controller Tests', function () {
         Storage::fake('public');
         $media = Media::factory()->fakeFile('kosa.jpeg');
 
-        $res = $this->postJson("{$this->url}/uploadProfileImage", [
+        $res = $this->postJson(route('customer.customer.uploadProfileImage'), [
             'profile_image' => $media,
         ])->assertOk();
 
@@ -47,7 +47,7 @@ describe('Customer Controller Tests', function () {
         Storage::fake('public');
         $media = Media::factory()->fakeFile('kosa.jpeg');
 
-        $res = $this->postJson("{$this->url}/uploadProfileImage", [
+        $res = $this->postJson(route('customer.customer.uploadProfileImage'), [
             'profile_image' => $media,
         ])->assertOk();
 
@@ -56,7 +56,7 @@ describe('Customer Controller Tests', function () {
         $fileName = $this->getFileName($res->json('payload.profile_image.url'));
         Storage::disk('public')->assertExists("uploads/images/customers/{$this->user->id}/{$fileName}");
 
-        $this->postJson("{$this->url}/deleteProfileImage")->assertOk();
+        $this->postJson(route('customer.customer.deleteProfileImage'))->assertOk();
 
         expect($this->user->fresh()->medias()->count())->toBe(0);
         Storage::disk('public')->assertMissing("uploads/images/customers/{$this->user->id}/{$fileName}");
@@ -75,7 +75,7 @@ describe('Customer Controller Tests', function () {
 
     it('toggle customer notification', function () {
         Customer::truncate();
-        $customer = Customer::factory()->create(['is_notifiable'=>false]);
+        $customer = Customer::factory()->create(['is_notifiable' => false]);
         $this->replaceUser($customer);
         $res = $this->postJson(route('customer.customer.toggleNotification'));
         $res->assertOk();

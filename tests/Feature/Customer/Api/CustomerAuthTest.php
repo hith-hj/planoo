@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {
     $this->seed();
-    $this->url = '/api/customer/v1/auth';
 });
 
 describe('CustomerAuth Controller test', function () {

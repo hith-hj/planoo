@@ -9,16 +9,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(LabelController::class)
     ->prefix('label')
+    ->name('label.')
     ->middleware(['throttle:50,1'])
     ->group(
         function (): void {
-            Route::get('tags', 'tags');
-            Route::get('weekDays', 'weekDays');
-            Route::get('categories', 'categories');
-            Route::get('usersTypes', 'usersTypes');
-            Route::get('activityTypes', 'activityTypes');
-            Route::get('sessionDuration', 'sessionDuration');
-            Route::get('courseDuration', 'courseDuration');
+            Route::get('tags', 'tags')->name('tags');
+            Route::get('weekDays', 'weekDays')->name('weekDays');
+            Route::get('categories', 'categories')->name('categories');
+            Route::get('usersTypes', 'usersTypes')->name('usersTypes');
+            Route::get('activityTypes', 'activityTypes')->name('activityTypes');
+            Route::get('courseDuration', 'courseDuration')->name('courseDuration');
+            Route::get('sessionDuration', 'sessionDuration')->name('sessionDuration');
         }
     );
 

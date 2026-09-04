@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {
     $this->seed();
-    $this->url = '/api/partner/v1/auth';
 });
 
 describe('UserAuth Controller test', function () {

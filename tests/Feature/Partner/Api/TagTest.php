@@ -8,21 +8,20 @@ use App\Models\Tag;
 beforeEach(function () {
     $this->seed();
     $this->user('partner', 'stadium')->api();
-    $this->url = '/api/partner/v1/tag';
 });
 
 describe('Tag Controller Test', function () {
     it('returns tags for a valid activity', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
 
-        $response = $this->getJson("{$this->url}/all/activity/{$activity->id}")
+        $response = $this->getJson(route('partner.tag.all', ['owner_type' => 'activity', 'owner_id' => $activity->id]))
             ->assertOk();
 
         expect($response->json('payload.tags'))->not->toBeNull();
     });
 
     it('returns 404 for tags of an invalid activity', function () {
-        $this->getJson("{$this->url}/get/activity/1000")->assertStatus(404);
+        $this->getJson(route('partner.tag.all', ['owner_type' => 'activity', 'owner_id' => 123]))->assertStatus(404);
     });
 
     it('assigns new tags to an activity', function () {
@@ -31,7 +30,7 @@ describe('Tag Controller Test', function () {
 
         $tags = Tag::inRandomOrder()->take(2)->pluck('id')->toArray();
 
-        $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+        $this->postJson(route('partner.tag.create', ['owner_type' => 'activity', 'owner_id' => $activity->id]), [
             'tags' => $tags,
         ])->assertOk();
 
@@ -45,7 +44,7 @@ describe('Tag Controller Test', function () {
 
         expect($activity->fresh()->tags()->count())->toBe(1);
 
-        $this->postJson("{$this->url}/create/activity/{$activity->id}", [
+        $this->postJson(route('partner.tag.create', ['owner_type' => 'activity', 'owner_id' => $activity->id]), [
             'tags' => [1, 2],
         ])->assertOk();
 
@@ -59,7 +58,7 @@ describe('Tag Controller Test', function () {
 
         expect($activity->fresh()->tags()->count())->toBe(1);
 
-        $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+        $this->deleteJson(route('partner.tag.delete', ['owner_type' => 'activity', 'owner_id' => $activity->id]), [
             'tags' => [3],
         ])->assertOk();
 
