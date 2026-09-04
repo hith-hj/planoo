@@ -28,7 +28,7 @@ final class CourseController extends Controller
         $validator = CourseValidators::find($request->all());
         $course = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('course_id')
+            $validator->safe()->input('course_id')
         );
 
         return Success(payload: ['course' => $course->toResource()]);
@@ -37,7 +37,7 @@ final class CourseController extends Controller
     public function create(Request $request, CourtServices $courtServices)
     {
         $validator = CourseValidators::create($request->all());
-        $court = $courtServices->find($validator->safe()->integer('court_id'));
+        $court = $courtServices->find($validator->safe()->input('court_id'));
         Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
         $course = $this->services->create(
             Auth::user(),
@@ -58,7 +58,7 @@ final class CourseController extends Controller
         $validator = CourseValidators::create($request->all(), true);
         $course = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('course_id')
+            $validator->safe()->input('course_id')
         );
         Truthy($validator->safe()->input('court_id') !== $course->court_id, 'invalid operation');
 
@@ -76,7 +76,7 @@ final class CourseController extends Controller
         $validator = CourseValidators::delete($request->all());
         $course = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('course_id')
+            $validator->safe()->input('course_id')
         );
         $this->services->delete($course);
 
@@ -88,7 +88,7 @@ final class CourseController extends Controller
         $validator = CourseValidators::find($request->all());
         $course = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('course_id')
+            $validator->safe()->input('course_id')
         );
         $this->services->toggleActivation($course);
 
@@ -98,7 +98,7 @@ final class CourseController extends Controller
     public function attend(Request $request, CustomerServices $customerServices)
     {
         $validator = CourseValidators::attend($request->all());
-        $course = $this->services->findByUser(Auth::user(), $validator->safe()->integer('course_id'));
+        $course = $this->services->findByUser(Auth::user(), $validator->safe()->input('course_id'));
         $customer = $customerServices->getCustomer($validator->safe()->except('course_id'));
 
         $this->services->attend($customer, $course);
@@ -109,7 +109,7 @@ final class CourseController extends Controller
     public function cancel(Request $request, CustomerServices $customerServices)
     {
         $validator = CourseValidators::cancel($request->all());
-        $course = $this->services->findByUser(Auth::user(), $validator->safe()->integer('course_id'));
+        $course = $this->services->findByUser(Auth::user(), $validator->safe()->input('course_id'));
         $customer = $customerServices->getCustomer($validator->safe()->except('course_id'));
 
         $this->services->cancel($customer, $course);

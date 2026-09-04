@@ -17,7 +17,7 @@ final class ResourceConflictDetectorJob implements ShouldQueue
 
     public function __construct(
         protected string $resource_type,
-        protected int $resource_id
+        protected mixed $resource_id
     ) {}
 
     public function handle(): void

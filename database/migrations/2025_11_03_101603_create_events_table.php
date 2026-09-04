@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('events', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id');
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Category::class);
             $table->foreignIdFor(Court::class)->nullable();
@@ -37,7 +37,6 @@ return new class extends Migration
             $table->index(['is_active', 'is_full', 'category_id', 'admission_fee']);
             $table->index(['is_active', 'is_full', 'start_date']);
         });
-
     }
 
     public function down(): void

@@ -17,7 +17,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('activities', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id');
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Category::class);
             $table->foreignIdFor(Court::class)->nullable();

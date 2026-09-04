@@ -14,6 +14,7 @@ use App\Traits\FavoriteHandler;
 use App\Traits\MediaHandler;
 use App\Traits\ReviewHandler;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,7 @@ final class Activity extends Model implements Dayable, Locatable, Mediable, Revi
 {
     use FavoriteHandler;
     use HasFactory;
+    use HasUlids;
     use MediaHandler;
     use ReviewHandler;
 

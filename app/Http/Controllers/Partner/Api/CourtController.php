@@ -29,7 +29,7 @@ final class CourtController extends Controller
         $validator = CourtValidators::find($request->all());
         $court = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('court_id')
+            $validator->safe()->input('court_id')
         );
 
         return Success(payload: [
@@ -57,7 +57,7 @@ final class CourtController extends Controller
         $model = Auth::user();
         $court = $this->services->findByUser(
             $model,
-            $validator->safe()->integer('court_id')
+            $validator->safe()->input('court_id')
         );
         $this->services->update(
             $court,
@@ -77,7 +77,7 @@ final class CourtController extends Controller
             return Error('last court can not be deleted');
         }
         /** @var Court $court */
-        $court = $courts->find($validator->safe()->integer('court_id'));
+        $court = $courts->find($validator->safe()->input('court_id'));
         if ($court->hasChildren()) {
             return Error('Court has children can not be deleted');
         }

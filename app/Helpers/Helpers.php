@@ -167,9 +167,9 @@ if (! function_exists('getModelGlobal')) {
      * @throws Illuminate\Validation\ValidationException
      * @throws NotFoundHttpException
      */
-    function getModelGlobal(?string $owner_type = null, ?int $owner_id = null): Taggable|Dayable|Mediable|Locatable|Reviewable|Model
+    function getModelGlobal(?string $owner_type = null, mixed $owner_id = null): Taggable|Dayable|Mediable|Locatable|Reviewable|Model
     {
-        $id = $owner_id ?? (int) request('owner_id');
+        $id = $owner_id ?? request('owner_id');
         $type = $owner_type ?? request('owner_type');
         Truthy(is_null($type) || is_null($id), 'failed to retrieve model');
         Truthy(! in_array($type, SectionsTypes::names()), sprintf('%s : %s', __('invalid model type'), "$type"));
@@ -184,9 +184,11 @@ if (! function_exists('getModelGlobal')) {
 }
 
 if (! function_exists('getModel')) {
-    function getModel(?string $owner_type = null, ?int $owner_id = null): Taggable|Dayable|Mediable|Locatable|Reviewable|Model
+    function getModel(?string $owner_type = null, mixed $owner_id = null): Taggable|Dayable|Mediable|Locatable|Reviewable|Model
     {
-        $model = getModelGlobal($owner_type, $owner_id);
+        $id = $owner_id ?? request('owner_id');
+        $type = $owner_type ?? request('owner_type');
+        $model = getModelGlobal($type, $id);
         Truthy((int) $model->user_id !== (int) Auth::id(), 'unauthorized access');
 
         return $model;

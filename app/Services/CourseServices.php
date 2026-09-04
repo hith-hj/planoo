@@ -68,7 +68,7 @@ final class CourseServices
         return $courses->load($this->toBeLoaded());
     }
 
-    public function findByUser(User $user, int $id): Course
+    public function findByUser(User $user, mixed $id): Course
     {
         Required($user, 'user');
         $course = $user->courses()->whereId($id)->first();
@@ -77,7 +77,7 @@ final class CourseServices
         return $course->load($this->toBeLoaded());
     }
 
-    public function find(int $id): Course
+    public function find(mixed $id): Course
     {
         Required($id, 'id');
         $course = Course::whereId($id)->first();

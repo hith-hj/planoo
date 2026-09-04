@@ -60,7 +60,7 @@ final class CourseController extends Controller
     {
         $validator = CourseValidators::find($request->all());
         $course = $this->services->find(
-            $validator->safe()->integer('course_id')
+            $validator->safe()->input('course_id')
         );
 
         return Success(payload: ['course' => $course->toResource()]);
@@ -70,7 +70,7 @@ final class CourseController extends Controller
     {
         $validator = CourseValidators::find($request->all());
 
-        $course = $this->services->find($validator->safe()->integer('course_id'));
+        $course = $this->services->find($validator->safe()->input('course_id'));
 
         $this->services->attend(Auth::user(), $course);
 
@@ -81,7 +81,7 @@ final class CourseController extends Controller
     {
         $validator = CourseValidators::find($request->all());
 
-        $course = $this->services->find($validator->safe()->integer('course_id'));
+        $course = $this->services->find($validator->safe()->input('course_id'));
 
         $this->services->cancel(Auth::user(), $course);
 

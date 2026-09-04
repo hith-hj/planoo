@@ -59,7 +59,7 @@ final class EventController extends Controller
     public function find(Request $request)
     {
         $validator = EventValidators::find($request->all());
-        $event = $this->services->find($validator->safe()->integer('event_id'));
+        $event = $this->services->find($validator->safe()->input('event_id'));
 
         return Success(payload: ['event' => $event->toResource()]);
     }
@@ -67,7 +67,7 @@ final class EventController extends Controller
     public function attend(Request $request)
     {
         $validator = EventValidators::attend($request->all());
-        $event = $this->services->find($validator->safe()->integer('event_id'));
+        $event = $this->services->find($validator->safe()->input('event_id'));
 
         $this->services->attend(Auth::user(), $event);
 
@@ -77,7 +77,7 @@ final class EventController extends Controller
     public function cancel(Request $request)
     {
         $validator = EventValidators::cancel($request->all());
-        $event = $this->services->find($validator->safe()->integer('event_id'));
+        $event = $this->services->find($validator->safe()->input('event_id'));
 
         $this->services->cancel(Auth::user(), $event);
 

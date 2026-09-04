@@ -64,7 +64,7 @@ final class AppointmentServices
         return $appointments;
     }
 
-    public function find(int $id)
+    public function find(mixed $id)
     {
         Required($id, 'appointment id');
         $appointment = Appointment::find($id);

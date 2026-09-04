@@ -19,7 +19,7 @@ final class CourtServices
         return $courts;
     }
 
-    public function findByUser(User $user, int $id): Court
+    public function findByUser(User $user, mixed $id): Court
     {
         $court = $user->courts()->whereId($id)->first();
         NotFound($court, 'court');
@@ -27,7 +27,7 @@ final class CourtServices
         return $court->load($this->toBeLoaded());
     }
 
-    public function find(int $id): Court
+    public function find(mixed $id): Court
     {
         Required($id, 'id');
         $court = Court::whereId($id)->first();

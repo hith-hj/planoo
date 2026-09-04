@@ -6,9 +6,10 @@ namespace Database\Factories;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
-use App\Models\Course;
+use App\Models\Activity;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Appointment>
@@ -26,8 +27,8 @@ final class AppointmentFactory extends Factory
         $session_duration = fake()->randomElement(SessionDuration::values());
 
         return [
-            'appointable_type' => Course::class,
-            'appointable_id' => 1,
+            'appointable_type' => Activity::class,
+            'appointable_id' => Ulid::generate(),
             'date' => fake()->randomElement($this->toDate()),
             'time' => $time->toTimeString(),
             'price' => random_int(1000, 10000),

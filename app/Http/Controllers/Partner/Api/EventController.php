@@ -28,7 +28,7 @@ final class EventController extends Controller
         $validator = EventValidators::find($request->all());
         $event = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('event_id')
+            $validator->safe()->input('event_id')
         );
 
         return Success(payload: ['event' => $event->toResource()]);
@@ -37,7 +37,7 @@ final class EventController extends Controller
     public function create(Request $request, CourtServices $courtServices)
     {
         $validator = EventValidators::create($request->all());
-        $court = $courtServices->find($validator->safe()->integer('court_id'));
+        $court = $courtServices->find($validator->safe()->input('court_id'));
         Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
         $event = $this->services->create(
             Auth::user(),
@@ -59,7 +59,7 @@ final class EventController extends Controller
         $validator = EventValidators::create($request->all(), true);
         $event = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('event_id')
+            $validator->safe()->input('event_id')
         );
         Truthy($validator->safe()->input('court_id') !== $event->court_id, 'invalid operation');
 
@@ -77,7 +77,7 @@ final class EventController extends Controller
         $validator = EventValidators::delete($request->all());
         $event = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('event_id')
+            $validator->safe()->input('event_id')
         );
         $this->services->delete($event);
 
@@ -89,7 +89,7 @@ final class EventController extends Controller
         $validator = EventValidators::find($request->all());
         $event = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('event_id')
+            $validator->safe()->input('event_id')
         );
         $this->services->toggleActivation($event);
 
@@ -99,7 +99,7 @@ final class EventController extends Controller
     public function attend(Request $request, CustomerServices $customerServices)
     {
         $validator = EventValidators::attend($request->all());
-        $event = $this->services->findByUser(Auth::user(), $validator->safe()->integer('event_id'));
+        $event = $this->services->findByUser(Auth::user(), $validator->safe()->input('event_id'));
         $customer = $customerServices->getCustomer($validator->safe()->except('event_id'));
 
         $this->services->attend($customer, $event);
@@ -110,7 +110,7 @@ final class EventController extends Controller
     public function cancel(Request $request, CustomerServices $customerServices)
     {
         $validator = EventValidators::cancel($request->all());
-        $event = $this->services->findByUser(Auth::user(), $validator->safe()->integer('event_id'));
+        $event = $this->services->findByUser(Auth::user(), $validator->safe()->input('event_id'));
         $customer = $customerServices->getCustomer($validator->safe()->except('event_id'));
 
         $this->services->cancel($customer, $event);

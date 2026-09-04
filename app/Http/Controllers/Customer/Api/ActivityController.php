@@ -36,7 +36,7 @@ final class ActivityController extends Controller
     public function find(Request $request)
     {
         $validator = ActivityValidators::find($request->all());
-        $activity = $this->services->find($validator->safe()->integer('activity_id'));
+        $activity = $this->services->find($validator->safe()->input('activity_id'));
 
         return Success(payload: ['activity' => $activity->toResource()]);
     }

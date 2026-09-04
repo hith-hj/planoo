@@ -66,7 +66,7 @@ final class EventServices
         return $events->load($this->toBeLoaded());
     }
 
-    public function findByUser(User $user, int $id): Event
+    public function findByUser(User $user, mixed $id): Event
     {
         Required($user, 'user');
         $event = $user->events()->whereId($id)->first();
@@ -75,7 +75,7 @@ final class EventServices
         return $event->load($this->toBeLoaded());
     }
 
-    public function find(int $id): Event
+    public function find(mixed $id): Event
     {
         Required($id, 'id');
         $event = Event::whereId($id)->first();

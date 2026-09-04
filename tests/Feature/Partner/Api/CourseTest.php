@@ -86,7 +86,10 @@ describe('Course Controller Tests', function () {
     });
 
     it('updates an existing course', function () {
-        $course = Course::factory()->for($this->user, 'user')->create();
+        $course = Course::factory()
+            ->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')
+            ->create();
         $course->update(['name' => 'tido']);
 
         $updatePayload = ['course_id' => $course->id, ...$course->toArray()];
@@ -169,7 +172,7 @@ describe('Course Controller Tests', function () {
             ]
         );
         $res->assertOk();
-        $customer = Customer::where([['phone', '987654321'],['country_code','+963']])->first();
+        $customer = Customer::where([['phone', '987654321'], ['country_code', '+963']])->first();
         $customerCourse = $course->customers()->wherePivot('customer_id', $customer->id)->first();
         expect($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
     });

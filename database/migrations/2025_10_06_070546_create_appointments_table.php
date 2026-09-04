@@ -15,7 +15,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('appointments', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id');
             $table->morphs('appointable');
             $table->foreignIdFor(Customer::class)->nullable();
             $table->date('date');

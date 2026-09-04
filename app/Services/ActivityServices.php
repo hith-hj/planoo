@@ -50,7 +50,7 @@ final class ActivityServices
         return $activities->load($this->toBeLoaded());
     }
 
-    public function findByUser(User $user, int $id): Activity
+    public function findByUser(User $user, mixed $id): Activity
     {
         Required($user, 'user');
         $activity = $user->activities()->whereId($id)->first();
@@ -59,7 +59,7 @@ final class ActivityServices
         return $activity->load($this->toBeLoaded());
     }
 
-    public function find(int $id): Activity
+    public function find(mixed $id): Activity
     {
         Required($id, 'id');
         $activity = Activity::whereId($id)->first();

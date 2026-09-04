@@ -82,7 +82,10 @@ describe('Event Controller Tests', function () {
     });
 
     it('updates an existing event', function () {
-        $event = Event::factory()->for($this->user, 'user')->create();
+        $event = Event::factory()
+            ->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')
+            ->create();
         $event->update(['name' => 'tido']);
 
         $updatePayload = ['event_id' => $event->id, ...$event->toArray()];
@@ -154,7 +157,7 @@ describe('Event Controller Tests', function () {
             'customer_phone' => '987654321',
         ]);
         $res->assertOk();
-        $customer = Customer::where([['phone', '987654321'],['country_code','+963']])->first();
+        $customer = Customer::where([['phone', '987654321'], ['country_code', '+963']])->first();
         $customerEvent = $event->customers()->wherePivot('customer_id', $customer->id)->first();
         expect($customerEvent)->not->toBeNull();
     });

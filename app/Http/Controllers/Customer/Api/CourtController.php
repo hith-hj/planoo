@@ -39,7 +39,7 @@ final class CourtController extends Controller
     {
         $validator = CourtValidators::find($request->all());
         $court = $this->services->find(
-            $validator->safe()->integer('court_id')
+            $validator->safe()->input('court_id')
         );
 
         return Success(payload: [

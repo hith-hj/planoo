@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Traits\MediaHandler;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 final class Court extends Model
 {
     use HasFactory;
+    use HasUlids;
     use MediaHandler;
 
     /**
@@ -50,7 +52,7 @@ final class Court extends Model
     public function hasChildren(): bool
     {
         return $this->activities()->exists()
-        || $this->courses()->exists()
-        || $this->events()->exists();
+            || $this->courses()->exists()
+            || $this->events()->exists();
     }
 }

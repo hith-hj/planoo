@@ -27,7 +27,7 @@ final class ActivityController extends Controller
         $validator = ActivityValidators::find($request->all());
         $activity = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('activity_id')
+            $validator->safe()->input('activity_id')
         );
 
         return Success(payload: ['activity' => $activity->toResource()]);
@@ -36,7 +36,7 @@ final class ActivityController extends Controller
     public function create(Request $request, CourtServices $courtServices)
     {
         $validator = ActivityValidators::create($request->all());
-        $court = $courtServices->find($validator->safe()->integer('court_id'));
+        $court = $courtServices->find($validator->safe()->input('court_id'));
         Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
         $activity = $this->services->create(
             Auth::user(),
@@ -57,7 +57,7 @@ final class ActivityController extends Controller
         $validator = ActivityValidators::create($request->all(), true);
         $activity = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('activity_id')
+            $validator->safe()->input('activity_id')
         );
         Truthy($validator->safe()->input('court_id') !== $activity->court_id, 'invalid operation');
         // TODO: check if the activity has any appointment prevent update ad diactivate
@@ -75,7 +75,7 @@ final class ActivityController extends Controller
         $validator = ActivityValidators::delete($request->all());
         $activity = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('activity_id')
+            $validator->safe()->input('activity_id')
         );
         $this->services->delete($activity);
 
@@ -87,7 +87,7 @@ final class ActivityController extends Controller
         $validator = ActivityValidators::find($request->all());
         $activity = $this->services->findByUser(
             Auth::user(),
-            $validator->safe()->integer('activity_id')
+            $validator->safe()->input('activity_id')
         );
         $this->services->toggleActivation($activity);
 

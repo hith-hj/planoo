@@ -19,9 +19,11 @@ final class FavoriteFactory extends Factory
      */
     public function definition(): array
     {
+        $activity = Activity::factory()->create();
+
         return [
             'customer_id' => 1,
-            'favoritable_id' => 1,
+            'favoritable_id' => $activity->id,
             'favoritable_type' => Activity::class,
         ];
     }

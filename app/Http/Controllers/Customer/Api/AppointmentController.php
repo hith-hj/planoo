@@ -56,7 +56,7 @@ final class AppointmentController extends Controller
     public function find(Request $request)
     {
         $validator = AppointmentValidators::find($request->all());
-        $appointment = $this->services->find($validator->safe()->integer('appointment_id'));
+        $appointment = $this->services->find($validator->safe()->input('appointment_id'));
 
         return Success(payload: [
             'appointment' => $appointment->toResource(),
@@ -67,7 +67,7 @@ final class AppointmentController extends Controller
     {
         $validator = AppointmentValidators::check($request->all());
         $activity = $this->activityServices
-            ->find($validator->safe()->integer('activity_id'));
+            ->find($validator->safe()->input('activity_id'));
         $slots = $this->services->checkAvailableSlots($activity, $validator->safe()->all());
 
         return Success(payload: ['slots' => $slots]);
@@ -81,7 +81,7 @@ final class AppointmentController extends Controller
         Truthy(! $code->isValid(), 'invalid code');
         $this->codeServices->deleteCode($code);
 
-        $activity = $this->activityServices->find($validator->safe()->integer('activity_id'));
+        $activity = $this->activityServices->find($validator->safe()->input('activity_id'));
         if ($this->services->checkAppointmentExists($activity, $validator->safe()->all())) {
             return Error('appointment just got booked');
         }
@@ -100,7 +100,7 @@ final class AppointmentController extends Controller
     public function cancel(Request $request)
     {
         $validator = AppointmentValidators::find($request->all());
-        $appointment = $this->services->find($validator->safe()->integer('appointment_id'));
+        $appointment = $this->services->find($validator->safe()->input('appointment_id'));
         if ($appointment->appointable_type !== Activity::class) {
             return Error('appointment type can not be canceled');
         }

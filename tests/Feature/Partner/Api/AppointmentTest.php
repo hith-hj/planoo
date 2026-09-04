@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\AppointmentStatus;
 use App\Enums\CodesTypes;
+use App\Models\Activity;
 use App\Models\Appointment;
 use App\Models\Customer;
 use App\Services\CodeServices;
@@ -53,9 +54,11 @@ describe('Appointment Controller Tests', function () {
 
     it('find appointment by id ', function () {
         Appointment::truncate();
-        $appointment = Appointment::factory()->create();
+        $activity = Activity::factory()->create();
+        $appointment = Appointment::factory()->for($activity, 'holder')->create();
         $res = $this->getJson("{$this->url}/find?appointment_id={$appointment->id}");
         $res->assertOk();
+        // dd($res->json(), $appointment->holder);
         expect($res->json('payload'))->toHaveKeys(['appointment']);
         expect($res->json('payload.appointment'))->not->toBeNull()
             ->and($res->json('payload.appointment.holder'))->toHaveKeys(['type', 'id', 'name', 'image']);

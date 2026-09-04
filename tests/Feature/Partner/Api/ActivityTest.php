@@ -26,14 +26,14 @@ describe('Activity Controller Tests', function () {
     it('finds a specific activity by ID', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
 
-        $response = $this->getJson(route('partner.activity.find',['activity_id'=>$activity->id]))
+        $response = $this->getJson(route('partner.activity.find', ['activity_id' => $activity->id]))
             ->assertOk();
 
         expect($response->json('payload.activity.id'))->toBe($activity->id);
     });
 
     it('fails to find an activity with invalid ID', function () {
-        $this->getJson(route('partner.activity.find',['activity_id'=>422]))->assertStatus(422);
+        $this->getJson(route('partner.activity.find', ['activity_id' => 422]))->assertStatus(422);
     });
 
     it('creates a new activity with days, location, media, and tags', function () {
@@ -109,12 +109,16 @@ describe('Activity Controller Tests', function () {
     });
 
     it('updates an existing activity', function () {
-        $activity = Activity::factory()->for($this->user, 'user')->create();
+        $activity = Activity::factory()
+            ->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')
+            ->create();
         $activity->update(['name' => 'tido']);
 
         $updatePayload = ['activity_id' => $activity->id, ...$activity->toArray()];
 
-        $response = $this->patchJson(route('partner.activity.update'), $updatePayload)->assertOk();
+        $response = $this->patchJson(route('partner.activity.update'), $updatePayload);
+        $response->assertOk();
 
         expect($response->json('payload.activity.name'))->toBe('tido');
     });

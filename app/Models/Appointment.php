@@ -8,6 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Observers\AppointmentObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 final class Appointment extends Model
 {
     use HasFactory;
+    use HasUlids;
 
     /**
      * The attributes that are mass assignable.
@@ -42,7 +44,7 @@ final class Appointment extends Model
         return $this->morphTo(__FUNCTION__, 'appointable_type', 'appointable_id');
     }
 
-    public function scopeOwner(Builder $query, string $owner_class, ?int $owner_id)
+    public function scopeOwner(Builder $query, string $owner_class, mixed $owner_id)
     {
         return $query->where([['appointable_type', $owner_class], ['appointable_id', $owner_id]]);
     }
