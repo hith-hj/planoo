@@ -9,7 +9,6 @@ use App\Models\Event;
 beforeEach(function () {
     $this->seed();
     $this->user('customer')->api();
-    $this->url = '/api/customer/v1/home';
 });
 
 describe('Activity Controller Tests', function () {
@@ -17,7 +16,7 @@ describe('Activity Controller Tests', function () {
         Activity::factory()->create();
         Course::factory()->create();
         Event::factory()->create();
-        $res = $this->getJson("{$this->url}/feeds");
+        $res = $this->getJson(route('customer.home.feeds'));
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['feeds'])
             ->and($res->json('payload.feeds'))->toHaveKeys(['activities', 'courses', 'events']);
@@ -27,7 +26,7 @@ describe('Activity Controller Tests', function () {
         Activity::factory()->create();
         Course::factory()->create();
         Event::factory()->create();
-        $res = $this->getJson("{$this->url}/recommended")->assertOk();
+        $res = $this->getJson(route('customer.home.recommended'))->assertOk();
         expect($res->json('payload'))->toHaveKeys(['recommended'])
             ->and($res->json('payload.recommended'))->toHaveKeys(['activities', 'courses', 'events']);
     });
@@ -36,7 +35,7 @@ describe('Activity Controller Tests', function () {
         Activity::factory()->create();
         Course::factory()->create();
         Event::factory()->create();
-        $res = $this->getJson("{$this->url}/featured")->assertOk();
+        $res = $this->getJson(route('customer.home.featured'))->assertOk();
         expect($res->json('payload'))->toHaveKeys(['featured'])
             ->and($res->json('payload.featured'))->toHaveKeys(['activity', 'course', 'event'])
             ->and($res->json('payload.featured.activity'))->toHaveCount(1)
@@ -46,14 +45,20 @@ describe('Activity Controller Tests', function () {
 
     it('returns search for customer', function () {
         $activity = Activity::factory()->create();
-        $res = $this->getJson("{$this->url}/search?owner=activity&search=$activity->name");
+        $res = $this->getJson(route('customer.home.search', [
+            'owner' => 'activity',
+            'search' => $activity->name
+        ]));
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['result'])
             ->and($res->json('payload.result'))->toBeIterable();
     });
 
     it('fails to returns search for customer with invalid owner', function () {
-        $res = $this->getJson("{$this->url}/search?owner=invalid&search=something");
+        $res = $this->getJson(route(
+            'customer.home.search',
+            ['owner' => 'invalid', 'search' => 'something']
+        ));
         $res->assertStatus(400);
     });
 });

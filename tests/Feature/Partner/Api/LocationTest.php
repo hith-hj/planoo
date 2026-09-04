@@ -8,14 +8,13 @@ use App\Models\Location;
 beforeEach(function () {
     $this->seed();
     $this->user('partner', 'stadium')->api();
-    $this->url = '/api/partner/v1/location';
 });
 
 describe('Location Controller Tests', function () {
     it('returns location for a valid activity', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
 
-        $response = $this->getJson("{$this->url}/get/activity/{$activity->id}")
+        $response = $this->getJson(route('partner.location.get', ['owner_type' => 'activity', 'owner_id' => $activity->id]))
             ->assertOk();
 
         expect($response->json('payload.location'))->not->toBeNull()
@@ -23,7 +22,7 @@ describe('Location Controller Tests', function () {
     });
 
     it('returns 404 for location of an invalid activity', function () {
-        $this->getJson("{$this->url}/get/activity/1000")->assertStatus(404);
+        $this->getJson(route('partner.location.get', ['owner_type' => 'activity', 'owner_id' => 12312]))->assertStatus(404);
     });
 
     it('creates a new location for an activity', function () {
@@ -32,7 +31,7 @@ describe('Location Controller Tests', function () {
 
         $locationData = Location::factory()->make()->toArray();
 
-        $response = $this->postJson("{$this->url}/create/activity/{$activity->id}", $locationData)
+        $response = $this->postJson(route('partner.location.create', ['owner_type' => 'activity', 'owner_id' => $activity->id]), $locationData)
             ->assertOk();
 
         expect($response->json('payload.location'))->not->toBeNull();
@@ -42,7 +41,7 @@ describe('Location Controller Tests', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
         $locationData = Location::factory()->make()->toArray();
 
-        $this->postJson("{$this->url}/create/activity/{$activity->id}", $locationData)
+        $this->postJson(route('partner.location.create', ['owner_type' => 'activity', 'owner_id' => $activity->id]), $locationData)
             ->assertStatus(400);
     });
 
@@ -50,13 +49,12 @@ describe('Location Controller Tests', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
         $activity->location()->delete();
 
-        $this->postJson("{$this->url}/create/activity/{$activity->id}", [])
+        $this->postJson(route('partner.location.create', ['owner_type' => 'activity', 'owner_id' => $activity->id]), [])
             ->assertStatus(422);
     });
 
     it('fails to create location for an invalid activity', function () {
-        $this->postJson("{$this->url}/create/activity/1000", [])
-            ->assertStatus(404);
+        $this->postJson(route('partner.location.create', ['owner_type' => 'activity', 'owner_id' => 123]))->assertStatus(404);
     });
 
     it('updates a specific location', function () {
@@ -64,7 +62,7 @@ describe('Location Controller Tests', function () {
         $location = $activity->location;
         $updateData = Location::factory()->make()->toArray();
 
-        $response = $this->patchJson("{$this->url}/update/activity/{$activity->id}", [
+        $response = $this->patchJson(route('partner.location.update', ['owner_type' => 'activity', 'owner_id' => $activity->id]), [
             'location_id' => $location->id,
             ...$updateData,
         ])->assertOk();
@@ -77,7 +75,7 @@ describe('Location Controller Tests', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
         $location = $activity->location;
 
-        $this->deleteJson("{$this->url}/delete/activity/{$activity->id}", [
+        $this->deleteJson(route('partner.location.delete', ['owner_type' => 'activity', 'owner_id' => $activity->id]), [
             'location_id' => $location->id,
         ])->assertOk();
 

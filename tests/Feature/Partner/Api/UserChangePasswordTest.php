@@ -8,13 +8,12 @@ use Illuminate\Support\Facades\Hash;
 beforeEach(function () {
     $this->seed();
     $this->user('partner', 'stadium');
-    $this->url = '/api/partner/v1/auth/changePassword';
 });
 
 describe('Partner change password security rules', function () {
 
     it('rejects reusing the same password', function () {
-        $res = $this->api()->postJson($this->url, [
+        $res = $this->api()->postJson(route('partner.changePassword'), [
             'old_password' => 'password',
             'new_password' => 'password',
             'new_password_confirmation' => 'password',
@@ -27,7 +26,7 @@ describe('Partner change password security rules', function () {
     });
 
     it('rejects a wrong old password', function () {
-        $res = $this->api()->postJson($this->url, [
+        $res = $this->api()->postJson(route('partner.changePassword'), [
             'old_password' => 'wrong-password-1',
             'new_password' => 'new-password-99',
             'new_password_confirmation' => 'new-password-99',
@@ -38,7 +37,7 @@ describe('Partner change password security rules', function () {
     });
 
     it('updates the password with valid credentials', function () {
-        $res = $this->api()->postJson($this->url, [
+        $res = $this->api()->postJson(route('partner.changePassword'), [
             'old_password' => 'password',
             'new_password' => 'brand-new-pass-1',
             'new_password_confirmation' => 'brand-new-pass-1',

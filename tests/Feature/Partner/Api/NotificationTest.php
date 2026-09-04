@@ -7,28 +7,27 @@ use App\Models\Notification;
 beforeEach(function () {
     $this->seed();
     $this->user('partner', 'stadium')->api();
-    $this->url = '/api/partner/v1/notification';
     Notification::truncate();
 });
 
 describe('Notification Controller Tests', function () {
     it('returns all notifications for the authenticated partner', function () {
         Notification::factory(2)->for($this->user, 'holder')->create();
-        $res = $this->getJson("{$this->url}/all")->assertOk();
+        $res = $this->getJson(route('partner.notification.all'))->assertOk();
         expect($res->json('payload'))->toHaveKeys(['notifications']);
         expect($res->json('payload.notifications'))->toHaveCount(2);
     });
 
     it('return true when there are new notifications', function () {
         Notification::factory(2)->for($this->user, 'holder')->create(['is_viewed' => 0]);
-        $res = $this->getJson("{$this->url}/checkNew")->assertOk();
+        $res = $this->getJson(route('partner.notification.checkNew'))->assertOk();
         expect($res->json('payload'))->toHaveKeys(['new'])
             ->and($res->json('payload.new'))->toBe(true);
     });
 
     it('return false when there are no new notifications', function () {
         Notification::factory(2)->for($this->user, 'holder')->create(['is_viewed' => 1]);
-        $res = $this->getJson("{$this->url}/checkNew")->assertOk();
+        $res = $this->getJson(route('partner.notification.checkNew'))->assertOk();
         expect($res->json('payload'))->toHaveKeys(['new'])
             ->and($res->json('payload.new'))->toBe(false);
     });
@@ -36,7 +35,7 @@ describe('Notification Controller Tests', function () {
     it('finds a specific notification by ID', function () {
         $notification = Notification::factory()->for($this->user, 'holder')->create();
 
-        $res = $this->getJson("{$this->url}/find?notification_id={$notification->id}")
+        $res = $this->getJson(route('partner.notification.find', ['notification_id' => $notification->id]))
             ->assertOk();
 
         expect($res->json('payload.notification.id'))->toBe($notification->id);
@@ -44,7 +43,7 @@ describe('Notification Controller Tests', function () {
 
     it('fails to find an notification with invalid ID', function () {
         $this->getJson(
-            "{$this->url}/find?notification_id=422"
+            route('partner.notification.find', ['notification_id' => 1231])
         )->assertStatus(422);
     });
 
@@ -52,7 +51,7 @@ describe('Notification Controller Tests', function () {
         $notification = Notification::factory()->for($this->user, 'holder')->create();
         expect($notification->is_viewed)->toBeFalse();
         $this->postJson(
-            "{$this->url}/view",
+            route('partner.notification.view'),
             ['notifications' => [$notification->id]]
         )->assertOk();
         expect($notification->fresh()->is_viewed)->toBeTrue();
@@ -61,7 +60,7 @@ describe('Notification Controller Tests', function () {
     it('delete notification', function () {
         $notification = Notification::factory()->for($this->user, 'holder')->create();
         $this->deleteJson(
-            "{$this->url}/delete",
+            route('partner.notification.delete'),
             ['notification_id' => $notification->id]
         )->assertOk();
         expect($notification->fresh())->toBeNull();
@@ -70,7 +69,7 @@ describe('Notification Controller Tests', function () {
     it('clear all notification', function () {
         Notification::factory(5)->for($this->user, 'holder')->create();
         expect($this->user->notifications()->count())->toBe(5);
-        $this->postJson("{$this->url}/clear")->assertOk();
+        $this->postJson(route('partner.notification.clear'))->assertOk();
         expect($this->user->notifications()->count())->toBe(0);
     });
 });
