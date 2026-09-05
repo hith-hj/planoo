@@ -64,9 +64,7 @@ describe('Appointment Controller Tests', function () {
         $res = $this->postJson(
             route(
                 'partner.appointment.accepted',
-                [
-                    'owner_type' => 'activity',
-                ]
+                ['owner_type' => 'activity',]
             ),
             ['orderBy' => ['date' => 'desc']]
         );
@@ -85,9 +83,7 @@ describe('Appointment Controller Tests', function () {
         $res = $this->getJson(
             route(
                 'partner.appointment.find',
-                [
-                    'appointment_id' => $appointment->id
-                ]
+                ['appointment_id' => $appointment->id]
             )
         );
         $res->assertOk();
@@ -102,9 +98,7 @@ describe('Appointment Controller Tests', function () {
         $res = $this->getJson(
             route(
                 'partner.appointment.find',
-                [
-                    'appointment_id' => 19091
-                ]
+                ['appointment_id' => 19091]
             )
         );
         $res->assertStatus(422);
@@ -125,9 +119,7 @@ describe('Appointment Controller Tests', function () {
 
         $response = $this->postJson(
             route('partner.appointment.check'),
-
             $data
-
         );
         $response->assertOk();
         expect($response->json('payload.slots'))->not->toBeNull()
@@ -138,11 +130,8 @@ describe('Appointment Controller Tests', function () {
     it('fails to check slots with invalid data', function () {
         $this->postJson(
             route('partner.appointment.check'),
-
             []
-
-        )
-            ->assertStatus(422);
+        )->assertStatus(422);
     });
 
     it('creates a new appointment with user phone', function () {
@@ -164,9 +153,7 @@ describe('Appointment Controller Tests', function () {
 
         $response = $this->postJson(
             route('partner.appointment.create'),
-
             $data
-
         );
         $response->assertOk();
 
@@ -190,9 +177,7 @@ describe('Appointment Controller Tests', function () {
             ]);
         $response = $this->postJson(
             route('partner.appointment.create'),
-
             $data
-
         );
 
         $response->assertOk();
@@ -218,9 +203,7 @@ describe('Appointment Controller Tests', function () {
 
         $response = $this->postJson(
             route('partner.appointment.create'),
-
             $data
-
         );
         $response->assertStatus(400);
     });
@@ -228,11 +211,8 @@ describe('Appointment Controller Tests', function () {
     it('fails to create appointment with invalid data', function () {
         $this->postJson(
             route('partner.appointment.create'),
-
             []
-
-        )
-            ->assertStatus(422);
+        )->assertStatus(422);
     });
 
     it('fails to create a duplicate appointment', function () {
@@ -262,11 +242,8 @@ describe('Appointment Controller Tests', function () {
 
         $this->postJson(
             route('partner.appointment.create'),
-
             $appointmentData
-
-        )
-            ->assertStatus(400);
+        )->assertStatus(400);
     });
 
     it('cancels an accepted appointment', function () {
