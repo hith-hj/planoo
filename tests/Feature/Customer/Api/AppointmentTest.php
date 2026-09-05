@@ -18,10 +18,7 @@ describe('Appointment Controller Tests', function () {
         Appointment::truncate();
         Appointment::factory(2)->for($this->user, 'customer')->create();
         $res = $this->postJson(
-            route(
-                'customer.appointment.all',
-                ['owner_type' => 'activity',]
-            ),
+            route('customer.appointment.all', ['owner_type' => 'activity',]),
             ['page' => 1, 'perPage' => 1]
         );
         $res->assertOk();
@@ -36,9 +33,7 @@ describe('Appointment Controller Tests', function () {
         Appointment::factory(2)->for($this->user, 'customer')->create();
         $res = $this->postJson(
             route('customer.appointment.all', ['owner_type' => 'activity', 'paginate' => false]),
-            [
-                'filters' => ['status' => '0']
-            ]
+            ['filters' => ['status' => '0']]
         );
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['page', 'perPage', 'appointments']);
@@ -60,7 +55,10 @@ describe('Appointment Controller Tests', function () {
 
     it('find appointment by id ', function () {
         Appointment::truncate();
-        $appointment = Appointment::factory()->create();
+        $activity = Activity::factory()->create();
+        $appointment = Appointment::factory()
+            ->for($activity, 'holder')
+            ->create();
         $res = $this->getJson(route('customer.appointment.find', ['appointment_id' => $appointment->id]));
         $res->assertOk();
         expect($res->json('payload'))->toHaveKeys(['appointment']);
@@ -161,9 +159,10 @@ describe('Appointment Controller Tests', function () {
         $appointment = Appointment::factory()->for($activity, 'holder')
             ->create(['status' => AppointmentStatus::accepted->value]);
 
-        $response = $this->postJson(route('customer.appointment.cancel'), [
-            'appointment_id' => $appointment->id,
-        ])->assertOk();
+        $response = $this->postJson(
+            route('customer.appointment.cancel'),
+            ['appointment_id' => $appointment->id,]
+        )->assertOk();
 
         expect($response->json('payload.appointment'))->not->toBeNull()
             ->and($response->json('payload.appointment.status'))->toBe(AppointmentStatus::canceled->name);
