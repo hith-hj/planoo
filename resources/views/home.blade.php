@@ -251,20 +251,26 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Card 1 -->
                     <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                        <i class="bi bi-android2 text-7xl text-teal mb-4 mx-auto"></i>
-                        <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('android')]) }}</h3>
-                        <p class="text-gray-600">
-                            {{ __('Download link',['type'=>__('android'),'user'=>__('customers')]) }}
-                        </p>
+                        <a href="https://play.google.com/store/apps/details?id=com.your1site.planoo" 
+                            target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-android2 text-7xl text-teal mb-4 mx-auto"></i>
+                            <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('android')]) }}</h3>
+                            <p class="text-gray-600">
+                                {{ __('Download link',['type'=>__('android'),'user'=>__('customers')]) }}
+                            </p>
+                        </a>
                     </div>
 
                     <!-- Card 2 -->
                     <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                        <i class="bi bi-apple text-7xl text-teal mb-4 mx-auto"></i>
-                        <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('IOS')]) }}</h3>
-                        <p class="text-gray-600">
-                            {{ __('Download link',['type'=>__('IOS'),'user'=>__('customers')]) }}
-                        </p>
+                        <a href="https://apps.apple.com/nl/app/planoo/id6767510401" 
+                            target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-apple text-7xl text-teal mb-4 mx-auto"></i>
+                            <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('IOS')]) }}</h3>
+                            <p class="text-gray-600">
+                                {{ __('Download link',['type'=>__('IOS'),'user'=>__('customers')]) }}
+                            </p>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -274,20 +280,24 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Card 1 -->
                     <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                        <i class="bi bi-android2 text-7xl text-teal mb-4 mx-auto"></i>
-                        <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('android')]) }}</h3>
-                        <p class="text-gray-600">
-                            {{ __('Download link',['type'=>__('android'),'user'=>__('partners')]) }}
-                        </p>
+                        <a href="https://play.google.com/store/apps/details?id=com.your1site.planoo_partner" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-android2 text-7xl text-teal mb-4 mx-auto"></i>
+                            <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('android')]) }}</h3>
+                            <p class="text-gray-600">
+                                {{ __('Download link',['type'=>__('android'),'user'=>__('partners')]) }}
+                            </p>
+                        </a>
                     </div>
 
                     <!-- Card 2 -->
                     <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                        <i class="bi bi-apple text-7xl text-teal mb-4 mx-auto"></i>
-                        <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('IOS')]) }}</h3>
-                        <p class="text-gray-600">
-                            {{ __('Download link',['type'=>__('IOS'),'user'=>__('partners')]) }}
-                        </p>
+                        <a href="https://apps.apple.com/us/app/planoo-partner/id6761179417" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-apple text-7xl text-teal mb-4 mx-auto"></i>
+                            <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('IOS')]) }}</h3>
+                            <p class="text-gray-600">
+                                {{ __('Download link',['type'=>__('IOS'),'user'=>__('partners')]) }}
+                            </p>
+                        </a>
                     </div>
                 </div>
             </div>
