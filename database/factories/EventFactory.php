@@ -13,6 +13,7 @@ use App\Models\Location;
 use App\Models\Media;
 use App\Models\Review;
 use App\Models\Tag;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -37,7 +38,7 @@ final class EventFactory extends Factory
         }
 
         return [
-            'user_id' => 1,
+            'user_id' => $this->userId(),
             'category_id' => 1,
             'court_id' => 1,
             'name' => fake()->name,
@@ -71,5 +72,18 @@ final class EventFactory extends Factory
             Appointment::factory()->for($event, 'holder')->create();
             Customer::factory()->hasAttached($event, relationship: 'events')->create();
         });
+    }
+
+    /**
+     * Resolve a valid partner user id for the event owner.
+     */
+    private function userId(): int|string
+    {
+        $user = User::query()->orderBy('id')->first();
+        if ($user) {
+            return $user->id;
+        }
+
+        return User::factory()->create()->id;
     }
 }

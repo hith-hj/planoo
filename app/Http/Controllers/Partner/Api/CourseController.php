@@ -38,7 +38,7 @@ final class CourseController extends Controller
     {
         $validator = CourseValidators::create($request->all());
         $court = $courtServices->find($validator->safe()->input('court_id'));
-        Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
+        Truthy($court->user_id !== Auth::id(), 'invalid operation');
         $course = $this->services->create(
             Auth::user(),
             $validator->safe()->except(['cords', 'days', 'times', 'tags'])

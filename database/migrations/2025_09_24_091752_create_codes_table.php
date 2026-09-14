@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('codes', function (Blueprint $table) {
             $table->id();
-            $table->morphs('belongTo');
+            $table->ulidMorphs('belongTo');
             $table->string('type');
             $table->string('code')->unique();
             $table->timestamp('expire_at')->nullable();

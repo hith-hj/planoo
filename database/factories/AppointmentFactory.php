@@ -7,8 +7,10 @@ namespace Database\Factories;
 use App\Enums\AppointmentStatus;
 use App\Enums\SessionDuration;
 use App\Models\Activity;
+use App\Models\Customer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\Uid\Ulid;
 
 /**
@@ -36,11 +38,11 @@ final class AppointmentFactory extends Factory
             'end_at' => (clone $time)->addMinutes($session_duration)->toTimeString(),
             'status' => AppointmentStatus::accepted->value,
             'notes' => fake()->sentence,
-            'customer_id' => 1,
+            'customer_id' => $this->customerId(),
         ];
     }
 
-    public function fakerData($owner, array $extras = [])
+    public function fakerData(Model $owner, array $extras = [])
     {
         Truthy($owner === null, 'Onwer is required for Appointment factory');
         Truthy(! method_exists($owner, 'days'), 'Onwer missing days() method');
@@ -58,6 +60,19 @@ final class AppointmentFactory extends Factory
             'notes' => fake()->word,
             ...$extras,
         ];
+    }
+
+    /**
+     * Resolve a valid customer id for the appointment booker.
+     */
+    private function customerId(): int|string
+    {
+        $customer = Customer::query()->orderBy('id')->first();
+        if ($customer) {
+            return $customer->id;
+        }
+
+        return Customer::factory()->create()->id;
     }
 
     private function toDate(string $day = 'sunday', int $count = 5)

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 final class CustomerServices
 {
-    public function get(int|string|null $id): Customer
+    public function get(mixed $id): Customer
     {
         Required($id, 'customer id');
         $customer = Customer::find($id);
@@ -37,7 +37,7 @@ final class CustomerServices
         return $this->create($data);
     }
 
-    public function find(int $id): Customer
+    public function find(mixed $id): Customer
     {
         Required($id, 'customer id');
         $customer = Customer::find($id);
@@ -83,7 +83,7 @@ final class CustomerServices
                 ]);
             }
             if (isset($data['customer_id'])) {
-                $customer = $this->find((int) $data['customer_id']);
+                $customer = $this->find($data['customer_id']);
             }
         }
         NotFound($customer, 'customer');

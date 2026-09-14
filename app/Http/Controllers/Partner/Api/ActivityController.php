@@ -37,7 +37,7 @@ final class ActivityController extends Controller
     {
         $validator = ActivityValidators::create($request->all());
         $court = $courtServices->find($validator->safe()->input('court_id'));
-        Truthy($court->user_id !== (int) Auth::id(), 'invalid operation');
+        Truthy($court->user_id !== Auth::id(), 'invalid operation');
         $activity = $this->services->create(
             Auth::user(),
             $validator->safe()->except(['cords', 'days', 'times', 'tags'])

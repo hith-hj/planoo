@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->id();
-            $table->morphs('belongTo');
+            $table->ulidMorphs('belongTo');
             $table->string('url');
             $table->string('type')->nullable();
             $table->string('name')->nullable();

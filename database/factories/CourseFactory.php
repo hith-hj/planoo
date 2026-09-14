@@ -15,6 +15,7 @@ use App\Models\Location;
 use App\Models\Media;
 use App\Models\Review;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -29,7 +30,7 @@ final class CourseFactory extends Factory
         $start_date = today()->addDays($duration * 2)->toDateString();
 
         return [
-            'user_id' => 1,
+            'user_id' => $this->userId(),
             'category_id' => 1,
             'court_id' => 1,
             'name' => fake()->word,
@@ -62,5 +63,18 @@ final class CourseFactory extends Factory
                 'courses'
             )->create();
         });
+    }
+
+    /**
+     * Resolve a valid partner user id for the course owner.
+     */
+    private function userId(): int|string
+    {
+        $user = User::query()->orderBy('id')->first();
+        if ($user) {
+            return $user->id;
+        }
+
+        return User::factory()->create()->id;
     }
 }

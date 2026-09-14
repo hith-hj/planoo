@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->morphs('belongTo');
+            $table->ulidMorphs('belongTo');
             $table->float('long');
             $table->float('lat');
             $table->string('name');

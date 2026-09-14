@@ -12,6 +12,7 @@ use App\Models\Location;
 use App\Models\Media;
 use App\Models\Review;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -27,7 +28,7 @@ final class ActivityFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => 1,
+            'user_id' => $this->userId(),
             'category_id' => 1,
             'court_id' => 1,
             'name' => fake()->colorName,
@@ -50,5 +51,18 @@ final class ActivityFactory extends Factory
             Review::factory()->for($activity, 'holder')->create();
             Appointment::factory()->for($activity, 'holder')->create();
         });
+    }
+
+    /**
+     * Resolve a valid partner user id for the activity owner.
+     */
+    private function userId(): int|string
+    {
+        $user = User::query()->orderBy('id')->first();
+        if ($user) {
+            return $user->id;
+        }
+
+        return User::factory()->create()->id;
     }
 }

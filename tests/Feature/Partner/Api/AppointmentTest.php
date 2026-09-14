@@ -217,6 +217,7 @@ describe('Appointment Controller Tests', function () {
 
     it('fails to create a duplicate appointment', function () {
         $activity = $this->user->activities->first();
+        $customer = Customer::factory()->create();
 
         $appointmentData = [
             'date' => now()->tomorrow()->toDateString(),
@@ -224,7 +225,7 @@ describe('Appointment Controller Tests', function () {
             'session_duration' => 120,
             'end_at' => '14:00',
             'notes' => 'Recusandae et quis voluptatibus.',
-            'customer_id' => '1',
+            'customer_id' => $customer->id,
         ];
 
         $activity->appointments()->create([
@@ -234,7 +235,7 @@ describe('Appointment Controller Tests', function () {
         ]);
 
         $appointmentData['activity_id'] = $activity->id;
-        $appointmentData['day_id'] = 1;
+        $appointmentData['day_id'] = $activity->days()->first()->id;
         $appointmentData['code'] = app(CodeServices::class)->createCode(
             CodesTypes::appointment->name,
             timeToExpire: '1:m'

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Customer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Customer::class);
-            $table->morphs('belongTo');
+            $table->foreignUlid('customer_id');
+            $table->ulidMorphs('belongTo');
             $table->text('content')->nullable();
             $table->smallInteger('rate')->default(0);
             $table->timestamps();

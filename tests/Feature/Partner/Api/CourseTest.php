@@ -153,12 +153,13 @@ describe('Course Controller Tests', function () {
 
     it('can attend customer by id for course', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
+        $customer = Customer::factory()->create();
         $res = $this->postJson(
             route('partner.course.attend', ['course_id' => $course->id]),
-            ['customer_id' => 1]
+            ['customer_id' => $customer->id]
         );
         $res->assertOk();
-        $customerCourse = $course->customers()->wherePivot('customer_id', 1)->first();
+        $customerCourse = $course->customers()->wherePivot('customer_id', $customer->id)->first();
         expect($customerCourse->pivot->remaining_sessions)->toBe($course->course_duration);
     });
 
@@ -182,50 +183,54 @@ describe('Course Controller Tests', function () {
             'start_date' => today()->subDays(2),
             'status' => CourseStatus::active->value
         ]);
+        $customer = Customer::factory()->create();
         $res = $this->postJson(
             route('partner.course.attend', ['course_id' => $course->id]),
-            ['customer_id' => 1]
+            ['customer_id' => $customer->id]
         );
         $res->assertOk();
-        $customerCourse = $course->customers()->wherePivot('customer_id', 1)->first();
+        $customerCourse = $course->customers()->wherePivot('customer_id', $customer->id)->first();
         expect($customerCourse->pivot->remaining_sessions)
             ->toBe($course->course_duration - $course->appointments()->count());
     });
 
     it('can not attend full course', function () {
         $course = Course::factory()->for($this->user, 'user')->create(['is_full' => true]);
+        $customer = Customer::factory()->create();
         $res = $this->postJson(
             route('partner.course.attend', ['course_id' => $course->id]),
-            ['customer_id' => 1]
+            ['customer_id' => $customer->id]
         );
         $res->assertStatus(400);
     });
 
     it('can cancel course attend by customer id', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
+        $customer = Customer::factory()->create();
         $this->postJson(
             route('partner.course.attend', ['course_id' => $course->id]),
-            ['customer_id' => 1]
+            ['customer_id' => $customer->id]
         );
         $res = $this->postJson(
             route('partner.course.cancel', ['course_id' => $course->id]),
-            ['customer_id' => 1]
+            ['customer_id' => $customer->id]
         );
         $res->assertOk();
-        expect($course->customers()->wherePivot('customer_id', 1)->first())->toBeNull();
+        expect($course->customers()->wherePivot('customer_id', $customer->id)->first())->toBeNull();
     });
 
     it('can not cancel course after specific time', function () {
         $course = Course::factory()->for($this->user, 'user')->create();
+        $customer = Customer::factory()->create();
         $this->postJson(
             route('partner.course.attend', ['course_id' => $course->id]),
-            ['customer_id' => 1]
+            ['customer_id' => $customer->id]
         );
-        $customer = $course->customers()->where('customer_id', 1)->first();
-        $customer->pivot->update(['created_at' => now()->subDays(2)]);
+        $customerCourse = $course->customers()->where('customer_id', $customer->id)->first();
+        $customerCourse->pivot->update(['created_at' => now()->subDays(2)]);
         $res = $this->postJson(
             route('partner.course.cancel', ['course_id' => $course->id]),
-            ['customer_id' => 1]
+            ['customer_id' => $customer->id]
         );
         $res->assertStatus(400);
     });

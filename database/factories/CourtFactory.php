@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,9 +20,22 @@ final class CourtFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => 1,
+            'user_id' => $this->userId(),
             'name' => fake()->colorName,
             'description' => fake()->sentence,
         ];
+    }
+
+    /**
+     * Resolve a valid partner user id for the court owner.
+     */
+    private function userId(): int|string
+    {
+        $user = User::query()->orderBy('id')->first();
+        if ($user) {
+            return $user->id;
+        }
+
+        return User::factory()->create()->id;
     }
 }

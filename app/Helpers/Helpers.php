@@ -189,7 +189,7 @@ if (! function_exists('getModel')) {
         $id = $owner_id ?? request('owner_id');
         $type = $owner_type ?? request('owner_type');
         $model = getModelGlobal($type, $id);
-        Truthy((int) $model->user_id !== (int) Auth::id(), 'unauthorized access');
+        Truthy($model->user_id !== Auth::id(), 'unauthorized access');
 
         return $model;
     }

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('days', function (Blueprint $table) {
             $table->id();
-            $table->morphs('belongTo');
+            $table->ulidMorphs('belongTo');
             $table->string('day');
             $table->string('start');
             $table->string('end');

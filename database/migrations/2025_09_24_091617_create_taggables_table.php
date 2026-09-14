@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('taggables', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Tag::class);
-            $table->morphs('taggable');
+            $table->ulidMorphs('taggable');
         });
     }
 
