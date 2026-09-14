@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->id();
-            $table->ulidMorphs('belongTo');
+            // $table->ulidMorphs('belongTo');
+            $table->string('belongTo_type', 100);
+            $table->string('belongTo_id', 26);
             $table->string('url');
             $table->string('type')->nullable();
-            $table->string('name')->nullable();
+            $table->string('name', 50)->nullable();
             $table->timestamps();
 
             $table->index(['belongTo_type', 'belongTo_id', 'name'], 'media_belongto_name_index');
