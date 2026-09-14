@@ -12,7 +12,7 @@ use Kreait\Firebase\Messaging\Notification as FcmNotification;
 
 trait FCMHandler
 {
-    private function sendFCM(string $firebase_token, string $title, string $body, array $data): mixed
+    private function sendFCM(?string $firebase_token, string $title, string $body, array $data): mixed
     {
         Truthy($firebase_token === null, 'firebase token is missing');
 
