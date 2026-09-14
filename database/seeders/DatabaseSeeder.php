@@ -7,7 +7,6 @@ namespace Database\Seeders;
 use App\Enums\AdminsRoles;
 use App\Enums\UsersTypes;
 use App\Models\Admin;
-use App\Models\Customer;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,7 +22,6 @@ final class DatabaseSeeder extends Seeder
         $this->createCategories();
         $this->createTags();
         $this->createUsers();
-        // $this->createCustomers();
     }
 
     public function createSettings()
@@ -69,26 +67,23 @@ final class DatabaseSeeder extends Seeder
 
     private function createUsers()
     {
-        User::factory()->create([
-            'name' => 'fadi partner',
-            'email' => 'fadi.alfrejat@gmail.com',
-            'country_code' => '+963',
-            'phone' => '944102050',
-            'account_type' => UsersTypes::stadium->name,
-            'password' => bcrypt('Password123@@'),
+        User::factory()->createMany([
+            [
+                'name' => 'fadi partner',
+                'email' => 'fadi.alfrejat@gmail.com',
+                'country_code' => '+963',
+                'phone' => '944102050',
+                'account_type' => UsersTypes::stadium->name,
+                'password' => bcrypt('Password123@@'),
+            ],
+            [
+                'name' => 'test partner',
+                'email' => 'test@partner.com',
+                'country_code' => '+963',
+                'phone' => '911111111',
+                'account_type' => UsersTypes::stadium->name,
+                'password' => bcrypt('Mm12345@@'),
+            ],
         ]);
-        User::factory()->create([
-            'name' => 'test partner',
-            'email' => 'test@partner.com',
-            'country_code' => '+963',
-            'phone' => '911111111',
-            'account_type' => UsersTypes::stadium->name,
-            'password' => bcrypt('Mm12345@@'),
-        ]);
-    }
-
-    private function createCustomers()
-    {
-        Customer::factory()->create();
     }
 }

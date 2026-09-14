@@ -53,11 +53,10 @@ final class UserFactory extends Factory
 
     public function configure()
     {
-        if (! app()->environment('local', 'testing')) {
-            return;
-        }
-
         return $this->afterCreating(function (User $user) {
+            if (! app()->environment('local', 'testing')) {
+                return;
+            }
 
             if ($user->account_type === UsersTypes::stadium->name) {
                 $court = Court::factory()->for($user, 'user')->create();
