@@ -69,24 +69,21 @@ final class DatabaseSeeder extends Seeder
 
     private function createUsers()
     {
-        // User::factory()->create();
-        User::factory()->createMany([
-            [
-                'name' => 'fadi partner',
-                'email' => 'fadi.alfrejat@gmail.com',
-                'country_code' => '+963',
-                'phone' => '944102050',
-                'account_type' => UsersTypes::stadium->name,
-                'password' => bcrypt('Password123@@'),
-            ],
-            [
-                'name' => 'test partner',
-                'email' => 'test@partner.com',
-                'country_code' => '+963',
-                'phone' => '911111111',
-                'account_type' => UsersTypes::stadium->name,
-                'password' => bcrypt('Mm12345@@'),
-            ],
+        User::factory()->create([
+            'name' => 'fadi partner',
+            'email' => 'fadi.alfrejat@gmail.com',
+            'country_code' => '+963',
+            'phone' => '944102050',
+            'account_type' => UsersTypes::stadium->name,
+            'password' => bcrypt('Password123@@'),
+        ]);
+        User::factory()->create([
+            'name' => 'test partner',
+            'email' => 'test@partner.com',
+            'country_code' => '+963',
+            'phone' => '911111111',
+            'account_type' => UsersTypes::stadium->name,
+            'password' => bcrypt('Mm12345@@'),
         ]);
     }
 
