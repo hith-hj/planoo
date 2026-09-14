@@ -20,9 +20,9 @@ final class DatabaseSeeder extends Seeder
     {
         $this->createSettings();
         $this->createAdmin();
-        $this->createCategories();
-        $this->createTags();
         $this->createUsers();
+        // $this->createCategories();
+        // $this->createTags();
         // $this->createCustomers();
     }
 
