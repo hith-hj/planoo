@@ -31,7 +31,7 @@ final class ActivityFactory extends Factory
             'user_id' => $this->userId(),
             'category_id' => 1,
             'court_id' => 1,
-            'name' => fake()->colorName,
+            'name' => 'activity-'.random_int(1000, 9999),
             'description' => fake()->paragraph(2),
             'price' => random_int(500, 1000),
             'session_duration' => fake()->randomElement([30, 60, 90, 120]),

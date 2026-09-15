@@ -41,7 +41,7 @@ final class EventFactory extends Factory
             'user_id' => $this->userId(),
             'category_id' => 1,
             'court_id' => 1,
-            'name' => fake()->name,
+            'name' => 'event-'.random_int(1000, 9999),
             'description' => fake()->sentence,
             'is_active' => 1,
             'is_full' => 0,

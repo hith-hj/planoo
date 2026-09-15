@@ -21,7 +21,7 @@ final class CourtFactory extends Factory
     {
         return [
             'user_id' => $this->userId(),
-            'name' => fake()->colorName,
+            'name' => 'court-'.random_int(1000, 9999),
             'description' => fake()->sentence,
         ];
     }
