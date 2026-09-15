@@ -33,7 +33,7 @@ final class CustomerAuthServices
             'firebase_token' => $data['firebase_token'],
             'password' => bcrypt($data['password']),
             'status' => AccountStatus::fresh->value,
-            'is_active' => false,
+            'is_active' => (bool) app_setting('new_customer_activation_status', false),
             'is_notifiable' => true,
         ]);
 
