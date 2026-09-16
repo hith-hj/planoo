@@ -69,9 +69,9 @@ final class CustomerAuthServices
             $customer->update(['firebase_token' => $validator->safe()->input('firebase_token')]);
         }
 
-        // if (!$customer->is_active) {
-        //     throw new Exception(__('inactive account,wait until activation'));
-        // }
+        if (! $customer->is_active) {
+            throw new Exception(__('inactive account,wait until activation'));
+        }
 
         return [$customer->toResource(), JWTAuth::fromUser($customer)];
     }

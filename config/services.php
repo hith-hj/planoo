@@ -51,5 +51,5 @@ return [
         'webhook_secret' => env('SYRIATEL_WEBHOOK_SECRET', 'PlanooApp1_webhook_secret'),
     ],
 
-    'conflicts_detection' => env('CONFLICTS_DETECTION', false),
+    'conflicts_detection' => env('CONFLICTS_DETECTION', true),
 ];

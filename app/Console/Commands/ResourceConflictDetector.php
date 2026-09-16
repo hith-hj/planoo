@@ -12,6 +12,7 @@ use App\Models\Course;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 final class ResourceConflictDetector extends Command
@@ -76,7 +77,7 @@ final class ResourceConflictDetector extends Command
     /**
      * Inspects a resource against court schedules.
      */
-    private function checkConflict(object $resource): array
+    private function checkConflict(Model $resource): array
     {
         $days = $resource->days;
         $court = $resource->court;
@@ -173,7 +174,7 @@ final class ResourceConflictDetector extends Command
     /**
      * Outputs findings to command interface terminal.
      */
-    private function outputConflicts(object $resource, array $conflicts): void
+    private function outputConflicts(Model $resource, array $conflicts): void
     {
         $resourceName = $resource->name ?? 'Resource ID: '.$resource->id;
 

@@ -30,8 +30,8 @@ Schedule::command(NotifyEventSession::class)
     ->dailyAt('01:40')
     ->runInBackground();
 Schedule::command(ResourceConflictDetector::class)
-    ->dailyAt('01:50')
+    ->everyThirtyMinutes()
     ->runInBackground();
 Schedule::command('queue:work --stop-when-empty')
-    ->dailyAt('00:01')
+    ->everyTenMinutes()
     ->runInBackground();

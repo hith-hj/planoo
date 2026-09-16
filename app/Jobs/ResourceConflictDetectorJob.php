@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Console\Commands\ResourceConflictDetector;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,7 +25,7 @@ final class ResourceConflictDetectorJob implements ShouldQueue
     {
         // executes command resource:detect-conflict with resource-type resource-id
         if (config('services.conflicts_detection', false) === true) {
-            Artisan::call('resource:detect-conflict', [
+            Artisan::call(ResourceConflictDetector::class, [
                 '--resource-type' => $this->resource_type,
                 '--resource-id' => $this->resource_id,
             ]);

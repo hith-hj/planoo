@@ -66,9 +66,9 @@ final class UserAuthServices
             throw new Exception(__('unverified account'));
         }
 
-        // if (!$user->is_active) {
-        //     throw new Exception(__('inactive account,wait until activation'));
-        // }
+        if (! $user->is_active) {
+            throw new Exception(__('inactive account,wait until activation'));
+        }
 
         if ($user->firebase_token === null) {
             $user->update(['firebase_token' => $validator->safe()->input('firebase_token')]);

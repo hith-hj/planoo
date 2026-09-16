@@ -87,6 +87,10 @@ final class AppointmentController extends Controller
             return Error('appointment just got booked');
         }
         $customer = $customerServices->getCustomer($validator->safe()->all());
+        // Prevent double booking for customers (own appointments + attended events/courses).
+        if (! $this->services->canCreateAppointment($customer, $validator->safe()->all())) {
+            return Error('You have Appointment at this date');
+        }
 
         $appointment = $this->services->create($activity, $validator->safe()->all(), $customer);
 
