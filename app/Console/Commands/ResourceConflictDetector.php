@@ -213,13 +213,32 @@ final class ResourceConflictDetector extends Command
                 ],
             );
         }
+        $name = $resource->name ?? 'resource unknown';
+        $payload = $this->safeFcmPayload($conflicts);
         $user->notify(
             'Schedule error',
-            'You have schedule conflicts',
+            "{$name} schedule conflicts",
             [
                 'type' => NotificationTypes::normal->value,
-                'conflicts' => $conflicts,
+                'conflicts' => $payload,
             ],
         );
+    }
+
+    private function safeFcmPayload(array $payload): string
+    {
+        // 1. Convert the array to a JSON string
+        $jsonString = json_encode($payload);
+
+        // 2. string length in bytes
+        $payloadBytes = mb_strlen($jsonString, '8bit');
+        // 3. the max limit (4 KB = 4096 bytes)
+        $maxBytes = 4096;
+
+        if ($payloadBytes <= $maxBytes) {
+            return mb_substr($jsonString, 0, 200).'...';
+        }
+
+        return $jsonString;
     }
 }
