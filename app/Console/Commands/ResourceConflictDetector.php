@@ -176,7 +176,7 @@ final class ResourceConflictDetector extends Command
      */
     private function outputConflicts(Model $resource, array $conflicts): void
     {
-        $resourceName = $resource->name ?? 'Resource ID: ' . $resource->id;
+        $resourceName = $resource->name ?? 'Resource ID: '.$resource->id;
 
         if (empty($conflicts)) {
             $this->info("No conflicts found for [{$resourceName}]");
@@ -236,7 +236,7 @@ final class ResourceConflictDetector extends Command
         $maxBytes = 4096;
 
         if ($payloadBytes <= $maxBytes) {
-            return mb_substr($jsonString, 0, 200) . '...';
+            return mb_substr($jsonString, 0, 200).'...';
         }
 
         return $jsonString;
