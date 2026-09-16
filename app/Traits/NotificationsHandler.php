@@ -96,14 +96,14 @@ trait NotificationsHandler
         try {
             $res = $this->sendWA($this->phone(), $this->body, $this->data);
             $notification = $this->store(['result' => ['wamid' => $res->json('messages.0.id')]]);
-            $payload = [
-                'id' => $this->id,
-                'wamid' => $res->json('messages.0.id'),
-                'phone' => $this->phone(),
-                'code' => $this->data['code'],
-                'notification_id' => $notification->id,
-            ];
-            Cache::add("wa_msg_{$res->json('messages.0.id')}", $payload, now()->addMinutes(10));
+            // $payload = [
+            //     'id' => $this->id,
+            //     'wamid' => $res->json('messages.0.id'),
+            //     'phone' => $this->phone(),
+            //     'code' => $this->data['code'],
+            //     'notification_id' => $notification->id,
+            // ];
+            // Cache::add("wa_msg_{$res->json('messages.0.id')}", $payload, now()->addMinutes(10));
 
             return true;
         } catch (Exception $e) {
@@ -155,10 +155,10 @@ trait NotificationsHandler
             'title' => $this->title,
             'body' => $this->body,
             'type' => $this->data['type'] ?? NotificationTypes::normal->value,
-            'payload' => json_encode([
+            'payload' => [
                 ...$this->data,
                 ...$extra,
-            ]),
+            ],
             'is_viewed' => false,
         ]);
     }

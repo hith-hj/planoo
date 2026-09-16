@@ -20,7 +20,7 @@ return new class extends Migration
             $table->smallInteger('type');
             $table->string('title');
             $table->string('body');
-            $table->text('payload');
+            $table->json('payload')->nullable();
             $table->timestamps();
 
             $table->index(['belongTo_type', 'belongTo_id'], 'notifications_belongto_index');

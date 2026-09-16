@@ -12,6 +12,8 @@ use Kreait\Firebase\Messaging\Notification as FcmNotification;
 
 trait FCMHandler
 {
+    private array $discardKeys = ['conflicts'];
+
     private function sendFCM(?string $firebase_token, string $title, string $body, array $data): mixed
     {
         Truthy($firebase_token === null, 'firebase token is missing');
@@ -19,6 +21,7 @@ trait FCMHandler
         $factory = (new FcmFactory)->withServiceAccount($this->getFCMCredentials());
         $messaging = $factory->createMessaging();
         $notification = ['title' => $title, 'body' => $body];
+        $data = $this->safeFcmDataArray($data);
         $message = CloudMessage::new()->toToken($firebase_token)
             ->withNotification(FcmNotification::fromArray($notification))
             ->withAndroidConfig($this->getFCMAndroidConfig())
@@ -26,6 +29,36 @@ trait FCMHandler
 
         return $messaging->send($message);
     }
+
+    private function safeFcmDataArray(array $data): array
+    {
+        $newData = [];
+
+        foreach ($data as $key => $value) {
+            if (in_array($key, $this->discardKeys, true)) {
+                continue;
+            }
+
+            $processedValue = is_array($value) ? json_encode($value) : (string) $value;
+            if (mb_strlen($processedValue, '8bit') > 500) {
+                continue;
+            }
+
+            // 4. Look ahead: Create a temporary test with the new item included
+            $test = $newData;
+            $test[$key] = $processedValue;
+
+            // 5. If this new item pushes the total payload over 4000 bytes, STOP and return immediately
+            if (mb_strlen(json_encode($test), '8bit') > 4000) {
+                return $newData;
+            }
+
+            $newData[$key] = $processedValue;
+        }
+
+        return $newData;
+    }
+
 
     private function getFCMCredentials(): string
     {
