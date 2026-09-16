@@ -214,11 +214,7 @@ final class ResourceConflictDetector extends Command
             );
         }
         $name = $resource->name ?? 'resource unknown';
-<<<<<<< HEAD
         $payload = $this->safeFcmPayload($conflicts);
-=======
-        $payload =  $this->safeFcmPayload($conflicts);
->>>>>>> b3978a3aba43b6ee2712ce320de58cad47b653cb
         $user->notify(
             'Schedule error',
             "{$name} schedule conflicts",
@@ -235,21 +231,12 @@ final class ResourceConflictDetector extends Command
         $jsonString = json_encode($payload);
 
         // 2. string length in bytes
-<<<<<<< HEAD
         $payloadBytes = mb_strlen($jsonString, '8bit');
-=======
-        $payloadBytes = strlen($jsonString);
-
->>>>>>> b3978a3aba43b6ee2712ce320de58cad47b653cb
         // 3. the max limit (4 KB = 4096 bytes)
         $maxBytes = 4096;
 
         if ($payloadBytes <= $maxBytes) {
-<<<<<<< HEAD
-            return mb_substr($jsonString, 0, 200).'...';
-=======
             return mb_substr($jsonString, 0, 200) . '...';
->>>>>>> b3978a3aba43b6ee2712ce320de58cad47b653cb
         }
 
         return $jsonString;
