@@ -24,7 +24,10 @@ final class User extends Authenticatable implements JWTSubject, Notifiable
     use NotificationsHandler;
     use VerificationHandler;
 
-    protected $attributes = ['rate' => 0];
+    protected $attributes = [
+        'is_active' => true,
+        'rate' => 0,
+    ];
 
     /**
      * The attributes that are mass assignable.

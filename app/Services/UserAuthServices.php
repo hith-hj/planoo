@@ -33,7 +33,6 @@ final class UserAuthServices
             'description' => $data['description'],
             'password' => bcrypt($data['password']),
             'status' => AccountStatus::fresh->value,
-            'is_active' => false,
             'is_notifiable' => true,
         ]);
 

@@ -161,7 +161,7 @@ final class SetSystemSettings extends Command
             ],
             [
                 'name' => 'new_customer_activation_status',
-                'value' => false,
+                'value' => true,
                 'description' => 'this option set activation status of the new customer. allowed values (0,1)',
             ],
         ];

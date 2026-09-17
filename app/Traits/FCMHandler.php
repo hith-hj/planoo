@@ -59,7 +59,6 @@ trait FCMHandler
         return $newData;
     }
 
-
     private function getFCMCredentials(): string
     {
         Truthy(! file_exists(storage_path('app/fcm.json')), 'Missing firebase config file');
