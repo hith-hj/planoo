@@ -23,7 +23,7 @@ final class NotificationResource extends JsonResource
             'body' => $this->body,
             'type' => NotificationTypes::from($this->type ?? 1)->name,
             'is_viewed' => $this->is_viewed,
-            'payload' => json_decode($this->payload),
+            'payload' => $this->payload,
             'created_at' => $this->created_at,
         ];
     }
