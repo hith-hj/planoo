@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 trait MediaHandler
@@ -45,7 +46,7 @@ trait MediaHandler
         string $type,
         ?string $name,
         UploadedFile $file,
-    ): Media {
+    ): ?Media {
         $type = $this->getFileType($file);
         $fileName = time().'_'.$file->hashName();
         $path = $file->storeAs(
@@ -57,11 +58,18 @@ trait MediaHandler
             defer(fn () => Artisan::call('app:sync-files-to-public'));
         }
 
-        return $this->medias()->create([
-            'url' => $path,
-            'type' => $type,
-            'name' => $this->getFileName($file, $name),
-        ]);
+        try {
+            return $this->medias()->create([
+                'url' => $path,
+                'type' => $type,
+                'name' => $this->getFileName($file, $name),
+            ]);
+        } catch (Exception $e) {
+            Log::error("Media Upload Faild: {$e->getMessage()}");
+            Truthy(true, 'Media Upload Faild');
+
+            return null;
+        }
     }
 
     private function getFileType(UploadedFile $file): string
@@ -73,11 +81,15 @@ trait MediaHandler
 
     private function getFileName(UploadedFile $file, ?string $name = null): string
     {
+        $maxLength = 30; // Define your fixed length here
+
         if ($name !== null) {
-            return $name;
+            $baseName = $name;
+        } else {
+            $baseName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         }
 
-        return explode('.', $file->getClientOriginalName())[0];
+        return mb_substr($baseName, 0, $maxLength, 'UTF-8');
     }
 
     private function getAllowedMime(UploadedFile $file): string
