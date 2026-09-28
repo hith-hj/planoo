@@ -47,7 +47,9 @@ final class UserResource extends Resource
 
     public static function canDelete(Model $record): bool
     {
-        return false;
+        $role = Auth::user()->role;
+
+        return $role === AdminsRoles::super->value;
     }
 
     public static function canEdit(Model $record): bool

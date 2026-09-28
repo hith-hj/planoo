@@ -43,21 +43,18 @@ final class CourseObserver
      */
     public function deleted(Course $course): void
     {
-        if (app()->environment('testing')) {
-            foreach ($course->customers as $customer) {
-                $customer->notify(
-                    'Course removal',
-                    "this course {$course->name} is removed.",
-                    ['type' => NotificationTypes::course->value, 'course' => $course->id],
-                );
-            }
-
-            $course->days()->delete();
-            $course->location()->delete();
-            $course->appointments()->delete();
-            $course->tags()->detach();
-            $course->customers()->detach();
+        foreach ($course->customers as $customer) {
+            $customer->notify(
+                'Event removal',
+                "this course {$course->name} is removed.",
+                ['type' => NotificationTypes::course->value],
+            );
         }
+        $course->customers()->detach();
+        $course->tags()->detach();
+        $course->days()->delete();
+        $course->location()->delete();
+        $course->appointments()->delete();
     }
 
     /**

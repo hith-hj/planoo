@@ -41,21 +41,18 @@ final class EventObserver
      */
     public function deleted(Event $event): void
     {
-        if (app()->environment('testing')) {
-            foreach ($event->customers as $customer) {
-                $customer->notify(
-                    'Event removal',
-                    "this event {$event->name} is removed.",
-                    ['type' => NotificationTypes::event->value, 'event' => $event->id],
-                );
-            }
-
-            $event->days()->delete();
-            $event->location()->delete();
-            $event->appointments()->delete();
-            $event->tags()->detach();
-            $event->customers()->detach();
+        foreach ($event->customers as $customer) {
+            $customer->notify(
+                'Event removal',
+                "this event {$event->name} is removed.",
+                ['type' => NotificationTypes::event->value],
+            );
         }
+        $event->customers()->detach();
+        $event->tags()->detach();
+        $event->days()->delete();
+        $event->location()->delete();
+        $event->appointments()->delete();
     }
 
     /**

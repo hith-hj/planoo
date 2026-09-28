@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Interfaces\Notifiable;
+use App\Observers\UserObserver;
 use App\Traits\CodeHandler;
 use App\Traits\MediaHandler;
 use App\Traits\NotificationsHandler;
 use App\Traits\VerificationHandler;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
+#[ObservedBy(UserObserver::class)]
 final class User extends Authenticatable implements JWTSubject, Notifiable
 {
     use CodeHandler;

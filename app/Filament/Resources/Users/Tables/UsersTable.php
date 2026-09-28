@@ -6,7 +6,7 @@ namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -30,13 +30,16 @@ final class UsersTable
                     ->searchable(),
                 TextColumn::make('country_code')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('rate')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 IconColumn::make('is_active')
                     ->boolean(),
                 TextColumn::make('verified_at')
@@ -52,16 +55,17 @@ final class UsersTable
             ])
             ->recordActions([
                 ViewAction::make()->label(''),
-                Action::make('toggle')
+                DeleteAction::make()
+                    ->label('')
                     ->requiresConfirmation()
-                    ->action(function (Model $record) {
-                        $record->update(['is_active' => ! $record->is_active]);
-                    }),
+                    ->modalDescription('This is a super dangerous action, it is going to delete the user and all his related resources'),
+                Action::make('activation')
+                    ->requiresConfirmation()
+                    ->label(fn (Model $record) => $record->is_active ? 'deactivate' : 'activate')
+                    ->action(fn (Model $record) => $record->update(['is_active' => ! $record->is_active])),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    // DeleteBulkAction::make(),
-                ]),
+                BulkActionGroup::make([]),
             ]);
     }
 }
