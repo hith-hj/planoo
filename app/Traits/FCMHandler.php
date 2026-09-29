@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
+use Exception;
+use Illuminate\Support\Facades\Log;
+use Kreait\Firebase\Exception\Messaging\InvalidArgument;
+use Kreait\Firebase\Exception\Messaging\NotFound;
 use Kreait\Firebase\Factory as FcmFactory;
 use Kreait\Firebase\Messaging\AndroidConfig;
-use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\CloudMessage; // Token not registered / expired
 use Kreait\Firebase\Messaging\MessageData;
 use Kreait\Firebase\Messaging\Notification as FcmNotification;
 
@@ -20,14 +24,41 @@ trait FCMHandler
 
         $factory = (new FcmFactory)->withServiceAccount($this->getFCMCredentials());
         $messaging = $factory->createMessaging();
+
         $notification = ['title' => $title, 'body' => $body];
         $data = $this->safeFcmDataArray($data);
+
         $message = CloudMessage::new()->toToken($firebase_token)
             ->withNotification(FcmNotification::fromArray($notification))
             ->withAndroidConfig($this->getFCMAndroidConfig())
             ->withData(MessageData::fromArray($data));
 
-        return $messaging->send($message);
+        try {
+            return $messaging->send($message);
+        } catch (NotFound $e) {
+            $this->handleInvalidToken($firebase_token, 'unregistered');
+
+            return null;
+        } catch (InvalidArgument $e) {
+            $this->handleInvalidToken($firebase_token, 'malformed');
+
+            return null;
+        } catch (Exception $e) {
+            Log::error('FCM Core Error: '.$e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Custom hook to clean up bad tokens from your system.
+     */
+    private function handleInvalidToken(string $token, string $reason): void
+    {
+        // 1. Log it for clear system tracking
+        Log::warning("FCM token discarded. Reason: {$reason}. Token: {$token}");
+
+        // 2. Clear from database
+        $this->update(['fcm_token' => null]);
     }
 
     private function safeFcmDataArray(array $data): array
@@ -44,11 +75,9 @@ trait FCMHandler
                 continue;
             }
 
-            // 4. Look ahead: Create a temporary test with the new item included
             $test = $newData;
             $test[$key] = $processedValue;
 
-            // 5. If this new item pushes the total payload over 4000 bytes, STOP and return immediately
             if (mb_strlen(json_encode($test), '8bit') > 4000) {
                 return $newData;
             }
