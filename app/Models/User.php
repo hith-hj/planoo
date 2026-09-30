@@ -28,7 +28,7 @@ final class User extends Authenticatable implements JWTSubject, Notifiable
     use VerificationHandler;
 
     protected $attributes = [
-        'is_active' => true,
+        'is_active' => false,
         'rate' => 0,
     ];
 
