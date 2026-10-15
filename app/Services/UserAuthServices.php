@@ -66,7 +66,7 @@ final class UserAuthServices
         }
 
         if (! $user->is_active) {
-            throw new Exception(__('inactive account,wait until activation'));
+            throw new Exception(__('Your request will be processed within 24 hours'));
         }
 
         if ($user->firebase_token === null) {

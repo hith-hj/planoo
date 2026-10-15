@@ -70,7 +70,7 @@ final class CustomerAuthServices
         }
 
         if (! $customer->is_active) {
-            throw new Exception(__('inactive account,wait until activation'));
+            throw new Exception(__('Your request will be processed within 24 hours'));
         }
 
         return [$customer->toResource(), JWTAuth::fromUser($customer)];
