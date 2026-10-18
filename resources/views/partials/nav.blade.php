@@ -1,119 +1,22 @@
-<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-    <div class="h-18 flex items-center justify-between md:justify-around">
-
-        <!-- Logo -->
-        <a href="#" class="flex flex-col items-start group">
-            <span class="text-4xl font-bold tracking-tight text-purple group-hover:opacity-90">
-                Planoo<span class="text-teal">.</span>
-            </span>
-            <span class="text-md uppercase text-gray-500 font-semibold tracking-widest hidden md:block">
-                {{ __('get better') }}
-            </span>
-        </a>
-
-        <!-- Desktop Nav -->
-        <nav class="hidden md:flex items-center gap-8 font-bold text-purple ltr:text-xl">
-            <a href="/#home" data-section="home" class="hover:text-teal py-2">{{ __('Home') }}</a>
-            <a href="/#sections" data-section="sections" class="hover:text-teal py-2">{{ __('Sections') }}</a>
-            <a href="/#apps" data-section="apps" class="hover:text-teal py-2">{{ __('Apps') }}</a>
-            <a href="/#about" data-section="about" class="hover:text-teal py-2">{{ __('About us') }}</a>
-            <a href="/#contact" data-section="contact" class="hover:text-teal py-2">{{ __('Contact') }}</a>
-            <div class="relative py-2">
-                <!-- Dropdown Button -->
-                <button type="button"
-                        class="inline-flex justify-center w-full hover:text-teal focus:outline-none"
-                        onclick="document.getElementById('langMenu').classList.toggle('hidden')">
-                    <i class="bi bi-globe text-xl"></i>
-                </button>
-
-                <!-- Dropdown Menu -->
-                <div id="langMenu"
-                     class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 text-center">
-                    <div class="py-1">
-                        <a href="{{ route('lang',['locale'=>'ar']) }}"
-                           class="block px-4 py-2 hover:text-teal {{ app()->getLocale() == 'ar' ? 'text-teal' : '' }}">
-                            {{ __('Arabic') }}
-                        </a>
-                        <a href="{{ route('lang',['locale'=>'en']) }}"
-                           class="block px-4 py-2 hover:text-teal {{ app()->getLocale() == 'en' ? 'text-teal': '' }}">
-                            {{ __('English') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
+<header class="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur-lg dark:bg-[#1c1826]/95" data-site-header>
+    <div class="mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px] flex min-h-[76px] items-center justify-between gap-4 sm:min-h-[88px] sm:gap-6">
+        <x-brand :tagline="true" />
+        <nav class="hidden items-center gap-[18px] min-[901px]:flex min-[1051px]:gap-[30px] [&_a]:py-3 [&_a]:text-[.85rem] [&_a]:font-semibold [&_a]:text-muted [&_a:hover]:text-accent [&_a[aria-current]]:text-accent" data-desktop-nav aria-label="{{ __('Main navigation') }}">
+            @foreach(['home' => 'Home', 'sections' => 'Explore', 'apps' => 'Apps', 'about' => 'About us'] as $section => $label)
+                <a href="{{ route('home') }}#{{ $section }}" data-section="{{ $section }}">{{ __($label) }}</a>
+            @endforeach
         </nav>
-
-        <!-- Right Actions -->
-        <div class="flex items-center gap-4">
-            <!-- Login -->
-            <a href="#apps" class="hidden sm:block font-bold text-purple hover:underline">
-                {{ __('Become Partner') }}
-            </a>
-
-            <!-- Join Button -->
-            {{-- <a href="#apps" class="hidden sm:inline-block bg-teal hover:bg-tealhover text-white font-bold py-3 px-6 rounded-full transition-colors">
-                {{ __('Download App') }}
-            </a> --}}
-
-            <!-- Mobile Menu Icon -->
-            <button id="mobile-menu-btn" class="lg:hidden text-purple p-2">
-                <i class="bi bi-list text-3xl"></i>
-            </button>
+        <div class="flex items-center gap-[18px] sm:gap-[22px] max-[380px]:gap-2.5">
+            
+            <a class="flex items-center gap-2 text-[.8rem]" href="{{ route('lang', ['locale' => app()->getLocale() === 'ar' ? 'en' : 'ar']) }}" lang="{{ app()->getLocale() === 'ar' ? 'en' : 'ar' }}"><i class="bi bi-globe2" aria-hidden="true"></i> {{ app()->getLocale() === 'ar' ? 'English' : 'العربية' }}</a>
+            <button id="theme-toggle" class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-line bg-transparent text-[1.1rem] text-accent transition-all duration-200 hover:bg-purple/10 active:scale-[.97]" type="button" aria-label="{{ __('Dark mode') }}" aria-pressed="false" title="{{ __('Dark mode') }}"><i class="bi bi-moon" aria-hidden="true"></i></button>
+            <div class="hidden min-[1051px]:block"><x-button href="{{ route('home') }}#partners">{{ __('Become Partner') }} <i class="bi bi-arrow-up-right" aria-hidden="true"></i></x-button></div>
+            <button id="mobile-menu-btn" class="block cursor-pointer border-0 bg-transparent text-[1.8rem] text-accent min-[901px]:hidden" type="button" aria-label="{{ __('Open menu') }}" aria-expanded="false" aria-controls="mobile-menu"><i class="bi bi-list" aria-hidden="true"></i></button>
         </div>
     </div>
-
-    <!-- Mobile Menu -->
-    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 hidden z-40"></div>
-    <div id="mobile-menu"
-         class="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300">
-        <div class="p-4 flex justify-end">
-            <button id="close-menu-btn" class="text-gray-500">
-                <i class="bi bi-x text-4xl"></i>
-            </button>
-        </div>
-        <div class="px-6 py-4 space-y-4 font-bold text-purple">
-            <a href="#home" data-section="home" class="block py-2 border-b hover:text-teal py-2">
-                {{ __('Home') }}
-            </a>
-            <a href="#sections" data-section="sections" class="block py-2 border-b hover:text-teal py-2">
-                {{ __('Sections') }}
-            </a>
-            <a href="#apps" data-section="apps" class="block py-2 border-b hover:text-teal py-2">
-                {{ __('Apps') }}
-            </a>
-            <a href="#about" data-section="about" class="block py-2 border-b hover:text-teal py-2">
-                {{ __('About us') }}
-            </a>
-            <a href="#contact" data-section="contact" class="block py-2 border-b hover:text-teal py-2">
-                {{ __('Contact') }}
-            </a>
-
-            <a href="#" class="block py-2 border-b hover:text-teal py-2">{{ __('Log in') }}</a>
-            <div class="relative py-2">
-                <!-- Dropdown Button -->
-                <button type="button"
-                        class="block hover:text-teal focus:outline-none"
-                        onclick="document.getElementById('mobileLangMenu').classList.toggle('hidden')">
-                    <i class="bi bi-globe text-xl"></i>
-                </button>
-
-                <!-- Dropdown Menu -->
-                <div id="mobileLangMenu"
-                     class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 text-center">
-                    <div class="py-1">
-                        <a href="{{ route('lang',['locale'=>'ar']) }}"
-                           class="block px-4 py-2 hover:text-teal {{ app()->getLocale() == 'ar' ? 'text-teal' : '' }}">
-                            {{ __('Arabic') }}
-                        </a>
-                        <a href="{{ route('lang',['locale'=>'en']) }}"
-                           class="block px-4 py-2 hover:text-teal {{ app()->getLocale() == 'en' ? 'text-teal': '' }}">
-                            {{ __('English') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <a href="#" class="block py-3 mt-4 text-center bg-teal text-white rounded">{{ __('Join now') }}</a>
-
-        </div>
-    </div>
+    <nav id="mobile-menu" class="pt-3 pb-6 min-[901px]:hidden [&_a]:block [&_a]:border-t [&_a]:border-line [&_a]:py-3 [&:not([hidden])]:animate-[menu-enter_.2s_ease-out] mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px]" aria-label="{{ __('Mobile navigation') }}" hidden>
+        @foreach(['home' => 'Home', 'sections' => 'Explore', 'apps' => 'Apps', 'about' => 'About us', 'partners' => 'Become Partner', 'contact' => 'Contact'] as $section => $label)
+            <a href="{{ route('home') }}#{{ $section }}">{{ __($label) }}</a>
+        @endforeach
+    </nav>
 </header>

@@ -1,108 +1,47 @@
-<footer id="contact" class="h-fit md:h-full bg-blend-multiply bg-purple text-white"
-style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
-    <div class="flex justify-center items-start py-10">
-        <h1 class="text-6xl md:text-9xl font-extrabold text-white uppercase
-        [text-shadow:_0_10px_15px_rgba(0,0,0,0.3)]">
-            {{ __('Questions?') }}
-        </h1>
+<footer id="contact" class="relative isolate overflow-hidden border-t border-line bg-soft pt-16 text-ink">
+    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        <img src="{{ asset('images/hero-bg.avif') }}" alt="" loading="lazy" class="h-full w-full object-cover object-center">
+        <div class="absolute inset-0 bg-soft/85 dark:bg-soft/90"></div>
     </div>
-    <div class="container mx-auto px-2 py-12">
-        <div class="w-full flex flex-col md:flex-row gap-2 justify-between bg-white/40 text-white p-10 my-5">
-            <div class="flex flex-col">
-                <h1 class="text-2xl font-semibold capitalize shadow-2xl">
-                    {{ __('Any question?') }}
-                </h1>
-                <p>{{ __('If you have any question don’t hesitate, you can ask anything you want.') }}</p>
-            </div>
-            <div class="flex justify-end">
-                <button class="w-full md:w-auto bg-yellow/80 text-purple hover:bg-yellow font-medium py-4 px-8 rounded-lg transition duration-300 flex items-center justify-center space-x-2 shadow-md">
-                    <span>{{ __('Contact') }}</span>
-                    <i class="bi bi-arrow-right px-2 rtl:rotate-180"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-4 py-8 my-5">
-            <div class="col-span-3"> 
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="group flex flex-col items-start justify-center">
-                        <span class="text-4xl font-bold tracking-tight text-teal group-hover:opacity-90">
-                            Planoo<span class="text-teal">.</span>
-                        </span>
-                        <span class="uppercase text-gray-500 font-semibold tracking-widest hidden sm:block">
-                            {{ __('get better') }}
-                        </span>
-                    </div>
-                </div>
-                <p class="text-gray-100 text-sm max-w-sm mb-6 leading-relaxed">
-                    {{ __('PLANOO is a smart platform designed to simplify how you discover, book, and manage services in one place. Whether you are looking for activities, courts, sport courses, or experiences, PLANOO makes it easy to find what you need.') }}
-                </p>
-            </div>
-
-            <div class="col-span-1"> 
-                <h4 class="text-lg font-bold text-white mb-6">{{ __('Company') }}</h4>
-                <ul class="space-y-3 text-gray-100 text-sm">
-                    <li><a href="#" class="hover:text-gold transition">{{ __('About') }}</a></li>
-                    <li><a href="#" class="hover:text-gold transition">{{ __('Locations map') }}</a></li>
-                    <li><a href="#" class="hover:text-gold transition">{{ __('FAQ') }}</a></li>
-                    <li><a href="#" class="hover:text-gold transition">{{ __('Contact us') }}</a></li>
-                </ul>
-            </div>
-
-            <div class="col-span-1"> 
-                <h4 class="text-lg font-bold text-white mb-6">{{ __('Services') }}</h4>
-                <ul class="space-y-3 text-gray-100 text-sm">
-                    <li><a href="#" class="hover:text-gold transition">{{ __('Login') }}</a></li>
-                    <li><a href="#" class="hover:text-gold transition">{{ __('My account') }}</a></li>
-                    <li><a href="{{route('terms')}}" class="hover:text-gold transition">{{ __('Terms & Condition') }}</a></li>
-                    <li><a href="{{route('privacy')}}" class="hover:text-gold transition">{{ __('Privacy Policy') }}</a></li>
-                </ul>
-            </div>
-
-            <div class="col-span-1"> 
-                <h4 class="text-lg font-bold text-white mb-6">{{ __('Customers core') }}</h4>
-                <ul class="space-y-3 text-gray-100 text-sm">
-                    <li><a href="#" class="hover:text-gold transition">{{ __('Blog') }}</a></li>
-                    <li><a href="#" class="hover:text-gold transition">{{ __('All products') }}</a></li>
-                    <li><a href="#" class="hover:text-gold transition">{{ __('Offers') }}</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="flex flex-col md:flex-row gap-2 justify-between items-center pb-1">
-            <!-- Left Section -->
-            <div class="flex flex-1 justify-between text-white">
-                <a href="#" class="flex items-end hover:text-gold transition">
-                    <i class="bi bi-geo-alt px-2 text-3xl"></i>
-                    <span>{{ __('New York') }}</span>
-                </a>
-                <a href="tel:+123456789" class="flex items-end hover:text-gold transition">
-                    <i class="bi bi-telephone px-2 text-3xl"></i>
-                    <span>{{ __('Phone') }}</span>
-                </a>
-                <a href="mailto:info@darion.com" class="flex items-end hover:text-gold transition">
-                    <i class="bi bi-envelope px-2 text-3xl"></i>
-                    <span>{{ __('Email') }}</span>
-                </a>
-            </div>
-
-            <div class="flex flex-1"></div>
-
-            <!-- Right Section -->
-            <div class="flex flex-1 gap-3 justify-end">
-                <h1 class="text-xl font-semibold">{{ __('Follow us') }}</h1>
-                <div class="flex gap-4">
-                    <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full text-black bg-white hover:bg-gold transition">
-                        <i class="bi bi-instagram"></i>
-                    </a>
-                    <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full text-black bg-white hover:bg-gold transition">
-                        <i class="bi bi-facebook"></i>
-                    </a>
-                    <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full text-black bg-white hover:bg-gold transition">
-                        <i class="bi bi-twitter-x"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px]">
+<div class="flex flex-col items-start justify-between gap-8 border-b border-line pb-12 sm:flex-row sm:items-center [&_h2]:text-[2.6rem] [&_p]:mt-3.5 [&_p]:max-w-[500px] [&_p]:text-[.9rem] transition-[opacity,transform] duration-500 data-[reveal=pending]:translate-y-[18px] data-[reveal=pending]:opacity-0 focus-within:translate-y-0 focus-within:opacity-100" data-reveal>
+<div>
+<span class="mb-[18px] block text-[.69rem] font-bold tracking-[.16em] text-teal rtl:tracking-normal">{{ __('LET’S TALK') }}</span>
+<h2>{{ __('Any question?') }}</h2>
+<p>{{ __('If you have any question don’t hesitate, you can ask anything you want.') }}</p>
+</div>
+<x-button href="mailto:info@planoo.net">{{ __('Contact us') }} <i class="bi bi-arrow-up-right" aria-hidden="true">
+</i>
+</x-button>
+</div>
+<div class="grid grid-cols-2 gap-x-5 gap-y-8 py-12 sm:grid-cols-[2fr_1fr_1fr] sm:gap-8 min-[901px]:gap-[70px] [&>div:first-child]:col-span-2 sm:[&>div:first-child]:col-span-1 [&_p]:mt-5 [&_p]:max-w-[330px] [&_p]:text-[.85rem] [&_h3]:mb-[18px] [&_h3]:text-[.85rem] [&>div>a:not([data-brand])]:block [&>div>a:not([data-brand])]:py-[5px] [&>div>a:not([data-brand])]:text-[.8rem] [&>div>a:not([data-brand])]:text-muted [&>div>a:not([data-brand]):hover]:text-accent">
+<div>
+<x-brand />
+<p>{{ __('Discover, book, and make time for the things you love. Your next activity starts here.') }}</p>
+</div>
+<div>
+<h3>{{ __('Discover') }}</h3>
+<a href="{{ route('home') }}#sections">{{ __('Activities') }}</a>
+<a href="{{ route('home') }}#kids">{{ __('Activities For Kids') }}</a>
+<a href="{{ route('home') }}#apps">{{ __('Apps') }}</a>
+</div>
+<div>
+<h3>{{ __('Company') }}</h3>
+<a href="{{ route('about') }}">{{ __('About us') }}</a>
+<a href="{{ route('home') }}#partners">{{ __('Become Partner') }}</a>
+<a href="mailto:info@planoo.net">info@planoo.net</a>
+</div>
+</div>
+<div class="flex flex-wrap justify-between gap-5 border-t border-line py-[22px] text-[.7rem] text-muted [&>div]:flex [&>div]:gap-6 [&_a:hover]:text-accent">
+<span>© {{ date('Y') }} Planoo. {{ __('All rights reserved.') }}</span>
+<div>
+<a href="{{ route('privacy') }}">{{ __('Privacy Policy') }}</a>
+<a href="{{ route('terms') }}">{{ __('Terms & conditions') }}</a>
+</div>
+<a href="#main-content">{{ __('Back to top') }} ↑</a>
+</div>
+</div>
 </footer>
+
+
+

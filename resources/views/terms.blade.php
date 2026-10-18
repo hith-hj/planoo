@@ -1,26 +1,14 @@
 @extends('layouts.main')
+@section('title', __('Terms & conditions'))
 @section('content')
-    {{-- hero --}}
-    <section id="home" class="">
-        <div class="relative w-full h-screen bg-blend-overlay bg-purple flex flex-col justify-center items-center"
-        style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
-            <!-- Hero Text -->
-            <h1 class="text-white text-4xl md:text-6xl font-bold mb-8 text-center drop-shadow-md">
-                {{ __('Terms & conditions') }}
-            </h1>
-            <p class="text-white text-xl md:text-3xl mb-8 text-center drop-shadow-md w-full md:w-1/2">
-                {{ __('Here we clearify what can and can not be done on our platform') }}
-            </p>
-
-        </div>
-    </section>
+<section class="bg-[#f3f0f9] py-[52px] text-center sm:py-[76px] dark:bg-[#251e35] [&_h1]:text-[clamp(2.5rem,5vw,4rem)] [&_h1]:text-accent [&_p]:mx-auto [&_p]:mt-[22px] [&_p]:max-w-[650px]"><div class="mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px]"><span class="mb-[18px] block text-[.69rem] font-bold tracking-[.16em] text-teal rtl:tracking-normal">PLANOO</span><h1>{{ __('Terms & conditions') }}</h1><nav class="mt-[26px] flex justify-center gap-3 [&_a]:rounded-3xl [&_a]:border [&_a]:border-line [&_a]:px-5 [&_a]:py-2 [&_a]:text-[.85rem] [&_a]:text-accent" aria-label="{{ __('Document languages') }}"><a href="#document-en" lang="en">English</a><a href="#document-ar" lang="ar">العربية</a></nav></div></section>
 
 
 
- 	<div class="max-w-7xl mx-auto px-6 py-12">
+	<div class="mx-auto my-7 w-[calc(100%-40px)] max-w-[800px] rounded-2xl border border-line p-6 sm:my-12 sm:p-9 [&_h2]:text-[1.3rem] [&_h2]:tracking-[-.02em] [&_h2]:text-accent [&_p]:text-muted [&_li]:text-muted [&_p]:leading-[1.9] [&_li]:leading-[1.9] [&_ul]:ps-6" id="document-en" lang="en" dir="ltr">
 	    <!-- Introduction -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">1. Introduction</h2>
 	      <p class="leading-relaxed">
 	        Welcome to <span class="font-semibold">Planoo</span>. These Terms of Use govern your access to and use of our sports and fitness platform, including mobile applications, websites, and related services. By registering or using our platform, you agree to comply with these Terms.
 	      </p>
@@ -28,7 +16,7 @@
 
 	    <!-- Eligibility -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Eligibility</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">2. Eligibility</h2>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>Users must be at least 16 years old (or the minimum legal age in their jurisdiction).</li>
 	        <li>By using the platform, you confirm that you meet eligibility requirements.</li>
@@ -37,7 +25,7 @@
 
 	    <!-- Account Registration -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Account Registration</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">3. Account Registration</h2>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>You must provide accurate and complete information during registration.</li>
 	        <li>You are responsible for maintaining the confidentiality of your login credentials.</li>
@@ -47,7 +35,7 @@
 
 	    <!-- Acceptable Use -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Acceptable Use</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">4. Acceptable Use</h2>
 	      <p class="mb-4">You agree not to:</p>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>Post offensive, discriminatory, or harmful content.</li>
@@ -59,7 +47,7 @@
 
 	    <!-- Content & Intellectual Property -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Content & Intellectual Property</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">5. Content & Intellectual Property</h2>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>All content, logos, and trademarks on the platform are owned by Planoo or its licensors.</li>
 	        <li>You may not copy, distribute, or exploit platform content without prior written consent.</li>
@@ -69,7 +57,7 @@
 
 	    <!-- Services -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Services</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">6. Services</h2>
 	      <p class="leading-relaxed">
 	        The platform may provide training programs, live streams, sports event updates, community forums, and social features. Services may change or be discontinued at any time without prior notice.
 	      </p>
@@ -77,7 +65,7 @@
 
 	    <!-- Payments -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Payments & Subscriptions</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">7. Payments & Subscriptions</h2>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>Certain features may require paid subscriptions.</li>
 	        <li>All payments are non-refundable unless required by law.</li>
@@ -87,7 +75,7 @@
 
 	    <!-- Privacy -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Privacy</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">8. Privacy</h2>
 	      <p class="leading-relaxed">
 	        Your personal data will be handled according to our Privacy Policy. We prioritize user safety and data protection.
 	      </p>
@@ -95,7 +83,7 @@
 
 	    <!-- Limitation of Liability -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Limitation of Liability</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">9. Limitation of Liability</h2>
 	      <p class="leading-relaxed">
 	        The platform is provided “as is” without warranties. Planoo is not liable for injuries, losses, or damages resulting from sports activities or reliance on platform content.
 	      </p>
@@ -103,7 +91,7 @@
 
 	    <!-- Termination -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Termination</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">10. Termination</h2>
 	      <p class="leading-relaxed">
 	        We reserve the right to suspend or terminate accounts that violate these Terms. Users may terminate their account at any time.
 	      </p>
@@ -111,7 +99,7 @@
 
 	    <!-- Governing Law -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">11. Governing Law</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">11. Governing Law</h2>
 	      <p class="leading-relaxed">
 	        These Terms are governed by the laws of [Your Jurisdiction]. Any disputes will be resolved in the courts of [Your Jurisdiction].
 	      </p>
@@ -119,16 +107,16 @@
 
 	    <!-- Changes -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">12. Changes to Terms</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">12. Changes to Terms</h2>
 	      <p class="leading-relaxed">
 	        We may update these Terms periodically. Continued use of the platform after changes constitutes acceptance of the new Terms.
 	      </p>
 	    </section>
 	</div>
 
-	<div class="max-w-7xl mx-auto px-6 py-12" dir="rtl">
+	<div class="mx-auto my-7 w-[calc(100%-40px)] max-w-[800px] rounded-2xl border border-line p-6 sm:my-12 sm:p-9 [&_h2]:text-[1.3rem] [&_h2]:tracking-[-.02em] [&_h2]:text-accent [&_p]:text-muted [&_li]:text-muted [&_p]:leading-[1.9] [&_li]:leading-[1.9] [&_ul]:ps-6" id="document-ar" lang="ar" dir="rtl">
  		<section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. مقدمة</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">1. مقدمة</h2>
 	      <p class="leading-relaxed">
 	        مرحباً بكم في <span class="font-semibold">Planoo</span>. تحكم شروط الاستخدام هذه وصولك إلى منصتنا الرياضية واستخدامها، بما في ذلك تطبيقات الهاتف المحمول والمواقع الإلكترونية والخدمات ذات الصلة. من خلال التسجيل أو استخدام منصتنا، فإنك توافق على الامتثال لهذه الشروط.
 	      </p>
@@ -136,7 +124,7 @@
 
 	    <!-- Eligibility -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. الأهلية</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">2. الأهلية</h2>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>يجب أن لا يقل عمر المستخدمين عن 16 عاماً (أو الحد الأدنى للسن القانوني في ولايتهم القضائية).</li>
 	        <li>باستخدام المنصة، فإنك تؤكد استيفاءك لمتطلبات الأهلية.</li>
@@ -145,7 +133,7 @@
 
 	    <!-- Account Registration -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. تسجيل الحساب</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">3. تسجيل الحساب</h2>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>يجب تقديم معلومات دقيقة وكاملة أثناء عملية التسجيل.</li>
 	        <li>أنت مسؤول عن الحفاظ على سرية بيانات اعتماد تسجيل الدخول الخاصة بك.</li>
@@ -155,7 +143,7 @@
 
 	    <!-- Acceptable Use -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. الاستخدام المقبول</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">4. الاستخدام المقبول</h2>
 	      <p class="mb-4">أنت توافق على عدم القيام بما يلي:</p>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>نشر محتوى مسيء أو تمييزي أو ضار.</li>
@@ -167,7 +155,7 @@
 
 	    <!-- Content & Intellectual Property -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. المحتوى والملكية الفكرية</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">5. المحتوى والملكية الفكرية</h2>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>جميع المحتويات والشعارات والعلامات التجارية الموجودة على المنصة مملوكة لشركة Planoo أو مرخصيها.</li>
 	        <li>لا يجوز لك نسخ محتوى المنصة أو توزيعه أو استغلاله دون موافقة خطية مسبقة.</li>
@@ -177,7 +165,7 @@
 
 	    <!-- Services -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. الخدمات</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">6. الخدمات</h2>
 	      <p class="leading-relaxed">
 	        قد توفر المنصة برامج تدريبية، وبثاً مباشراً، وتحديثات للأحداث الرياضية، ومنتديات مجتمعية، وميزات اجتماعية. قد تتغير الخدمات أو تتوقف في أي وقت دون إشعار مسبق.
 	      </p>
@@ -185,7 +173,7 @@
 
 	    <!-- Payments -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. المدفوعات والاشتراكات</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">7. المدفوعات والاشتراكات</h2>
 	      <ul class="list-disc pl-6 space-y-2">
 	        <li>قد تتطلب بعض الميزات اشتراكات مدفوعة.</li>
 	        <li>جميع المدفوعات غير قابلة للاسترداد ما لم يقتضِ القانون خلاف ذلك.</li>
@@ -195,7 +183,7 @@
 
 	    <!-- Privacy -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. الخصوصية</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">8. الخصوصية</h2>
 	      <p class="leading-relaxed">
 	        سيتم التعامل مع بياناتك الشخصية وفقاً لسياسة الخصوصية الخاصة بنا. نحن نولي الأولوية لسلامة المستخدم وحماية البيانات.
 	      </p>
@@ -203,7 +191,7 @@
 
 	    <!-- Limitation of Liability -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. تحديد المسؤولية</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">9. تحديد المسؤولية</h2>
 	      <p class="leading-relaxed">
 	        يتم توفير المنصة "كما هي" دون أي ضمانات. لا تتحمل Planoo المسؤولية عن الإصابات أو الخسائر أو الأضرار الناتجة عن الأنشطة الرياضية أو الاعتماد على محتوى المنصة.
 	      </p>
@@ -211,7 +199,7 @@
 
 	    <!-- Termination -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. إنهاء الخدمة</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">10. إنهاء الخدمة</h2>
 	      <p class="leading-relaxed">
 	        نحتفظ بالحق في تعليق أو إنهاء الحسابات التي تنتهك هذه الشروط. كما يحق للمستخدمين إنهاء حساباتهم في أي وقت.
 	      </p>
@@ -219,7 +207,7 @@
 
 	    <!-- Governing Law -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">11. القانون المعمول به</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">11. القانون المعمول به</h2>
 	      <p class="leading-relaxed">
 	        تخضع هذه الشروط لقوانين [ولايتك القضائية]. يتم حل أي نزاعات في محاكم [ولايتك القضائية].
 	      </p>
@@ -227,7 +215,7 @@
 
 	    <!-- Changes -->
 	    <section class="mb-10">
-	      <h2 class="text-2xl font-semibold text-gray-900 mb-4">12. التغييرات في الشروط</h2>
+	      <h2 class="text-2xl font-semibold text-accent mb-4">12. التغييرات في الشروط</h2>
 	      <p class="leading-relaxed">
 	        قد نقوم بتحديث هذه الشروط بشكل دوري. استمرارك في استخدام المنصة بعد إجراء التغييرات يعتبر قبولاً للشروط الجديدة.
 	      </p>

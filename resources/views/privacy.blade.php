@@ -1,24 +1,12 @@
 @extends('layouts.main')
+@section('title', __('Privacy Policy'))
 @section('content')
-    {{-- hero --}}
-    <section id="home" class="">
-        <div class="relative w-full h-screen bg-blend-overlay bg-purple flex flex-col justify-center items-center"
-        style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
-            <!-- Hero Text -->
-            <h1 class="text-white text-4xl md:text-6xl font-bold mb-8 text-center drop-shadow-md">
-                {{ __('Privacy Policy') }}
-            </h1>
-            <p class="text-white text-xl md:text-3xl mb-8 text-center drop-shadow-md w-full md:w-1/2">
-                {{ __('Here we clearify what can and can not be done on our platform') }}
-            </p>
+<section class="bg-[#f3f0f9] py-[52px] text-center sm:py-[76px] dark:bg-[#251e35] [&_h1]:text-[clamp(2.5rem,5vw,4rem)] [&_h1]:text-accent [&_p]:mx-auto [&_p]:mt-[22px] [&_p]:max-w-[650px]"><div class="mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px]"><span class="mb-[18px] block text-[.69rem] font-bold tracking-[.16em] text-teal rtl:tracking-normal">PLANOO</span><h1>{{ __('Privacy Policy') }}</h1><nav class="mt-[26px] flex justify-center gap-3 [&_a]:rounded-3xl [&_a]:border [&_a]:border-line [&_a]:px-5 [&_a]:py-2 [&_a]:text-[.85rem] [&_a]:text-accent" aria-label="{{ __('Document languages') }}"><a href="#document-en" lang="en">English</a><a href="#document-ar" lang="ar">العربية</a></nav></div></section>
 
-        </div>
-    </section>
-
-    <div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="mx-auto my-7 w-[calc(100%-40px)] max-w-[800px] rounded-2xl border border-line p-6 sm:my-12 sm:p-9 [&_h2]:text-[1.3rem] [&_h2]:tracking-[-.02em] [&_h2]:text-accent [&_p]:text-muted [&_li]:text-muted [&_p]:leading-[1.9] [&_li]:leading-[1.9] [&_ul]:ps-6" id="document-en" lang="en" dir="ltr">
     	<!-- Section 1 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Definitions and Interpretation</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">1. Definitions and Interpretation</h2>
 		  <p class="leading-relaxed mb-2">In this Policy, the following terms shall have the following meanings:</p>
 		  <ul class="list-disc ml-6 leading-relaxed">
 		    <li><span class="font-semibold">“Data”</span> means all information that you submit to PLANOO via the Platform.</li>
@@ -30,7 +18,7 @@
 
 		<!-- Section 2 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Scope of this Policy</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">2. Scope of this Policy</h2>
 		  <p class="leading-relaxed mb-2">This Policy applies only to the actions of PLANOO and Users within the Platform. It does not extend to:</p>
 		  <ul class="list-disc ml-6 leading-relaxed">
 		    <li>Any external websites or services</li>
@@ -42,7 +30,7 @@
 
 		<!-- Section 3 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Data Collected</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">3. Data Collected</h2>
 		  <p class="leading-relaxed mb-2">We may collect the following Data:</p>
 
 		  <p class="font-semibold mt-2">Personal Data:</p>
@@ -70,7 +58,7 @@
 
 		<!-- Section 4 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Legal Basis for Processing (GDPR)</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">4. Legal Basis for Processing (GDPR)</h2>
 		  <p class="leading-relaxed mb-2">Data is processed based on one of the following legal grounds:</p>
 		  <ul class="list-disc ml-6 leading-relaxed">
 		    <li>User consent</li>
@@ -82,7 +70,7 @@
 
 		<!-- Section 5 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Use of Data</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">5. Use of Data</h2>
 		  <p class="leading-relaxed mb-2">Data may be used for the following purposes:</p>
 		  <ul class="list-disc ml-6 leading-relaxed mb-4">
 		    <li>Managing user accounts and bookings</li>
@@ -97,7 +85,7 @@
 
 		<!-- Section 6 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Data Sharing</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">6. Data Sharing</h2>
 		  <p class="leading-relaxed mb-2">Data may be shared with:</p>
 		  <ul class="list-disc ml-6 leading-relaxed mb-4">
 		    <li>Partners: to complete bookings and provide services</li>
@@ -109,13 +97,13 @@
 
 		<!-- Section 7 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. International Data Transfers</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">7. International Data Transfers</h2>
 		  <p class="leading-relaxed">Data may be transferred outside the user’s country. We take appropriate safeguards in accordance with GDPR.</p>
 		</section>
 
 		<!-- Section 8 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Data Retention</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">8. Data Retention</h2>
 		  <p class="leading-relaxed mb-2">Data is retained:</p>
 		  <ul class="list-disc ml-6 leading-relaxed">
 		    <li>As long as the account is active</li>
@@ -125,7 +113,7 @@
 
 		<!-- Section 9 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. User Rights (GDPR)</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">9. User Rights (GDPR)</h2>
 		  <p class="leading-relaxed mb-2">Users have the right to:</p>
 		  <ul class="list-disc ml-6 leading-relaxed">
 		    <li>Access their data</li>
@@ -140,7 +128,7 @@
 
 		<!-- Section 10 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Account Deletion</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">10. Account Deletion</h2>
 		  <p class="leading-relaxed mb-2">Users may request deletion of their account and data:</p>
 		  <ul class="list-disc ml-6 leading-relaxed">
 		    <li>Through the app</li>
@@ -151,13 +139,13 @@
 
 		<!-- Section 11 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">11. Links to Other Websites</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">11. Links to Other Websites</h2>
 		  <p class="leading-relaxed">The Platform may contain links to external websites. PLANOO is not responsible for their content or privacy practices.</p>
 		</section>
 
 		<!-- Section 12 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">12. Data Security</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">12. Data Security</h2>
 		  <p class="leading-relaxed mb-2">We take data security seriously and implement:</p>
 		  <ul class="list-disc ml-6 leading-relaxed">
 		    <li>Technical measures</li>
@@ -169,19 +157,19 @@
 
 		<!-- Section 13 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">13. Children’s Privacy</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">13. Children’s Privacy</h2>
 		  <p class="leading-relaxed">The Platform is not intended for children without legal supervision, and we do not knowingly collect their data.</p>
 		</section>
 
 		<!-- Section 14 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">14. Policy Updates</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">14. Policy Updates</h2>
 		  <p class="leading-relaxed">PLANOO may update this Policy at any time. Continued use of the Platform constitutes acceptance of any updates.</p>
 		</section>
 
 		<!-- Section 15 -->
 		<section class="mb-10">
-		  <h2 class="text-2xl font-semibold text-gray-900 mb-4">15. Contact Information</h2>
+		  <h2 class="text-2xl font-semibold text-accent mb-4">15. Contact Information</h2>
 		  <p class="leading-relaxed"> info@planoo.net</p>
 		  <p class="leading-relaxed"> www.planoo.net</p>
 		</section>
@@ -193,10 +181,10 @@
     </div>
 
 
-    <div class="max-w-7xl mx-auto px-6 py-12" dir="rtl">
+    <div class="mx-auto my-7 w-[calc(100%-40px)] max-w-[800px] rounded-2xl border border-line p-6 sm:my-12 sm:p-9 [&_h2]:text-[1.3rem] [&_h2]:tracking-[-.02em] [&_h2]:text-accent [&_p]:text-muted [&_li]:text-muted [&_p]:leading-[1.9] [&_li]:leading-[1.9] [&_ul]:ps-6" id="document-ar" lang="ar" dir="rtl">
 		<!-- Section 1 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">1. التعريفات والتفسير</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">1. التعريفات والتفسير</h2>
 			<p class="leading-relaxed mb-2">في هذه السياسة، يكون للمصطلحات التالية المعاني الموضحة أدناه:</p>
 			<ul class="list-disc mr-6 leading-relaxed">
 			  <li><span class="font-semibold">”البيانات“:</span> تعني جميع المعلومات التي يقدمها المستخدم إلى PLANOO عبر المنصة.</li>
@@ -208,7 +196,7 @@
 
 		<!-- Section 2 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">2. نطاق هذه السياسة</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">2. نطاق هذه السياسة</h2>
 			<p class="leading-relaxed mb-2">تنطبق هذه السياسة فقط على تعامل PLANOO والمستخدمين داخل المنصة. ولا تمتد إلى:</p>
 			<ul class="list-disc mr-6 leading-relaxed">
 			  <li>أي مواقع أو خدمات خارجية</li>
@@ -220,7 +208,7 @@
 
 		<!-- Section 3 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">3. البيانات التي يتم جمعها</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">3. البيانات التي يتم جمعها</h2>
 			<p class="leading-relaxed mb-2">قد نقوم بجمع البيانات التالية:</p>
 
 			<p class="font-semibold mt-2">بيانات شخصية:</p>
@@ -248,7 +236,7 @@
 
 		<!-- Section 4 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">4. الأساس القانوني لمعالجة البيانات (GDPR)</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">4. الأساس القانوني لمعالجة البيانات (GDPR)</h2>
 			<p class="leading-relaxed mb-2">تتم معالجة البيانات وفقاً لأحد الأسس التالية:</p>
 			<ul class="list-disc mr-6 leading-relaxed">
 			  <li>موافقة المستخدم</li>
@@ -260,7 +248,7 @@
 
 		<!-- Section 5 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">5. استخدام البيانات</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">5. استخدام البيانات</h2>
 			<p class="leading-relaxed mb-2">قد يتم استخدام البيانات للأغراض التالية:</p>
 			<ul class="list-disc mr-6 leading-relaxed mb-4">
 			  <li>إدارة الحسابات والحجوزات</li>
@@ -275,25 +263,25 @@
 
 		<!-- Section 6 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">6. مشاركة البيانات</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">6. مشاركة البيانات</h2>
 			<p class="leading-relaxed mb-2">قد تتم مشاركة البيانات مع:</p>
 			<ul class="list-disc mr-6 leading-relaxed mb-4">
 			  <li>العملاء: لتنفيذ الحجوزات وتقديم الخدمات</li>
 			  <li>مزودي الخدمات: مثل الاستضافة والدعم التقني</li>
 			  <li>الجهات القانونية: إذا طُلب ذلك بموجب القانون</li>
 			</ul>
-			<p class="leading-relaxed italic text-sm text-gray-600"> لا تتحمل PLANOO مسؤولية استخدام البيانات من قبل العملاء خارج نطاق المنصة</p>
+			<p class="leading-relaxed italic text-sm text-muted"> لا تتحمل PLANOO مسؤولية استخدام البيانات من قبل العملاء خارج نطاق المنصة</p>
 		</section>
 
 		<!-- Section 7 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">7. نقل البيانات دولياً</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">7. نقل البيانات دولياً</h2>
 			<p class="leading-relaxed">قد يتم نقل البيانات خارج بلد المستخدم، ونلتزم باتخاذ الإجراءات اللازمة لحمايتها وفقاً لقوانين GDPR.</p>
 		</section>
 
 		<!-- Section 8 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">8. مدة الاحتفاظ بالبيانات</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">8. مدة الاحتفاظ بالبيانات</h2>
 			<p class="leading-relaxed mb-2">يتم الاحتفاظ بالبيانات:</p>
 			<ul class="list-disc mr-6 leading-relaxed">
 			  <li>طالما الحساب نشط</li>
@@ -303,7 +291,7 @@
 
 		<!-- Section 9 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">9. حقوق المستخدم (GDPR)</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">9. حقوق المستخدم (GDPR)</h2>
 			<p class="leading-relaxed mb-2">يحق للمستخدم:</p>
 			<ul class="list-disc mr-6 leading-relaxed">
 			  <li>الوصول إلى بياناته</li>
@@ -318,7 +306,7 @@
 
 		<!-- Section 10 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">10. حذف الحساب</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">10. حذف الحساب</h2>
 			<p class="leading-relaxed mb-2">يمكن للمستخدم طلب حذف حسابه وبياناته:</p>
 			<ul class="list-disc mr-6 leading-relaxed">
 			  <li>من داخل التطبيق</li>
@@ -329,13 +317,13 @@
 
 		<!-- Section 11 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">11. روابط لمواقع أخرى</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">11. روابط لمواقع أخرى</h2>
 			<p class="leading-relaxed">قد تحتوي المنصة على روابط لمواقع خارجية، ولا تتحمل PLANOO مسؤولية محتوى أو سياسات تلك المواقع.</p>
 		</section>
 
 		<!-- Section 12 -->
 		<section class="mb-12">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">12. أمان البيانات</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">12. أمان البيانات</h2>
 			<p class="leading-relaxed mb-2">نولي أمان البيانات أهمية كبيرة، ونستخدم:</p>
 			<ul class="list-disc mr-6 leading-relaxed">
 			  <li>إجراءات تقنية</li>
@@ -347,19 +335,19 @@
 
 		<!-- Section 13 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">13. خصوصية الأطفال</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">13. خصوصية الأطفال</h2>
 			<p class="leading-relaxed">لا تستهدف المنصة الأطفال دون إشراف قانوني، ولا يتم جمع بياناتهم بشكل متعمد.</p>
 		</section>
 
 		<!-- Section 14 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">14. تعديل السياسة</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">14. تعديل السياسة</h2>
 			<p class="leading-relaxed">يحق لـ PLANOO تعديل هذه السياسة في أي وقت، ويُعد استمرار استخدام المنصة موافقة على التعديلات.</p>
 		</section>
 
 		<!-- Section 15 -->
 		<section class="mb-10">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-4">15. معلومات التواصل</h2>
+			<h2 class="text-2xl font-semibold text-accent mb-4">15. معلومات التواصل</h2>
 			<p class="leading-relaxed"> info@planoo.net</p>
 			<p class="leading-relaxed"> www.planoo.net</p>
 		</section>

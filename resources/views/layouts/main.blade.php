@@ -1,45 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" dir="{{app()->getLocale() === 'ar'? 'rtl':'ltr'}}">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planoo | Get Better</title>
-    <link rel="icon" type="text/css" href="images/user-logo-new.jpeg">
-    <link rel="icon" type="text/css" href="images/partner-logo-new.jpeg">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="PLANOO is a smart platform designed to simplify how you discover, book, and manage services in one place. Easily find sports courses, courts, and unique experiences.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.planoo.net/">
-
-    <!-- 3. Social Media Optimization (Open Graph for Facebook & LinkedIn) -->
+    <meta name="theme-color" content="#462e8e">
+    <script>
+        (() => {
+            let theme;
+            document.documentElement.dataset.motion = 'full';
+            try { theme = localStorage.getItem('planoo-theme'); } catch {}
+            document.documentElement.dataset.theme = theme === 'light' || theme === 'dark'
+                ? theme : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        })();
+    </script>
+    <title>@yield('title', __('Discover your next activity')) | Planoo</title>
+    <meta name="description" content="{{ __('Discover sports courts, activities, courses and experiences with Planoo. Find your next way to get better.') }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/user-logo-new.jpeg') }}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.planoo.net/">
-    <meta property="og:title" content="Planoo | Get Better - Discover & Book Local Activities">
-    <meta property="og:description" content="Simplify how you manage your lifestyle. Book sports courts, join fitness courses, and explore local experiences with PLANOO.">
-    <meta property="og:image" content="https://planoo.net">
-
-    <!-- 4. Twitter / X Cards -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://www.planoo.net/">
-    <meta name="twitter:title" content="Planoo | Get Better - Discover & Book Local Activities">
-    <meta name="twitter:description" content="Simplify how you manage your lifestyle. Book sports courts, join fitness courses, and explore local experiences with PLANOO.">
-    <meta name="twitter:image" content="https://planoo.net">
-
-    <!-- Favicon Links -->
-    <link rel="icon" href="https://planoo.net" type="image/x-icon">
-    @vite(['resources/js/app.js','resources/css/app.css'])
+    <meta property="og:title" content="@yield('title', __('Discover your next activity')) | Planoo">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ asset('images/hero-bg.avif') }}">
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
 </head>
-<body class="font-sans text-dark antialiased bg-white rtl:text-2xl">
-    <!-- MAIN HEADER -->
+<body>
+    <a class="fixed -top-[100px] start-5 z-[100] border-2 border-accent bg-surface px-6 py-3 focus:top-3" href="#main-content">{{ __('Skip to content') }}</a>
     @include('partials.nav')
-
-    <!-- MAIN CONTENT -->
-    <main>
-        @yield('content')
-    </main>
-
-    <section id="contact" class="">
-        @include('partials.footer')
-    </section>
+    <main id="main-content" tabindex="-1">@yield('content')</main>
+    @include('partials.footer')
 </body>
 </html>

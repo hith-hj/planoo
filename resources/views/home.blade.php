@@ -1,397 +1,102 @@
 @extends('layouts.main')
+@section('title', __('Discover your next activity'))
 @section('content')
-    {{-- hero --}}
-    <section id="home" class="">
-        <div class="relative w-full h-screen bg-cover bg-center bg-blend-overlay bg-purple flex flex-col justify-center items-center"
-             style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
-
-            <!-- Hero Text -->
-            <h1 class="text-white text-4xl md:text-6xl font-bold mb-8 text-center drop-shadow-md">
-                {{__('Looking for something interesting?')}}
-            </h1>
-            <p class="text-white text-xl md:text-3xl mb-8 text-center drop-shadow-md">
-                {{__('Let\'s help you find it')}}
-            </p>
-
-            <!-- Search Widget Container -->
-            <div class="w-full max-w-4xl bg-transparent rounded-lg shadow-xl overflow-hidden">
-                <!-- Tabs -->
-                <div class="flex border-b">
-                    <button class="flex-1 py-4 text-center font-bold text-lg tab-active " data-hometaps="court"
-                        id="tab-court">
-                      {{__('Find court')}}
-                    </button>
-                    <button class="flex-1 py-4 text-center font-bold text-lg tab-inactive" data-hometaps="activity"
-                        id="tab-activity">
-                      {{__('Find activity')}}
-                    </button>
-                </div>
-
-                <!-- Search Body: Centre -->
-                <div class="bg-white p-6 md:p-8 flex flex-col md:flex-row gap-4 items-center">
-                    <div id="content-court" class="flex-1 w-full relative">
-                      <label class="block text-xs font-bold text-gray-500 uppercase mb-1">{{__('Court')}}</label>
-                      <input type="text" class="w-full bg-gray-100 border border-gray-300 rounded p-3 text-lg focus:outline-none focus:border-teal text-gray-700 font-medium">
-                      <i class="bi bi-geo-alt text-xl absolute ltr:right-3 rtl:left-3 bottom-3"></i>
-                    </div>
-
-                    <div id="content-activity"  class="hidden flex-1 w-full relative">
-                      <label class="block text-xs font-bold text-gray-500 uppercase mb-1">{{__('Activity')}}</label>
-                      <input type="text" class="w-full bg-gray-100 border border-gray-300 rounded p-3 text-lg focus:outline-none focus:border-teal text-gray-700 font-medium">
-                      <i class="bi bi-search text-xl absolute ltr:right-3 rtl:left-3 bottom-3"></i>
-                    </div>
-
-                    <button class="w-full md:w-auto bg-yellow hover:bg-yellow-400 text-purple font-bold text-lg py-3 px-10 rounded shadow-sm mt-5 md:mt-5 transition-colors">
-                      {{__('Search')}}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- sections --}}
-    <section id="sections" class="py-16 bg-gray-100">
-        <!-- Intro Text -->
-        <div class="text-center max-w-2xl mx-auto">
-            <h2 class="text-3xl font-bold text-purple mb-4">{{__('Welcom to Planoo')}}</h2>
-            <p class="text-gray-600 leading-relaxed">
-                {{ __('Welcom message') }}
-            </p>
-        </div>
-
-        <!-- 3-Column Promo Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 px-4 md:px-12">
-            {{-- Courts --}}
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-                    <img src="{{ asset('images/activity.avif') }}" alt="{{ __('Courts') }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                    <div class="absolute bottom-0 ltr:left-0 rtl:right-0 bg-teal text-white px-4 py-2 font-bold text-sm">
-                        {{ __('Courts') }}
-                    </div>
-                </div>
-                <h3 class="text-xl font-bold text-purple mb-2 group-hover:text-teal transition-colors">
-                    {{ __('Wide range of courts') }}
-                </h3>
-                <p class="text-gray-600 mb-4">
-                    {{ __('Discover indoor and outdoor courts for basketball, tennis, and more.') }}
-                </p>
-                <a href="#" class="text-teal font-bold hover:underline flex items-center">
-                    {{ __('View Courts') }}
-                    <i class="bi bi-chevron-right rtl:rotate-180 text-xl"></i>
-                </a>
-            </div>
-
-            {{-- Activities --}}
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-                    <img src="{{ asset('images/swimming.webp') }}" alt="{{ __('Activities') }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                    <div class="absolute bottom-0 ltr:left-0 rtl:right-0 bg-purple text-white px-4 py-2 font-bold text-sm">
-                        {{ __('Activities') }}
-                    </div>
-                </div>
-                <h3 class="text-xl font-bold text-purple mb-2 group-hover:text-teal transition-colors">
-                    {{ __('Swimming & Lessons') }}
-                </h3>
-                <p class="text-gray-600 mb-4">
-                    {{ __('Enjoy recreational swimming, take lessons, or join a local swim club.') }}
-                </p>
-                <a href="#" class="text-teal font-bold hover:underline flex items-center">
-                    {{ __('Find out more') }}
-                    <i class="bi bi-chevron-right rtl:rotate-180 text-xl"></i>
-                </a>
-            </div>
-
-            {{-- Trainers --}}
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-                    <img src="{{ asset('images/activity.avif') }}" alt="{{ __('Trainers') }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                    <div class="absolute bottom-0 ltr:left-0 rtl:right-0 bg-yellow text-purple px-4 py-2 font-bold text-sm">
-                        {{ __('Trainers') }}
-                    </div>
-                </div>
-                <h3 class="text-xl font-bold text-purple mb-2 group-hover:text-teal transition-colors">
-                    {{ __('Expert trainers to guide you') }}
-                </h3>
-                <p class="text-gray-600 mb-4">
-                    {{ __('Choose from certified trainers and book classes to reach your fitness goals.') }}
-                </p>
-                <a href="#" class="text-teal font-bold hover:underline flex items-center">
-                    {{ __('View Trainers') }}
-                    <i class="bi bi-chevron-right rtl:rotate-180 text-xl"></i>
-                </a>
-            </div>
-
-            {{-- Courses --}}
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-                    <img src="{{ asset('images/activity.avif') }}" alt="{{ __('Courses') }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                    <div class="absolute bottom-0 ltr:left-0 rtl:right-0 bg-purple text-white px-4 py-2 font-bold text-sm">
-                        {{ __('Courses') }}
-                    </div>
-                </div>
-                <h3 class="text-xl font-bold text-purple mb-2 group-hover:text-teal transition-colors">
-                    {{ __('Learn new skills with expert guidance') }}
-                </h3>
-                <p class="text-gray-600 mb-4">
-                    {{ __('Explore a variety of courses from fitness to wellness, designed to help you grow and achieve your goals.') }}
-                </p>
-                <a href="#" class="text-teal font-bold hover:underline flex items-center">
-                    {{ __('View Courses') }}
-                    <i class="bi bi-chevron-right rtl:rotate-180 text-xl"></i>
-                </a>
-            </div>
-
-            {{-- Events --}}
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-                    <img src="{{ asset('images/activity.avif') }}" alt="{{ __('Events') }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                    <div class="absolute bottom-0 ltr:left-0 rtl:right-0 bg-teal text-purple px-4 py-2 font-bold text-sm">
-                        {{ __('Events') }}
-                    </div>
-                </div>
-                <h3 class="text-xl font-bold text-purple mb-2 group-hover:text-teal transition-colors">
-                    {{ __('Exciting events for everyone') }}
-                </h3>
-                <p class="text-gray-600 mb-4">
-                    {{ __('Join community events, workshops, and special activities that bring people together and inspire new experiences.') }}
-                </p>
-                <a href="#" class="text-teal font-bold hover:underline flex items-center">
-                    {{ __('View Events') }}
-                    <i class="bi bi-chevron-right rtl:rotate-180 text-xl"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    {{-- kids --}}
-    <section id="kids" class="py-16">
-        <div class="bg-white py-16">
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <h2 class="text-3xl font-bold text-purple mb-4">{{__('Activities For Kids')}}</h2>
-                <p>
-                    {{__('Fun activities for children From swimming lessons to sports clubs, our programs keep kids active and engaged')}}
-                </p>
-            </div>
-
-            <!-- 3-Column Promo Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-12">
-                {{-- Courts --}}
-                <div class="group cursor-pointer">
-                    <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-                        <img src="{{ asset('images/swimming.webp') }}" alt="{{ __('Courts') }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute bottom-0 ltr:left-0 rtl:right-0 bg-teal text-white px-4 py-2 font-bold text-sm">
-                            {{ __('Courts') }}
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-purple mb-2 group-hover:text-teal transition-colors">
-                        {{ __('Wide range of courts') }}
-                    </h3>
-                    <p class="text-gray-600 mb-4">
-                        {{ __('Discover indoor and outdoor courts for basketball, tennis, and more.') }}
-                    </p>
-                    <a href="#" class="text-teal font-bold hover:underline flex items-center">
-                        {{ __('View Courts') }}
-                        <i class="bi bi-chevron-right rtl:rotate-180 text-xl"></i>
-                    </a>
-                </div>
-
-                {{-- Activities --}}
-                <div class="group cursor-pointer">
-                    <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-                        <img src="{{ asset('images/activity.avif') }}" alt="{{ __('Activities') }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute bottom-0 ltr:left-0 rtl:right-0 bg-purple text-white px-4 py-2 font-bold text-sm">
-                            {{ __('Activities') }}
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-purple mb-2 group-hover:text-teal transition-colors">
-                        {{ __('Swimming & Lessons') }}
-                    </h3>
-                    <p class="text-gray-600 mb-4">
-                        {{ __('Enjoy recreational swimming, take lessons, or join a local swim club.') }}
-                    </p>
-                    <a href="#" class="text-teal font-bold hover:underline flex items-center">
-                        {{ __('Find out more') }}
-                        <i class="bi bi-chevron-right rtl:rotate-180 text-xl"></i>
-                    </a>
-                </div>
-
-                {{-- Trainers --}}
-                <div class="group cursor-pointer">
-                    <div class="relative overflow-hidden rounded-lg mb-4 h-64">
-                        <img src="{{ asset('images/swimming.webp') }}" alt="{{ __('Trainers') }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute bottom-0 ltr:left-0 rtl:right-0 bg-yellow text-purple px-4 py-2 font-bold text-sm">
-                            {{ __('Trainers') }}
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-purple mb-2 group-hover:text-teal transition-colors">
-                        {{ __('Expert trainers to guide you') }}
-                    </h3>
-                    <p class="text-gray-600 mb-4">
-                        {{ __('Choose from certified trainers and book classes to reach your fitness goals.') }}
-                    </p>
-                    <a href="#" class="text-teal font-bold hover:underline flex items-center">
-                        {{ __('View Trainers') }}
-                        <i class="bi bi-chevron-right rtl:rotate-180 text-xl"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Apps --}}
-    <section id="apps" class="py-16 bg-gray-100">
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <h2 class="text-3xl font-bold text-purple">{{ __('Apps') }}</h2>
-            <p class="text-gray-600 text-xl py-8">
-                {{ __('Here you can find our applications') }}
-            </p>
-
-            <div  class="py-5">
-                <h1 class="text-xl font-bold text-purple mb-4">{{__('Customers')}}</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Card 1 -->
-                    <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                        <a href="https://play.google.com/store/apps/details?id=com.your1site.planoo" 
-                            target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-android2 text-7xl text-teal mb-4 mx-auto"></i>
-                            <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('android')]) }}</h3>
-                            <p class="text-gray-600">
-                                {{ __('Download link',['type'=>__('android'),'user'=>__('customers')]) }}
-                            </p>
-                        </a>
-                    </div>
-
-                    <!-- Card 2 -->
-                    <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                        <a href="https://apps.apple.com/nl/app/planoo/id6767510401" 
-                            target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-apple text-7xl text-teal mb-4 mx-auto"></i>
-                            <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('IOS')]) }}</h3>
-                            <p class="text-gray-600">
-                                {{ __('Download link',['type'=>__('IOS'),'user'=>__('customers')]) }}
-                            </p>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div  class="py-5">
-                <h1 class="text-xl font-bold text-purple mb-4">{{__('Partners')}}</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Card 1 -->
-                    <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                        <a href="https://play.google.com/store/apps/details?id=com.your1site.planoo_partner" target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-android2 text-7xl text-teal mb-4 mx-auto"></i>
-                            <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('android')]) }}</h3>
-                            <p class="text-gray-600">
-                                {{ __('Download link',['type'=>__('android'),'user'=>__('partners')]) }}
-                            </p>
-                        </a>
-                    </div>
-
-                    <!-- Card 2 -->
-                    <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                        <a href="https://apps.apple.com/us/app/planoo-partner/id6761179417" target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-apple text-7xl text-teal mb-4 mx-auto"></i>
-                            <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our App',['type'=>__('IOS')]) }}</h3>
-                            <p class="text-gray-600">
-                                {{ __('Download link',['type'=>__('IOS'),'user'=>__('partners')]) }}
-                            </p>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- About --}}
-    <section id="about" class="py-16">
-        <div class="max-w-6xl mx-auto px-6 text-center py-20">
-            <h2 class="text-3xl font-bold text-purple mb-4">{{ __('About Us') }}</h2>
-            <p class="text-gray-600 mb-12">
-                {{ __('We are dedicated to creating vibrant spaces where health, learning, and community come together.') }}
-                <br>
-                {{__('Our mission is to inspire people of all ages to live better, healthier, and more connected lives.')}}
-            </p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
-                <!-- Card 1 -->
-                <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                    <i class="bi bi-eye text-7xl text-teal mb-4 mx-auto"></i>
-                    <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our Vision') }}</h3>
-                    <p class="text-gray-600">{{ __('To empower communities by promoting wellness, education, and social connection.') }}</p>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                    <i class="bi bi-check text-7xl text-teal mb-4 mx-auto"></i>
-                    <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our Mission') }}</h3>
-                    <p class="text-gray-600">{{ __('To provide accessible facilities and programs that inspire healthier lifestyles.') }}</p>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white rounded-lg shadow-lg p-6 group hover:shadow-xl transition">
-                    <i class="bi bi-plus text-7xl text-teal mb-4 mx-auto"></i>
-                    <h3 class="text-xl font-bold text-purple mb-2">{{ __('Our Values') }}</h3>
-                    <p class="text-gray-600">{{ __('Integrity, inclusivity, and innovation guide everything we do.') }}</p>
-                </div>
-            </div>
-
-            <div class="flex justify-center items-center py-6">
-                <a href="{{route('about')}}">
-                    <button class="bg-purple hover:bg-yellow px-12 py-2 rounded-lg text-white hover:text-black font-normal transition">
-                        About page
-                    </button>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    {{-- Why us --}}
-    <section id="why-choose-us" class="py-16 bg-gray-100">
-        <div class="max-w-6xl mx-auto px-6 text-center py-20">
-            <h2 class="text-3xl font-bold text-purple mb-4">{{ __('Why Choose Us') }}</h2>
-            <p class="text-gray-600 mb-12">
-                {{ __('We stand out by offering exceptional facilities, expert guidance, and a welcoming environment for everyone.') }}
-            </p>
-
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-16">
-                <!-- Card 1 -->
-                <div class="bg-gray-50 rounded-lg shadow p-6 hover:bg-teal/10 transition">
-                    <i class="bi bi-building text-7xl text-teal mb-4 mx-auto"></i>
-                    <h3 class="text-lg font-bold text-purple mb-2">{{ __('Modern Facilities') }}</h3>
-                    <p class="text-gray-600">
-                        {{ __('State-of-the-art gyms, pools, and studios designed for your comfort.') }}
-                    </p>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-gray-50 rounded-lg shadow p-6 hover:bg-teal/10 transition">
-                    <i class="bi bi-person-arms-up text-7xl text-teal mb-4 mx-auto"></i>
-                    <h3 class="text-lg font-bold text-purple mb-2">{{ __('Expert Trainers') }}</h3>
-                    <p class="text-gray-600">
-                        {{ __('Certified professionals to guide you every step of the way.') }}
-                    </p>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-gray-50 rounded-lg shadow p-6 hover:bg-teal/10 transition">
-                    <i class="bi bi-circle text-7xl text-teal mb-4 mx-auto"></i>
-                    <h3 class="text-lg font-bold text-purple mb-2">{{ __('Inclusive Programs') }}</h3>
-                    <p class="text-gray-600">
-                        {{ __('Activities for all ages and abilities, from kids to seniors.') }}
-                    </p>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="bg-gray-50 rounded-lg shadow p-6 hover:bg-teal/10 transition">
-                    <i class="bi bi-balloon-heart text-7xl text-teal mb-4 mx-auto"></i>
-                    <h3 class="text-lg font-bold text-purple mb-2">{{ __('Community Focus') }}</h3>
-                    <p class="text-gray-600">
-                        {{ __('We build connections through events, workshops, and social activities.') }}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+<section id="home" class="overflow-hidden bg-soft">
+<div class="mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px] grid grid-cols-1 items-center gap-9 py-12 sm:grid-cols-[1.05fr_1fr] sm:gap-8 min-[901px]:pt-[62px] min-[901px]:pb-[70px] min-[1051px]:gap-16">
+<div class="animate-[soft-enter_.65s_ease-out_both] [&_h1]:mb-6 [&_h1]:text-[3.2rem] sm:[&_h1]:text-[clamp(3rem,5.3vw,4.65rem)] [&_h1]:leading-[1.07] [&_em]:block [&>p]:max-w-[420px] [&>p]:text-[1.05rem] [&>p]:leading-[1.8]">
+<span class="mb-[18px] block text-[.69rem] font-bold tracking-[.16em] text-teal rtl:tracking-normal">
+<span class="size-[7px] shrink-0 rounded-full bg-teal">
+</span> {{ __('A LITTLE MORE MOVEMENT. A LOT MORE LIFE.') }}</span>
+<h1>{{ __('Good days start') }} <em>{{ __('with a plan.') }}</em>
+</h1>
+<p>{{ __('Discover courts, try something new, and find your people. Make your next move with Planoo.') }}</p>
+<div class="mt-8 mb-9 flex items-center gap-[22px] sm:gap-7">
+<x-button  href="#sections">{{ __('Explore activities') }} <i class="bi bi-arrow-up-right" aria-hidden="true">
+</i>
+</x-button>
+<x-text-link href="#apps">{{ __('Get the app') }} <i class="bi bi-arrow-down" aria-hidden="true">
+</i>
+</x-text-link>
+</div>
+<div class="flex items-center gap-[11px] text-[.73rem] text-muted">
+<span class="inline-flex size-[38px] shrink-0 items-center justify-center rounded-full bg-[#e9f5ef] text-teal dark:bg-[#233e36]">
+<i class="bi bi-heart" aria-hidden="true">
+</i>
+</span>
+<span>{{ __('More ways to move. More reasons to get together.') }}</span>
+</div>
+</div>
+<div class="relative pb-[18px] animate-[soft-enter_.75s_.08s_ease-out_both] [&>img]:h-[350px] [&>img]:w-full sm:[&>img]:h-[400px] min-[901px]:[&>img]:h-[470px] [&>img]:rounded-[120px_18px_18px_18px] rtl:[&>img]:rounded-[18px_120px_18px_18px]">
+<img src="{{ asset('images/hero-bg.avif') }}" alt="{{ __('Discover an active lifestyle with Planoo') }}" fetchpriority="high" width="720" height="800">
+<div class="absolute inset-x-[22px] bottom-0 flex items-center gap-3.5 rounded-[13px] border border-line bg-surface p-[18px] shadow-[0_10px_30px_#30204e0d] [&_strong]:block [&_strong]:text-[.88rem] [&_div>span]:block [&_div>span]:text-xs [&_div>span]:text-muted [&>i]:ms-auto [&>i]:text-accent">
+<span class="inline-flex size-[38px] shrink-0 items-center justify-center rounded-full bg-[#e9f5ef] text-teal dark:bg-[#233e36]">
+<i class="bi bi-lightning-charge-fill" aria-hidden="true">
+</i>
+</span>
+<div>
+<strong>{{ __('Your next experience') }}</strong>
+<span>{{ __('Just a plan away.') }}</span>
+</div>
+<i class="bi bi-arrow-up-right" aria-hidden="true">
+</i>
+</div>
+<span class="absolute top-[25px] end-5 rotate-[5deg] rounded-[30px] bg-yellow px-3.5 py-2 text-[.6rem] font-extrabold tracking-[.08em] text-[#30204e]">{{ __('GET OUT. JOIN IN. GET BETTER.') }}</span>
+</div>
+</div>
+</section>
+<div class="border-b border-line [&>div]:flex [&>div]:flex-wrap [&>div]:items-center [&>div]:gap-x-6 [&>div]:gap-y-3.5 [&>div]:py-6 min-[901px]:[&>div]:justify-between [&_span]:w-full min-[901px]:[&_span]:w-auto [&_span]:text-xs [&_span]:text-muted [&_a]:flex [&_a]:items-center [&_a]:gap-2.5 sm:[&_a]:gap-[22px] [&_a]:text-[.82rem] [&_a]:font-semibold [&_a:hover]:text-teal">
+<div class="mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px]">
+<span>{{ __('Find your kind of active') }}</span>@foreach(['Courts', 'Activities', 'Trainers', 'Courses', 'Events'] as $category)<a href="#sections">{{ __($category) }} <i class="bi bi-arrow-up-right" aria-hidden="true">
+</i>
+</a>@endforeach</div>
+</div>
+<section id="sections" class="py-[60px] sm:py-24 mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px]">
+<div class="mb-9 flex flex-col items-start justify-between gap-5 sm:flex-row sm:gap-9 min-[901px]:items-end [&>p]:text-[.9rem] sm:[&>p]:max-w-[280px] min-[901px]:[&>p]:max-w-[360px] transition-[opacity,transform] duration-500 data-[reveal=pending]:translate-y-[18px] data-[reveal=pending]:opacity-0 focus-within:translate-y-0 focus-within:opacity-100" data-reveal>
+<div>
+<span class="mb-[18px] block text-[.69rem] font-bold tracking-[.16em] text-teal rtl:tracking-normal">{{ __('MAKE TIME FOR YOU') }}</span>
+<h2>{{ __('A world of things to do.') }}</h2>
+</div>
+<p>{{ __('From your favourite sport to your next new hobby. Find a little inspiration for your next plan.') }}</p>
+</div>
+<div class="mb-[30px] flex flex-wrap gap-[7px] sm:gap-2 [&_button]:cursor-pointer [&_button]:rounded-[25px] [&_button]:border [&_button]:border-line [&_button]:bg-surface [&_button]:px-3.5 [&_button]:py-2 [&_button]:text-xs sm:[&_button]:px-5 sm:[&_button]:py-[9px] sm:[&_button]:text-[.8rem] [&_button]:text-muted [&_button]:transition-colors [&_button:hover]:border-accent [&_button[aria-pressed=true]]:border-purple [&_button[aria-pressed=true]]:bg-purple [&_button[aria-pressed=true]]:text-white dark:[&_button[aria-pressed=true]]:bg-[#7050bd]" role="group" aria-label="{{ __('Filter activities') }}">@foreach(['all' => 'All activities', 'courts' => 'Courts', 'activities' => 'Activities', 'trainers' => 'Trainers', 'courses' => 'Courses', 'events' => 'Events'] as $key => $label)<button type="button" data-filter="{{ $key }}" aria-pressed="{{ $loop->first ? 'true' : 'false' }}">{{ __($label) }}</button>@endforeach</div>
+<div class="grid grid-cols-1 gap-7 sm:grid-cols-2 min-[901px]:grid-cols-3">
+        @foreach([
+            ['courts', 'Courts', 'Wide range of courts', 'Discover indoor and outdoor courts for basketball, tennis, and more.', 'activity.avif', 'bi-dribbble'],
+            ['activities', 'Activities', 'Swimming & Lessons', 'Enjoy recreational swimming, take lessons, or join a local swim club.', 'swimming.webp', 'bi-water'],
+            ['trainers', 'Trainers', 'Expert trainers to guide you', 'Choose from certified trainers and book classes to reach your fitness goals.', 'booking.webp', 'bi-person-arms-up'],
+            ['courses', 'Courses', 'Learn new skills with expert guidance', 'Explore a variety of courses from fitness to wellness, designed to help you grow and achieve your goals.', 'activity.avif', 'bi-lightning-charge'],
+            ['events', 'Events', 'Exciting events for everyone', 'Join community events, workshops, and special activities that bring people together and inspire new experiences.', 'hero-bg.avif', 'bi-calendar-event']
+        ] as [$key, $label, $title, $description, $image, $icon])
+        <x-activity-card :category="$key" :label="$label" :title="$title" :description="$description" :image="$image" :icon="$icon" />
+        @endforeach
+    </div>
+<p id="filter-status" class="sr-only" role="status" aria-live="polite" data-template="{{ __(':count categories shown') }}">
+</p>
+</section>
+<section id="kids" class="bg-[#edf5f1] py-12 sm:py-[72px] dark:bg-[#182b28]">
+<div class="mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px] grid grid-cols-1 items-center gap-10 sm:grid-cols-2 min-[1051px]:gap-20 [&_p]:mt-[22px] [&_p]:mb-7 [&_em]:block transition-[opacity,transform] duration-500 data-[reveal=pending]:translate-y-[18px] data-[reveal=pending]:opacity-0 focus-within:translate-y-0 focus-within:opacity-100" data-reveal>
+<div class="[&_img]:h-[280px] sm:[&_img]:h-[350px] [&_img]:w-full [&_img]:rounded-[16px_90px_16px_16px]">
+<img src="{{ asset('images/swimming.webp') }}" alt="{{ __('Swimming and activities for children') }}" loading="lazy" width="680" height="500">
+</div>
+<div>
+<span class="mb-[18px] block text-[.69rem] font-bold tracking-[.16em] text-teal rtl:tracking-normal">{{ __('SMALL STEPS. BIG ADVENTURES.') }}</span>
+<h2>{{ __('Big fun for') }} <em>{{ __('little movers.') }}</em>
+</h2>
+<p>{{ __('Fun activities for children From swimming lessons to sports clubs, our programs keep kids active and engaged') }}</p>
+<x-button  href="#apps">{{ __('Activities For Kids') }} <span aria-hidden="true">↗</span>
+</x-button>
+</div>
+</div>
+</section>
+@include('partials.apps')
+<section id="about" class="py-[60px] sm:py-24 mx-auto w-[calc(100%-40px)] sm:w-[calc(100%-48px)] min-[901px]:w-[calc(100%-80px)] max-w-[1200px]">
+<div class="mb-9 flex flex-col items-start justify-between gap-5 sm:flex-row sm:gap-9 min-[901px]:items-end [&>p]:text-[.9rem] sm:[&>p]:max-w-[280px] min-[901px]:[&>p]:max-w-[360px] transition-[opacity,transform] duration-500 data-[reveal=pending]:translate-y-[18px] data-[reveal=pending]:opacity-0 focus-within:translate-y-0 focus-within:opacity-100" data-reveal>
+<div>
+<span class="mb-[18px] block text-[.69rem] font-bold tracking-[.16em] text-teal rtl:tracking-normal">{{ __('MORE THAN A BOOKING') }}</span>
+<h2>{{ __('Better, together.') }}</h2>
+</div>
+<p>{{ __('Our mission is to inspire people of all ages to live better, healthier, and more connected lives.') }}</p>
+</div>@include('partials.values')<x-text-link class="mt-7" href="{{ route('about') }}">{{ __('More about Planoo') }} <span aria-hidden="true">↗</span>
+</x-text-link>
+</section>
 @endsection
