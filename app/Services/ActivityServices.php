@@ -7,9 +7,9 @@ namespace App\Services;
 use App\Enums\SessionDuration;
 use App\Models\Activity;
 use App\Models\User;
+use App\Support\Pagination;
 use App\Traits\Filters;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 final class ActivityServices
 {
@@ -21,8 +21,9 @@ final class ActivityServices
         array $filters = [],
         array $orderBy = []
     ) {
+        Pagination::validate($page, $perPage);
         $query = Activity::query();
-        $query->with($this->toBeLoaded());
+        $query->with($this->toBeLoaded(true));
 
         $this->applyFilters($query, $filters, [
             'is_active' => [true, false],
@@ -34,20 +35,28 @@ final class ActivityServices
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'price']);
 
-        $activities = $query->paginate($perPage, ['*'], 'page', $page);
+        $activities = $query->withCount(['reviews'])->paginate($perPage, ['*'], 'page', $page);
 
         NotFound($activities->items(), 'activities');
 
         return $activities;
     }
 
-    public function allByUser(User $user): Collection|Model
+    public function allByUser(User $user, int $page = 1, ?int $perPage = null): Collection
     {
         Required($user, 'user');
-        $activities = $user->activities;
-        NotFound($activities, 'activities');
+        $query = $user->activities()->orderBy('activities.id');
+        if ($perPage === null) {
+            $items = Pagination::bounded($query);
+            NotFound($items, 'activities');
 
-        return $activities->load($this->toBeLoaded());
+            return $items->load($this->toBeLoaded());
+        }
+        Pagination::validate($page, $perPage);
+        $items = $query->with($this->toBeLoaded(true))->withCount(['reviews'])
+            ->forPage($page, $perPage)->get();
+
+        return $items;
     }
 
     public function findByUser(User $user, mixed $id): Activity
@@ -96,8 +105,8 @@ final class ActivityServices
         return $activity->update(['is_active' => ! $activity->is_active]);
     }
 
-    private function toBeLoaded()
+    private function toBeLoaded(bool $summary = false): array
     {
-        return ['court', 'days', 'location', 'tags', 'medias', 'category', 'reviews'];
+        return $summary ? ['court', 'days', 'location', 'tags', 'medias', 'category'] : ['court', 'days', 'location', 'tags', 'medias', 'category', 'reviews'];
     }
 }

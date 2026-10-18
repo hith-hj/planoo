@@ -19,6 +19,23 @@ beforeEach(function () {
 });
 
 describe('Notify Event Session Test', function () {
+    it('keeps the same session and sends no extra notifications when run again', function (int $status) {
+        $event = Event::factory()->hasCustomers(2)->create([
+            'status' => EventStatus::active->value,
+            'start_date' => '2026-05-19',
+            'end_date' => '2026-05-26',
+        ]);
+        $event->appointments()->delete();
+        Artisan::call('app:nes', ['date' => '2026-05-19']);
+        $session = $event->appointments()->sole();
+        $session->update(['status' => $status]);
+        $notifications = Notification::count();
+        Artisan::call('app:nes', ['date' => '2026-05-19']);
+        expect($event->appointments()->sole()->id)->toBe($session->id);
+        expect($session->fresh()->status)->toBe($status);
+        expect(Notification::count())->toBe($notifications);
+    })->with([AppointmentStatus::accepted->value, AppointmentStatus::canceled->value, AppointmentStatus::completed->value]);
+
     it('notifies customers and creates appointment for matching event day', function () {
         $user = User::factory()->create();
         $event = Event::factory()

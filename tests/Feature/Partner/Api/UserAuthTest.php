@@ -13,14 +13,14 @@ beforeEach(function () {
 describe('UserAuth Controller test', function () {
 
     it('registers_a_user', function () {
-        $data = User::factory()->password()->make()->toArray();
+        $data = User::factory()->password()->make()->makeVisible(['password', 'firebase_token'])->toArray();
         $data['password_confirmation'] = 'password';
         $res = $this->postJson(route('partner.register'), $data);
         expect($res->status())->toBe(201);
     });
 
     it('fails_to_registers_a_user', function () {
-        $data = User::factory()->make(['acount_type' => 'kiki'])->toArray();
+        $data = User::factory()->make(['acount_type' => 'kiki'])->makeVisible(['password', 'firebase_token'])->toArray();
         $res = $this->postJson(route('partner.register'), $data);
         expect($res->status())->toBe(422);
     });

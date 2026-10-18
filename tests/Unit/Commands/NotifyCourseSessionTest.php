@@ -57,6 +57,16 @@ describe('test NotifyCourseCustomer Command', function () {
             'is_viewed' => 0,
             'type' => NotificationTypes::session->value,
         ]);
+        $sessionCount = $course->appointments()->count();
+        $notificationCount = $customer->notifications()->count();
+        artisan('app:ncs')->assertExitCode(0);
+        expect($course->appointments()->count())->toBe($sessionCount);
+        expect($customer->notifications()->count())->toBe($notificationCount);
+        assertDatabaseHas('course_customer', [
+            'customer_id' => $customer->id,
+            'course_id' => $course->id,
+            'remaining_sessions' => 1,
+        ]);
     });
 
     it('marks customer complete and sends finish notification', function () {

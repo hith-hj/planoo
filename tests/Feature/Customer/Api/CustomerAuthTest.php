@@ -15,7 +15,7 @@ describe('CustomerAuth Controller test', function () {
 
     it('registers_a_customer', function () {
         Customer::truncate();
-        $data = Customer::factory()->password()->make()->toArray();
+        $data = Customer::factory()->password()->make()->makeVisible(['password', 'firebase_token'])->toArray();
         $data['password_confirmation'] = 'password';
         $res = $this->postJson(route('customer.register'), $data);
         $res->assertOk();
@@ -24,7 +24,7 @@ describe('CustomerAuth Controller test', function () {
 
     it('registers_a_customer_with_profile_image', function () {
         Customer::truncate();
-        $data = Customer::factory()->password()->make()->toArray();
+        $data = Customer::factory()->password()->make()->makeVisible(['password', 'firebase_token'])->toArray();
         $data['password_confirmation'] = 'password';
         $data['profile_image'] = Media::factory()->fakeFile('kosa.jpeg');
         $res = $this->postJson(route('customer.register'), $data);
@@ -34,7 +34,7 @@ describe('CustomerAuth Controller test', function () {
 
     it('fails_to_registers_a_customer_yonger_that_14', function () {
         Customer::truncate();
-        $data = Customer::factory()->password()->make()->toArray();
+        $data = Customer::factory()->password()->make()->makeVisible(['password', 'firebase_token'])->toArray();
         $data['password_confirmation'] = 'password';
         $data['birthdate'] = now()->format('Y-m-d');
         $data['profile_image'] = Media::factory()->fakeFile('kosa.jpeg');
@@ -44,7 +44,7 @@ describe('CustomerAuth Controller test', function () {
     });
 
     it('fails_to_registers_a_customer', function () {
-        $data = Customer::factory()->make()->toArray();
+        $data = Customer::factory()->make()->makeVisible(['password', 'firebase_token'])->toArray();
         $res = $this->postJson(route('customer.register'), $data);
         expect($res->status())->toBe(422);
         expect($res->json('success'))->toBe(false);

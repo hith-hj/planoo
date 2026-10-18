@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
+use App\Jobs\SyncMediaFile;
 use App\Models\Media;
+use DomainException;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 trait MediaHandler
@@ -23,6 +25,10 @@ trait MediaHandler
 
     public function mediaByName(?string $name = ''): ?Model
     {
+        if ($this->relationLoaded('medias')) {
+            return $this->medias->firstWhere('name', $name);
+        }
+
         return $this->medias()->where('name', $name)->first();
     }
 
@@ -54,22 +60,27 @@ trait MediaHandler
             $fileName,
             'public'
         );
-        if (! app()->environment(['local', 'testing'])) {
-            defer(fn () => Artisan::call('app:sync-files-to-public'));
-        }
+        Truthy($path === false, 'Media upload failed');
 
         try {
-            return $this->medias()->create([
+            $media = $this->medias()->create([
                 'url' => $path,
                 'type' => $type,
                 'name' => $this->getFileName($file, $name),
             ]);
         } catch (Exception $e) {
+            Storage::disk('public')->delete($path);
             Log::error("Media Upload Faild: {$e->getMessage()}");
             Truthy(true, 'Media Upload Faild');
 
             return null;
         }
+
+        if (! app()->environment(['local', 'testing'])) {
+            SyncMediaFile::dispatch($path);
+        }
+
+        return $media;
     }
 
     private function getFileType(UploadedFile $file): string
@@ -98,7 +109,7 @@ trait MediaHandler
         $allowed = ['image/jpeg', 'image/jpg', 'image/png', 'video/mp4'];
 
         if (! in_array($mime, $allowed)) {
-            throw new Exception("File type $mime is not supported");
+            throw new DomainException("File type $mime is not supported");
         }
 
         return $mime;

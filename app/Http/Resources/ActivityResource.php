@@ -28,6 +28,7 @@ final class ActivityResource extends JsonResource
             'price' => $this->price,
             'session_duration' => $this->session_duration,
             'rate' => $this->rate,
+            'reviews_count' => $this->whenCounted('reviews'),
             ...$this->extras(),
         ];
     }

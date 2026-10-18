@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Partner\Api;
 use App\Http\Controllers\Controller;
 use App\Services\ActivityServices;
 use App\Services\AppointmentServices;
-use App\Services\CodeServices;
 use App\Services\CustomerServices;
 use App\Validators\AppointmentValidators;
 use Illuminate\Http\Request;
@@ -27,12 +26,11 @@ final class AppointmentController extends Controller
         $paginate = $request->boolean('paginate', true);
 
         $query = $this->services->getUserQuery(Auth::user(), $ownerType);
-        $perPage = $paginate === false ? $query->count() : $perPage;
         $appointments = $this->services->allByQuery($query, $page, $perPage, $filters, $orderBy, $paginate);
 
         return Success(payload: [
             'page' => $page,
-            'perPage' => $perPage,
+            'perPage' => $paginate === false ? count($appointments) : $perPage,
             'appointments' => $appointments->toResourceCollection(),
         ]);
     }
@@ -53,7 +51,7 @@ final class AppointmentController extends Controller
     public function find(Request $request)
     {
         $validator = AppointmentValidators::find($request->all());
-        $appointment = $this->services->find($validator->safe()->input('appointment_id'));
+        $appointment = $this->services->findForActor(Auth::user(), $validator->safe()->input('appointment_id'));
 
         return Success(payload: [
             'appointment' => $appointment->toResource(),
@@ -72,27 +70,14 @@ final class AppointmentController extends Controller
     public function create(
         Request $request,
         ActivityServices $activityServices,
-        CodeServices $codeServices,
         CustomerServices $customerServices
     ) {
         $validator = AppointmentValidators::create($request->all());
 
-        $code = $codeServices->codeById($validator->safe()->integer('code'));
-        Truthy(! $code->isValid(), 'Invalid code');
-        $codeServices->deleteCode($code);
-
         $activity = $activityServices
             ->findByUser(Auth::user(), $validator->safe()->input('activity_id'));
-        if ($this->services->checkAppointmentExists($activity, $validator->safe()->all())) {
-            return Error('appointment just got booked');
-        }
         $customer = $customerServices->getCustomer($validator->safe()->all());
-        // Prevent double booking for customers (own appointments + attended events/courses).
-        if (! $this->services->canCreateAppointment($customer, $validator->safe()->all())) {
-            return Error('You have Appointment at this date');
-        }
-
-        $appointment = $this->services->create($activity, $validator->safe()->all(), $customer);
+        $appointment = $this->services->book($activity, Auth::user(), $customer, $validator->safe()->all());
 
         return Success(payload: ['appointment' => $appointment->toResource()]);
     }
@@ -100,7 +85,7 @@ final class AppointmentController extends Controller
     public function cancel(Request $request)
     {
         $validator = AppointmentValidators::find($request->all());
-        $appointment = $this->services->find($validator->safe()->input('appointment_id'));
+        $appointment = $this->services->findForActor(Auth::user(), $validator->safe()->input('appointment_id'));
         $this->services->cancel(Auth::user(), $appointment);
 
         return Success(payload: [

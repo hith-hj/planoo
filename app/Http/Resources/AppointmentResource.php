@@ -44,7 +44,7 @@ final class AppointmentResource extends JsonResource
             ];
         }
 
-        $this->holder->load(['category', 'medias']);
+        $this->holder->loadMissing(['category', 'medias']);
 
         return [
             'type' => class_basename($this->appointable_type),
@@ -53,7 +53,7 @@ final class AppointmentResource extends JsonResource
             'category' => $this->holder->category,
             'rate' => $this->holder->rate,
             'description' => $this->holder->description,
-            'image' => $this->holder->medias[0],
+            'image' => $this->holder->medias->first(),
             ...$this->getHolderDetails(class_basename($this->appointable_type)),
         ];
     }

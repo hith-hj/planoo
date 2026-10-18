@@ -34,6 +34,8 @@ final class EventResource extends JsonResource
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'rate' => $this->rate,
+            'reviews_count' => $this->whenCounted('reviews'),
+            'customers_count' => $this->whenCounted('customers'),
             'status' => EventStatus::from($this->status)->name,
             ...$this->extras(),
         ];

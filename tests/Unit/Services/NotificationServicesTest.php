@@ -40,13 +40,13 @@ describe('Notification Service', function () {
     });
 
     it('can mark a notifications as viewed', function () {
-        $notification = Notification::factory()->create(['is_viewed' => 0]);
-        expect($this->services->view([$notification->id]))->toBeNumeric();
+        $notification = Notification::factory()->for($this->user, 'holder')->create(['is_viewed' => 0]);
+        expect($this->services->view($this->user, [$notification->id]))->toBeNumeric();
         expect($notification->refresh()->is_viewed)->toBeTrue();
     });
 
     it('fails to mark a notifications as viewed with empty array', function () {
-        expect(fn () => $this->services->view([]))->toThrow(Exception::class);
+        expect(fn () => $this->services->view($this->user, []))->toThrow(Exception::class);
     });
 
     it('throws an exception when finding a non-existing notification', function () {

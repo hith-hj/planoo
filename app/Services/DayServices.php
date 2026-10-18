@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Interfaces\Dayable;
 use App\Models\Day;
+use DomainException;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -92,17 +93,17 @@ final class DayServices
         foreach ($oldDays as $od) {
             // break out immediately
             if ($od['day'] === $newDay['day'] && ! $updateing) {
-                throw new Exception("{$newDay['day']} exists");
+                throw new DomainException("{$newDay['day']} exists");
             }
             if ($od['day'] === $newDay['day']) {
                 if ($newDay['start'] === $od['start'] && $newDay['end'] === $od['end']) {
-                    throw new Exception("Duplicated Day {$od['day']} at {$od['start']}"); // duplication
+                    throw new DomainException("Duplicated Day {$od['day']} at {$od['start']}"); // duplication
                 }
                 if ($updateing && isset($newDay['id']) && $newDay['id'] === $od['id']) {
                     continue;
                 }
                 if ($newDay['start'] < $od['end'] && $newDay['end'] > $od['start']) {
-                    throw new Exception("Conflict with {$od['day']} at {$od['start']}"); // intersecting
+                    throw new DomainException("Conflict with {$od['day']} at {$od['start']}"); // intersecting
                 }
             }
         }

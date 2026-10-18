@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Partner\Api;
 use App\Http\Controllers\Controller;
 use App\Services\ActivityServices;
 use App\Services\CourtServices;
+use App\Support\Pagination;
 use App\Validators\ActivityValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +16,12 @@ final class ActivityController extends Controller
 {
     public function __construct(public ActivityServices $services) {}
 
-    public function all()
+    public function all(Request $request)
     {
-        $activities = $this->services->allByUser(Auth::user());
+        [$page, $perPage] = Pagination::fromRequest($request);
+        $activities = $this->services->allByUser(Auth::user(), $page, $perPage);
 
-        return Success(payload: ['activities' => $activities->toResourceCollection()]);
+        return Success(payload: ['activities' => $activities->toResourceCollection(), ...($perPage === null ? [] : compact('page', 'perPage'))]);
     }
 
     public function find(Request $request)

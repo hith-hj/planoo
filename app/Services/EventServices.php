@@ -9,10 +9,11 @@ use App\Enums\NotificationTypes;
 use App\Models\Customer;
 use App\Models\Event;
 use App\Models\User;
+use App\Support\Pagination;
 use App\Traits\Filters;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 final class EventServices
 {
@@ -25,11 +26,12 @@ final class EventServices
         array $orderBy = [],
         mixed $query = null
     ) {
+        Pagination::validate($page, $perPage);
         if ($query === null) {
             $query = Event::query();
-            $query->with($this->toBeLoaded());
+            $query->with($this->toBeLoaded(true));
         } else {
-            $query->with([...$this->toBeLoaded(), 'isFavorite', 'isAttending']);
+            $query->with([...$this->toBeLoaded(true), 'isFavorite', 'isAttending']);
         }
 
         $this->applyFilters($query, $filters, [
@@ -42,7 +44,7 @@ final class EventServices
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'admission_fee', 'event_duration']);
 
-        $events = $query->paginate($perPage, ['*'], 'page', $page);
+        $events = $query->withCount(['reviews', 'customers'])->paginate($perPage, ['*'], 'page', $page);
 
         NotFound($events->items(), 'events');
 
@@ -51,19 +53,27 @@ final class EventServices
 
     public function all(): Collection
     {
-        $events = Event::all();
+        $events = Pagination::bounded(Event::query());
         NotFound($events, 'events');
 
         return $events->load($this->toBeLoaded());
     }
 
-    public function allByUser(User $user): Collection|Model
+    public function allByUser(User $user, int $page = 1, ?int $perPage = null): Collection
     {
         Required($user, 'user');
-        $events = $user->events;
-        NotFound($events, 'events');
+        $query = $user->events()->orderBy('events.id');
+        if ($perPage === null) {
+            $items = Pagination::bounded($query);
+            NotFound($items, 'events');
 
-        return $events->load($this->toBeLoaded());
+            return $items->load($this->toBeLoaded());
+        }
+        Pagination::validate($page, $perPage);
+        $items = $query->with($this->toBeLoaded(true))->withCount(['reviews', 'customers'])
+            ->forPage($page, $perPage)->get();
+
+        return $items;
     }
 
     public function findByUser(User $user, mixed $id): Event
@@ -118,43 +128,51 @@ final class EventServices
 
     public function attend(Customer $customer, Event $event)
     {
-        Required($customer, 'customer');
-        Required($event, 'event');
-        Truthy($this->isAttending($customer, $event), 'already attending this event');
-        Truthy($event->is_full, 'Event is full');
-        Truthy($event->status !== EventStatus::pending->value, 'event is canceled');
-        Truthy(! $event->is_active, 'event is inactive');
+        return DB::transaction(function () use ($customer, $event): Event {
+            $event = Event::query()->lockForUpdate()->findOrFail($event->id);
+            $customer = Customer::query()->lockForUpdate()->findOrFail($customer->id);
+            Required($customer, 'customer');
+            Required($event, 'event');
+            Truthy($this->isAttending($customer, $event), 'already attending this event');
+            Truthy($event->is_full || $event->customers()->count() >= $event->capacity, 'Event is full');
+            Truthy($event->status !== EventStatus::pending->value, 'event is canceled');
+            Truthy(! $event->is_active, 'event is inactive');
 
-        $event->customers()->attach($customer->id);
-        if ($event->customers()->count() === $event->capacity) {
-            $event->update(['is_full' => true]);
-        }
-        $event->user->notify(
-            'New Customer',
-            'You have a new customer',
-            ['type' => NotificationTypes::event->value, 'event' => $event->id]
-        );
+            $event->customers()->attach($customer->id);
+            if ($event->customers()->count() >= $event->capacity) {
+                $event->update(['is_full' => true]);
+            }
+            $event->user->notify(
+                'New Customer',
+                'You have a new customer',
+                ['type' => NotificationTypes::event->value, 'event' => $event->id]
+            );
 
-        return $event;
+            return $event;
+        }, 3);
     }
 
     public function cancel(Customer $customer, Event $event)
     {
-        Required($customer, 'customer');
-        Required($event, 'event');
-        Truthy(! $this->isAttending($customer, $event), 'not attending this event');
-        Truthy(! $this->canCancel($customer, $event), 'can\'t cancel this event');
-        $event->customers()->detach($customer->id);
-        if ($event->customers()->count() < $event->capacity) {
-            $event->update(['is_full' => false]);
-        }
-        $event->user->notify(
-            'Customer Left',
-            'Customer left corse',
-            ['type' => NotificationTypes::event->value, 'event' => $event->id]
-        );
+        return DB::transaction(function () use ($customer, $event): Event {
+            $event = Event::query()->lockForUpdate()->findOrFail($event->id);
+            $customer = Customer::query()->lockForUpdate()->findOrFail($customer->id);
+            Required($customer, 'customer');
+            Required($event, 'event');
+            Truthy(! $this->isAttending($customer, $event), 'not attending this event');
+            Truthy(! $this->canCancel($customer, $event), 'can\'t cancel this event');
+            $event->customers()->detach($customer->id);
+            if ($event->customers()->count() < $event->capacity) {
+                $event->update(['is_full' => false]);
+            }
+            $event->user->notify(
+                'Customer Left',
+                'Customer left corse',
+                ['type' => NotificationTypes::event->value, 'event' => $event->id]
+            );
 
-        return $event;
+            return $event;
+        }, 3);
     }
 
     public function calculateEventEndDate(Event $event): bool
@@ -231,9 +249,9 @@ final class EventServices
         return $customer->events();
     }
 
-    private function toBeLoaded()
+    private function toBeLoaded(bool $summary = false): array
     {
-        return ['court', 'days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers'];
+        return $summary ? ['court', 'days', 'location', 'tags', 'medias', 'category'] : ['court', 'days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers.medias'];
     }
 
     private function isAttending(Customer $customer, Event $event): bool

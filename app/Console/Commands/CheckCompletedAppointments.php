@@ -21,11 +21,20 @@ final class CheckCompletedAppointments extends Command
         $now = Carbon::now();
         $currentDate = $now->toDateString();
         $currentHour = $now->format('H:i');
-        Appointment::where([
-            ['date', '<=', $currentDate],
-            ['time', '<', $currentHour],
-            ['status', AppointmentStatus::accepted->value],
-        ])->update(['status' => AppointmentStatus::completed->value]);
+        Appointment::query()
+            ->where('status', AppointmentStatus::accepted->value)
+            ->where(function ($query) use ($currentDate, $currentHour): void {
+                $query->where('date', '<', $currentDate)
+                    ->orWhere(function ($query) use ($currentDate, $currentHour): void {
+                        $query->where('date', $currentDate)->where('end_at', '<=', $currentHour.':00');
+                    });
+            })
+            ->with('holder.user')
+            ->chunkById(100, function ($appointments): void {
+                foreach ($appointments as $appointment) {
+                    $appointment->update(['status' => AppointmentStatus::completed->value]);
+                }
+            });
 
         $this->info('Past accepted appointments marked as completed.');
     }

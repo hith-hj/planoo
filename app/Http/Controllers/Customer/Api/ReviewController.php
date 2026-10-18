@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Customer\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\ReviewServices;
+use App\Support\Pagination;
 use App\Validators\ReviewValidators;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,11 +16,12 @@ final class ReviewController extends Controller
 {
     public function __construct(public ReviewServices $service) {}
 
-    public function all(): JsonResponse
+    public function all(Request $request): JsonResponse
     {
-        $reviews = $this->service->all(getModelGlobal());
+        [$page, $perPage] = Pagination::fromRequest($request);
+        $reviews = $this->service->all(getModelGlobal(), $page, $perPage);
 
-        return Success(payload: ['reviews' => $reviews->toResourceCollection()]);
+        return Success(payload: ['reviews' => $reviews->toResourceCollection(), ...($perPage === null ? [] : compact('page', 'perPage'))]);
     }
 
     public function create(Request $request)

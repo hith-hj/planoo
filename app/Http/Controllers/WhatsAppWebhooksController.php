@@ -21,9 +21,10 @@ final class WhatsAppWebhooksController extends Controller
         $token = $request->query('hub_verify_token');
         $challenge = $request->query('hub_challenge');
 
-        $localToken = env('WHATSAPP_WEBHOOK_VERIFY_TOKEN');
+        $localToken = config('services.whatsapp.verify_token');
 
-        if ($mode === 'subscribe' && $token === $localToken) {
+        if ($mode === 'subscribe' && is_string($localToken) && $localToken !== ''
+            && is_string($token) && hash_equals($localToken, $token)) {
             Log::info('WhatsApp Webhook successfully verified.');
 
             // Meta explicitly expects a raw string response of the challenge variable with a 200 code
@@ -41,6 +42,13 @@ final class WhatsAppWebhooksController extends Controller
      */
     public function handle(Request $request)
     {
+        $secret = config('services.whatsapp.app_secret');
+        $signature = $request->header('X-Hub-Signature-256');
+        if (! is_string($secret) || $secret === '' || ! is_string($signature)
+            || ! hash_equals('sha256='.hash_hmac('sha256', $request->getContent(), $secret), $signature)) {
+            return response('Unauthorized', 403);
+        }
+
         $payload = $request->all();
 
         defer(function () use ($payload) {

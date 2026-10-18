@@ -54,11 +54,9 @@ trait FCMHandler
      */
     private function handleInvalidToken(string $token, string $reason): void
     {
-        // 1. Log it for clear system tracking
-        Log::warning("FCM token discarded. Reason: {$reason}. Token: {$token}");
-
-        // 2. Clear from database
-        $this->update(['fcm_token' => null]);
+        Log::warning('FCM token discarded.', ['reason' => $reason, 'recipient_id' => $this->getKey()]);
+        $this->newQuery()->whereKey($this->getKey())->where('firebase_token', $token)->update(['firebase_token' => null]);
+        $this->refresh();
     }
 
     private function safeFcmDataArray(array $data): array

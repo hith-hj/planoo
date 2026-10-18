@@ -5,20 +5,16 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\AccountStatus;
-use App\Enums\CodesTypes;
 use App\Models\Customer;
-use Exception;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Validator;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use App\Traits\AccountAuthentication;
 
 final class CustomerAuthServices
 {
-    public function __construct()
-    {
-        Auth::shouldUse('customer:api');
-    }
+    use AccountAuthentication;
+
+    protected const GUARD = 'customer:api';
+
+    protected const MODEL = Customer::class;
 
     public function create(array $data): Customer
     {
@@ -38,123 +34,6 @@ final class CustomerAuthServices
         ]);
 
         $customer->fresh()->verify(by: $data['by'] ?? 'fcm');
-
-        return $customer;
-    }
-
-    public function verify(Validator $validator): Customer
-    {
-        $customer = $this->getCustomer($validator);
-        $code = $customer->code(CodesTypes::verification->name);
-        Truthy($code->code !== $validator->safe()->integer('code'), 'invalid code');
-        Truthy($code->expire_at !== null && ! $code->isValid(), 'code expired');
-        $customer->verified();
-
-        return $customer;
-    }
-
-    public function login(Validator $validator): array
-    {
-        $credentials = $validator->safe()->only(['country_code', 'phone', 'password']);
-        if (! Auth::attempt($credentials)) {
-            throw new Exception(__('invalid credentials'));
-        }
-        /** @var Customer $customer */
-        $customer = Auth::user();
-        if ($customer->verified_at === null) {
-            throw new Exception(__('unverified account'));
-        }
-
-        if ($customer->firebase_token === 'not-set' || $customer->firebase_token === null) {
-            $customer->update(['firebase_token' => $validator->safe()->input('firebase_token')]);
-        }
-
-        if (! $customer->is_active) {
-            throw new Exception(__('Your request will be processed within 24 hours'));
-        }
-
-        return [$customer->toResource(), JWTAuth::fromUser($customer)];
-    }
-
-    public function forgetPassword(Validator $validator): Customer
-    {
-        $customer = $this->getCustomer($validator);
-        Truthy($customer->firebase_token !== $validator->safe()->input('firebase_token'), 'invalid operation');
-        $customer->verify(CodesTypes::password->name);
-
-        return $customer;
-    }
-
-    public function resetPassword(Validator $validator): Customer
-    {
-        $customer = $this->getCustomer($validator);
-        Truthy($customer->firebase_token !== $validator->safe()->input('firebase_token'), 'invalid operation');
-        Truthy($customer->verified_at !== null, __('verify account'));
-
-        $code = $customer->code(CodesTypes::password->name);
-        Truthy($code->code !== $validator->safe()->integer('code'), 'invalid code');
-        Truthy($code->expire_at !== null && ! $code->isValid(), 'code expired');
-
-        $customer->verified(CodesTypes::password->name)
-            ->update(['password' => Hash::make($validator->safe()->input('password'))]);
-
-        return $customer;
-    }
-
-    public function resendCode(Validator $validator): Customer
-    {
-        $customer = $this->getCustomer($validator);
-        Truthy($customer->verified_at !== null, 'invalid operation');
-
-        $customer->verify();
-
-        return $customer;
-    }
-
-    public function changePassword(Validator $validator): Customer
-    {
-        /** @var Customer $customer */
-        $customer = Auth::user();
-        if ($customer->verified_at === null) {
-            throw new Exception(__('verify your account'));
-        }
-
-        if (! Hash::check($validator->safe()->input('old_password'), $customer->password)) {
-            throw new Exception(__('invalid password'));
-        }
-
-        if (Hash::check($validator->safe()->input('new_password'), $customer->password)) {
-            throw new Exception(__('passwords are equals'));
-        }
-
-        $customer->update(['password' => Hash::make($validator->safe()->input('new_password'))]);
-
-        return $customer;
-    }
-
-    public function refreshToken()
-    {
-        return Auth::refresh();
-    }
-
-    public function logout($clear_token = false)
-    {
-        if ($clear_token) {
-            /** @var Customer $customer */
-            $customer = Auth::user();
-            $customer->update(['firebase_token' => null]);
-        }
-
-        return JWTAuth::invalidate(JWTAuth::getToken());
-    }
-
-    private function getCustomer($validator): Customer
-    {
-        $customer = Customer::where([
-            ['country_code', $validator->safe()->input('country_code')],
-            ['phone', $validator->safe()->input('phone')],
-        ])->first();
-        NotFound($customer);
 
         return $customer;
     }

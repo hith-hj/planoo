@@ -6,17 +6,26 @@ namespace App\Services;
 
 use App\Models\Court;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+use App\Support\Pagination;
+use Illuminate\Database\Eloquent\Collection;
 
 final class CourtServices
 {
-    public function allByUser(User $user): Collection|Model
+    public function allByUser(User $user, int $page = 1, ?int $perPage = null): Collection
     {
-        $courts = $user->courts()->with($this->toBeLoaded())->get();
-        NotFound($courts, 'courts');
+        Required($user, 'user');
+        $query = $user->courts()->orderBy('courts.id');
+        if ($perPage === null) {
+            $items = Pagination::bounded($query);
+            NotFound($items, 'courts');
 
-        return $courts;
+            return $items->load($this->toBeLoaded());
+        }
+        Pagination::validate($page, $perPage);
+        $items = $query->with($this->toBeLoaded(true))->withCount(['activities', 'courses', 'events'])
+            ->forPage($page, $perPage)->get();
+
+        return $items;
     }
 
     public function findByUser(User $user, mixed $id): Court
@@ -38,17 +47,24 @@ final class CourtServices
 
     public function all(int $page = 1, int $perPage = 10)
     {
-        $query = Court::with($this->toBeLoaded());
+        Pagination::validate($page, $perPage);
+        $query = Court::with($this->toBeLoaded(true))->withCount(['activities', 'courses', 'events']);
         $courts = $query->paginate($perPage, ['*'], 'page', $page);
         NotFound($courts, 'court');
 
         return $courts;
     }
 
-    public function search(string $name)
+    public function search(string $name, int $page = 1, ?int $perPage = null): Collection
     {
         Required($name, 'name');
-        $court = Court::whereLike('name', $name)->get();
+        $query = Court::whereLike('name', $name)->orderBy('id');
+        if ($perPage !== null) {
+            Pagination::validate($page, $perPage);
+
+            return $query->withCount(['activities', 'courses', 'events'])->forPage($page, $perPage)->get();
+        }
+        $court = Pagination::bounded($query);
         NotFound($court, 'court');
 
         return $court->load($this->toBeLoaded());
@@ -82,11 +98,11 @@ final class CourtServices
 
     public function hasCourt(User $user): bool
     {
-        return $user->courts()->count() > 0;
+        return $user->courts()->exists();
     }
 
-    private function toBeLoaded(): array
+    private function toBeLoaded(bool $summary = false): array
     {
-        return ['activities', 'courses', 'events'];
+        return $summary ? [] : ['activities', 'courses', 'events'];
     }
 }

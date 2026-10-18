@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Customer\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\CourtServices;
+use App\Support\Pagination;
 use App\Validators\CourtValidators;
 use Illuminate\Http\Request;
 
@@ -28,10 +29,13 @@ final class CourtController extends Controller
 
     public function search(Request $request)
     {
-        $court = $this->services->search($request->input('name'));
+        $data = $request->validate(['name' => ['required', 'string', 'max:200']]);
+        [$page, $perPage] = Pagination::fromRequest($request);
+        $court = $this->services->search($data['name'], $page, $perPage);
 
         return Success(payload: [
             'court' => $court->toResourceCollection(),
+            ...($perPage === null ? [] : compact('page', 'perPage')),
         ]);
     }
 

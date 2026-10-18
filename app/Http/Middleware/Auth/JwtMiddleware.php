@@ -36,6 +36,9 @@ final class JwtMiddleware
             if (! $user) {
                 return Error(msg: 'User Not Found', code: 416);
             }
+            if (! $user->is_active || $user->verified_at === null) {
+                return Error(msg: 'Account access denied', code: 403);
+            }
         } catch (JWTException $e) {
             Log::error('JWT Error: '.$e->getMessage());
 

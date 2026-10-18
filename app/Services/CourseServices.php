@@ -10,10 +10,11 @@ use App\Enums\NotificationTypes;
 use App\Models\Course;
 use App\Models\Customer;
 use App\Models\User;
+use App\Support\Pagination;
 use App\Traits\Filters;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 final class CourseServices
 {
@@ -26,11 +27,12 @@ final class CourseServices
         array $orderBy = [],
         mixed $query = null,
     ) {
+        Pagination::validate($page, $perPage);
         if ($query === null) {
             $query = Course::query();
-            $query->with($this->toBeLoaded());
+            $query->with($this->toBeLoaded(true));
         } else {
-            $query->with([...$this->toBeLoaded(), 'isFavorite', 'isAttending']);
+            $query->with([...$this->toBeLoaded(true), 'isFavorite', 'isAttending']);
         }
 
         $this->applyFilters($query, $filters, [
@@ -44,7 +46,7 @@ final class CourseServices
 
         $this->applyOrderBy($query, $orderBy, ['rate', 'price']);
 
-        $courses = $query->paginate($perPage, ['*'], 'page', $page);
+        $courses = $query->withCount(['reviews', 'customers'])->paginate($perPage, ['*'], 'page', $page);
 
         NotFound($courses->items(), 'courses');
 
@@ -53,19 +55,27 @@ final class CourseServices
 
     public function all(): Collection
     {
-        $courses = Course::all();
+        $courses = Pagination::bounded(Course::query());
         NotFound($courses, 'courses');
 
         return $courses->load($this->toBeLoaded());
     }
 
-    public function allByUser(User $user): Collection|Model
+    public function allByUser(User $user, int $page = 1, ?int $perPage = null): Collection
     {
         Required($user, 'user');
-        $courses = $user->courses;
-        NotFound($courses, 'courses');
+        $query = $user->courses()->orderBy('courses.id');
+        if ($perPage === null) {
+            $items = Pagination::bounded($query);
+            NotFound($items, 'courses');
 
-        return $courses->load($this->toBeLoaded());
+            return $items->load($this->toBeLoaded());
+        }
+        Pagination::validate($page, $perPage);
+        $items = $query->with($this->toBeLoaded(true))->withCount(['reviews', 'customers'])
+            ->forPage($page, $perPage)->get();
+
+        return $items;
     }
 
     public function findByUser(User $user, mixed $id): Course
@@ -120,61 +130,69 @@ final class CourseServices
 
     public function attend(Customer $customer, Course $course)
     {
-        Required($customer, 'customer');
-        Required($course, 'course');
-        Truthy($this->isAttending($customer, $course), 'already attending this course');
-        Truthy($course->is_full, 'course is full');
-        Truthy(
-            ! in_array($course->status, [
-                CourseStatus::pending->value,
-                CourseStatus::active->value,
-            ]),
-            'event is canceled'
-        );
-        Truthy(! $course->is_active, 'course is inactive');
+        return DB::transaction(function () use ($customer, $course): Course {
+            $course = Course::query()->lockForUpdate()->findOrFail($course->id);
+            $customer = Customer::query()->lockForUpdate()->findOrFail($customer->id);
+            Required($customer, 'customer');
+            Required($course, 'course');
+            Truthy($this->isAttending($customer, $course), 'already attending this course');
+            Truthy($course->is_full || $course->customers()->count() >= $course->capacity, 'course is full');
+            Truthy(
+                ! in_array($course->status, [
+                    CourseStatus::pending->value,
+                    CourseStatus::active->value,
+                ]),
+                'event is canceled'
+            );
+            Truthy(! $course->is_active, 'course is inactive');
 
-        $remaining_session = $course->course_duration;
+            $remaining_session = $course->course_duration;
 
-        if (
-            $course->status === CourseStatus::active->value &&
-            Carbon::parse($course->start_date)->lt(today())
-        ) {
-            $remaining_session = $course->course_duration - $course->appointments()->count();
-        }
-        $course->customers()
-            ->attach($customer->id, [
-                'remaining_sessions' => $remaining_session,
-                'is_complete' => false,
-            ]);
-        if ($course->customers()->count() === $course->capacity) {
-            $course->update(['is_full' => true]);
-        }
-        $course->user->notify(
-            'New Customer',
-            'You have a new customer',
-            ['type' => NotificationTypes::course->value, 'course' => $course->id]
-        );
+            if (
+                $course->status === CourseStatus::active->value &&
+                Carbon::parse($course->start_date)->lt(today())
+            ) {
+                $remaining_session = $course->course_duration - $course->appointments()->count();
+            }
+            $course->customers()
+                ->attach($customer->id, [
+                    'remaining_sessions' => $remaining_session,
+                    'is_complete' => false,
+                ]);
+            if ($course->customers()->count() >= $course->capacity) {
+                $course->update(['is_full' => true]);
+            }
+            $course->user->notify(
+                'New Customer',
+                'You have a new customer',
+                ['type' => NotificationTypes::course->value, 'course' => $course->id]
+            );
 
-        return $course;
+            return $course;
+        }, 3);
     }
 
     public function cancel(Customer $customer, Course $course)
     {
-        Required($customer, 'customer');
-        Required($course, 'course');
-        Truthy(! $this->isAttending($customer, $course), 'not attending this course');
-        Truthy(! $this->canCancel($customer, $course), 'you can\'t cancel now');
-        $course->customers()->detach($customer->id);
-        if ($course->customers()->count() < $course->capacity) {
-            $course->update(['is_full' => false]);
-        }
-        $course->user->notify(
-            'Customer Left',
-            'Customer left course',
-            ['type' => NotificationTypes::course->value, 'course' => $course->id]
-        );
+        return DB::transaction(function () use ($customer, $course): Course {
+            $course = Course::query()->lockForUpdate()->findOrFail($course->id);
+            $customer = Customer::query()->lockForUpdate()->findOrFail($customer->id);
+            Required($customer, 'customer');
+            Required($course, 'course');
+            Truthy(! $this->isAttending($customer, $course), 'not attending this course');
+            Truthy(! $this->canCancel($customer, $course), 'you can\'t cancel now');
+            $course->customers()->detach($customer->id);
+            if ($course->customers()->count() < $course->capacity) {
+                $course->update(['is_full' => false]);
+            }
+            $course->user->notify(
+                'Customer Left',
+                'Customer left course',
+                ['type' => NotificationTypes::course->value, 'course' => $course->id]
+            );
 
-        return $course;
+            return $course;
+        }, 3);
     }
 
     public function getCustomerQuery(Customer $customer)
@@ -182,9 +200,9 @@ final class CourseServices
         return $customer->courses();
     }
 
-    private function toBeLoaded()
+    private function toBeLoaded(bool $summary = false): array
     {
-        return ['court', 'days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers'];
+        return $summary ? ['court', 'days', 'location', 'tags', 'medias', 'category'] : ['court', 'days', 'location', 'tags', 'medias', 'category', 'reviews', 'customers.medias'];
     }
 
     private function isAttending(Customer $customer, Course $course): bool
@@ -198,6 +216,9 @@ final class CourseServices
             ->customers()
             ->where([['customer_id', $customer->id], ['is_complete', false]])
             ->first();
+        if ($customerCourse === null) {
+            return false;
+        }
         $diff = now()
             ->diffInSeconds($customerCourse->pivot->created_at) / 3600;
         if (abs($diff) > config('app.settings.course_cancelation_period', 24)) {

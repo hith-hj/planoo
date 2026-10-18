@@ -68,7 +68,7 @@ if (! function_exists('Exists')) {
     function Exists($argument, string $name = ''): void
     {
         if ($argument) {
-            throw new Exception($name.' '.__('exists'), 400);
+            throw new DomainException($name.' '.__('exists'), 400);
         }
     }
 }
@@ -110,7 +110,7 @@ if (! function_exists('Required')) {
             empty($argument) ||
             (is_countable($argument) && count($argument) === 0)
         ) {
-            throw new Exception(sprintf('%s %s', __("$name"), __('is required')));
+            throw new DomainException(sprintf('%s %s', __("$name"), __('is required')));
         }
     }
 }
@@ -128,7 +128,7 @@ if (! function_exists('Truthy')) {
     function Truthy($condition, $message, ...$parameters): bool
     {
         if ($condition) {
-            throw new Exception(__("$message"), ...$parameters);
+            throw new DomainException(__("$message"), ...$parameters);
         }
 
         return (bool) $condition;
@@ -148,7 +148,7 @@ if (! function_exists('Falsy')) {
     function Falsy($condition, $message, ...$parameters): bool
     {
         if (! $condition) {
-            throw new Exception(__("$message"), ...$parameters);
+            throw new DomainException(__("$message"), ...$parameters);
         }
 
         return (bool) $condition;

@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\AccountStatus;
+use App\Jobs\DeleteMediaFile;
+use App\Models\Course;
 use App\Models\Customer;
+use App\Models\Event;
 use App\Models\Media;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 final class CustomerServices
@@ -100,14 +104,34 @@ final class CustomerServices
 
     public function delete(Customer $customer): bool
     {
-        $customer->medias()->delete();
-        $customer->location()->delete();
-        $customer->courses()->delete();
-        $customer->appointments()->delete();
-        $customer->events()->delete();
-        $customer->delete();
+        return DB::transaction(function () use ($customer): bool {
+            $customer = Customer::query()->lockForUpdate()->findOrFail($customer->id);
+            $courses = Course::query()->whereIn('id', $customer->courses()->select('courses.id'))
+                ->orderBy('id')->lockForUpdate()->get();
+            $events = Event::query()->whereIn('id', $customer->events()->select('events.id'))
+                ->orderBy('id')->lockForUpdate()->get();
+            foreach ($customer->medias()->get() as $media) {
+                $cleanup = str_starts_with($media->url, 'uploads/') ? new DeleteMediaFile($media->url) : null;
+                // The cleanup job removes the source before synchronizing its deletion.
+                $media->deleteQuietly();
+                if ($cleanup) {
+                    DB::afterCommit(fn () => dispatch($cleanup));
+                }
+            }
+            $customer->location()->delete();
+            $customer->courses()->detach();
+            $customer->events()->detach();
+            foreach ($courses->concat($events) as $group) {
+                $group->update(['is_full' => $group->customers()->count() >= $group->capacity]);
+            }
+            $customer->appointments()->delete();
+            $customer->notifications()->delete();
+            $customer->codes()->delete();
+            $customer->favorites()->delete();
+            $customer->reviews()->delete();
 
-        return true;
+            return $customer->delete();
+        }, 3);
     }
 
     public function uploadProfileImage(Customer $customer, array $data)

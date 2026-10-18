@@ -54,6 +54,8 @@ final class User extends Authenticatable implements JWTSubject, Notifiable
         'verified_at',
     ];
 
+    protected $hidden = ['password', 'firebase_token', 'remember_token'];
+
     protected function casts(): array
     {
         return [
@@ -61,10 +63,6 @@ final class User extends Authenticatable implements JWTSubject, Notifiable
             'is_notifiable' => 'bool',
         ];
     }
-
-    // protected $hidden = [
-    //     'password'
-    // ];
 
     public function getJWTIdentifier(): int|string
     {

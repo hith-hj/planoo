@@ -76,7 +76,7 @@ describe('Appointment Controller Tests', function () {
 
     it('find appointment by id ', function () {
         Appointment::truncate();
-        $activity = Activity::factory()->create();
+        $activity = Activity::factory()->for($this->user)->create();
         $appointment = Appointment::factory()
             ->for($activity, 'holder')
             ->create();
@@ -151,6 +151,13 @@ describe('Appointment Controller Tests', function () {
                 ]
             );
 
+        $day = $activity->days()->findOrFail($data['day_id']);
+        $day->update(['is_active' => true, 'start' => '09:00', 'end' => '18:00']);
+        $activity->update(['is_active' => true]);
+        $quote = $this->postJson(route('partner.appointment.check'), $data)->assertOk();
+        $data['code'] = $quote->json('payload.slots.code');
+        $data['time'] = $quote->json('payload.slots.slots.0.start');
+
         $response = $this->postJson(
             route('partner.appointment.create'),
             $data
@@ -175,6 +182,13 @@ describe('Appointment Controller Tests', function () {
                     timeToExpire: '1:m'
                 )->id,
             ]);
+        $day = $activity->days()->findOrFail($data['day_id']);
+        $day->update(['is_active' => true, 'start' => '09:00', 'end' => '18:00']);
+        $activity->update(['is_active' => true]);
+        $quote = $this->postJson(route('partner.appointment.check'), $data)->assertOk();
+        $data['code'] = $quote->json('payload.slots.code');
+        $data['time'] = $quote->json('payload.slots.slots.0.start');
+
         $response = $this->postJson(
             route('partner.appointment.create'),
             $data

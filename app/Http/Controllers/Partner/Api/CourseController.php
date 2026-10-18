@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Services\CourseServices;
 use App\Services\CourtServices;
 use App\Services\CustomerServices;
+use App\Support\Pagination;
 use App\Validators\CourseValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +17,12 @@ final class CourseController extends Controller
 {
     public function __construct(public CourseServices $services) {}
 
-    public function all()
+    public function all(Request $request)
     {
-        $courses = $this->services->allByUser(Auth::user());
+        [$page, $perPage] = Pagination::fromRequest($request);
+        $courses = $this->services->allByUser(Auth::user(), $page, $perPage);
 
-        return Success(payload: ['courses' => $courses->toResourceCollection()]);
+        return Success(payload: ['courses' => $courses->toResourceCollection(), ...($perPage === null ? [] : compact('page', 'perPage'))]);
     }
 
     public function find(Request $request)

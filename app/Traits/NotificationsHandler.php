@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use App\Enums\NotificationTypes;
+use App\Jobs\DeliverNotification;
 use App\Models\Notification;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 trait NotificationsHandler
@@ -31,6 +31,21 @@ trait NotificationsHandler
     }
 
     public function notify(
+        string $title = '',
+        string $body = '',
+        array $data = [],
+        string $provider = 'fcm'
+    ): bool {
+        if (! app()->environment(['testing', 'local']) && config('services.notifications.queued', true)) {
+            DeliverNotification::dispatch($this, $title, $body, $data, $provider);
+
+            return true;
+        }
+
+        return $this->deliverNotification($title, $body, $data, $provider);
+    }
+
+    public function deliverNotification(
         string $title = '',
         string $body = '',
         array $data = [],
@@ -95,22 +110,13 @@ trait NotificationsHandler
     {
         try {
             $res = $this->sendWA($this->phone(), $this->body, $this->data);
-            $notification = $this->store(['result' => ['wamid' => $res->json('messages.0.id')]]);
-            // $payload = [
-            //     'id' => $this->id,
-            //     'wamid' => $res->json('messages.0.id'),
-            //     'phone' => $this->phone(),
-            //     'code' => $this->data['code'],
-            //     'notification_id' => $notification->id,
-            // ];
-            // Cache::add("wa_msg_{$res->json('messages.0.id')}", $payload, now()->addMinutes(10));
+            $this->store(['result' => ['wamid' => $res->json('messages.0.id')]]);
 
             return true;
         } catch (Exception $e) {
-            $this->fcm();
             Log::error("Whatsapp message error {$e->getMessage()}");
 
-            return false;
+            return $this->fcm();
         }
     }
 
@@ -125,10 +131,9 @@ trait NotificationsHandler
 
             return true;
         } catch (Exception $e) {
-            $this->fcm();
             Log::error("SMS message error {$e->getMessage()}");
 
-            return false;
+            return $this->fcm();
         }
     }
 

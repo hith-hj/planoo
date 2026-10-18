@@ -26,12 +26,12 @@ final class AppointmentValidators extends Validators
     public static function create(array $data): ValidationResult
     {
         return Validator::make($data, [
-            'code' => ['required'],
+            'code' => ['required', 'integer'],
             'activity_id' => ['required', 'exists:activities,id'],
             'day_id' => ['required', 'exists:days,id'],
             'date' => ['required', Rule::date()->afterToday()],
             'session_duration' => ['required', new Enum(SessionDuration::class)],
-            'time' => ['required', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
+            'time' => ['required', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'],
             'notes' => ['nullable', 'string', 'max:500'],
             'customer_id' => ['sometimes', 'required', 'exists:customers,id', 'required_without:customer_phone'],
             'country_code' => ['sometimes', 'regex:/^\+[1-9]\d{0,2}$/', 'required_without:customer_id'],

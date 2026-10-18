@@ -19,6 +19,24 @@ beforeEach(function () {
 
 describe('Review Services Class', function () {
 
+    it('pages reviews and preloads reviewer images', function () {
+        Review::factory(3)->for($this->activity, 'holder')->for($this->customer, 'customer')->create();
+        $first = $this->services->all($this->activity, 1, 1);
+        $second = $this->services->all($this->activity, 2, 1);
+        expect($first)->toHaveCount(1);
+        expect($second)->toHaveCount(1);
+        expect($first->first()->id)->not->toBe($second->first()->id);
+        expect($first->first()->customer->relationLoaded('medias'))->toBeTrue();
+    });
+
+    it('calculates ratings from current database values rather than a cached relation', function () {
+        $this->activity->load('reviews');
+        Review::factory()->for($this->activity, 'holder')->create(['rate' => 8]);
+        Review::factory()->for($this->activity, 'holder')->create(['rate' => 4]);
+        $this->activity->updateRate();
+        expect((float) $this->activity->fresh()->rate)->toBe(3.0);
+    });
+
     it('get all reviews for activity by customer', function () {
         Review::factory(2)->for($this->activity, 'holder')->create();
         expect($this->activity->reviews)->toHaveCount(2);

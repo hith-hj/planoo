@@ -38,6 +38,8 @@ return [
     ],
 
     'whatsapp' => [
+        'app_secret' => env('WHATSAPP_APP_SECRET'),
+        'verify_token' => env('WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
         'token' => env('WHATSAPP_TOKEN'),
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
         'version' => env('WHATSAPP_VERSION', 'v20.0'),
@@ -49,6 +51,10 @@ return [
         'sender' => env('SYRIATEL_SENDER', 'PlanooApp'),
         'webhook_url' => env('SYRIATEL_WEBHOOK_URL', 'http://planoo.sy/webhooks.php'),
         'webhook_secret' => env('SYRIATEL_WEBHOOK_SECRET', 'PlanooApp1_webhook_secret'),
+    ],
+
+    'notifications' => [
+        'queued' => env('NOTIFICATIONS_QUEUED', true),
     ],
 
     'conflicts_detection' => env('CONFLICTS_DETECTION', true),

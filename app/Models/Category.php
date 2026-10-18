@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Observers\LabelIconObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy(LabelIconObserver::class)]
 final class Category extends Model
 {
     /** @use HasFactory<\Database\Factories\CategoryFactory> */
@@ -28,8 +31,12 @@ final class Category extends Model
 
     protected static function booted(): void
     {
-        self::saved(fn () => cache()->forget('labels.categories'));
-        self::deleted(fn () => cache()->forget('labels.categories'));
+        self::saved(function (): void {
+            cache()->forget('labels.categories');
+        });
+        self::deleted(function (): void {
+            cache()->forget('labels.categories');
+        });
     }
 
     public function activities(): HasMany

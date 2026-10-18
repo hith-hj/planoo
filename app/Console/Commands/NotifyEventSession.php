@@ -55,6 +55,16 @@ final class NotifyEventSession extends Command
             }
 
             DB::transaction(function () use ($event, $day, $dateString, $appointmentService) {
+                $event = Event::query()->lockForUpdate()->findOrFail($event->id);
+                if ($event->status !== EventStatus::active->value
+                    || $event->appointments()->where('date', $dateString)->where('notes', 'event session')->exists()) {
+                    return;
+                }
+                $event->load(['user', 'customers']);
+                $day = $event->days()->where('day', $day->day)->first();
+                if (! $day) {
+                    return;
+                }
                 $sessionDuration = $this->sessionDurationInMinutes($day);
 
                 $this->handleAppointmentConflict($dateString, $day, $event, $sessionDuration, $appointmentService);
@@ -78,7 +88,7 @@ final class NotifyEventSession extends Command
                 foreach ($event->customers as $customer) {
                     $customer->notify(...$notification);
                 }
-            });
+            }, 3);
         }
 
         $this->info("Customers notified for upcoming event sessions on {$dateString}.");

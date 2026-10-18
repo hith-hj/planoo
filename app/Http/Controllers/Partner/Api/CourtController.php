@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Partner\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Court;
 use App\Services\CourtServices;
+use App\Support\Pagination;
 use App\Validators\CourtValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,12 +15,13 @@ final class CourtController extends Controller
 {
     public function __construct(public CourtServices $services) {}
 
-    public function all()
+    public function all(Request $request)
     {
-        $courts = $this->services->allByUser(Auth::user());
+        [$page, $perPage] = Pagination::fromRequest($request);
+        $courts = $this->services->allByUser(Auth::user(), $page, $perPage);
 
         return Success(payload: [
-            'courts' => $courts->toResourceCollection(),
+            'courts' => $courts->toResourceCollection(), ...($perPage === null ? [] : compact('page', 'perPage')),
         ]);
     }
 
@@ -72,12 +73,10 @@ final class CourtController extends Controller
     public function delete(Request $request)
     {
         $validator = CourtValidators::delete($request->all());
-        $courts = $this->services->allByUser(Auth::user());
-        if ($courts->count() === 1) {
+        $court = $this->services->findByUser(Auth::user(), $validator->safe()->input('court_id'));
+        if (Auth::user()->courts()->count() === 1) {
             return Error('last court can not be deleted');
         }
-        /** @var Court $court */
-        $court = $courts->find($validator->safe()->input('court_id'));
         if ($court->hasChildren()) {
             return Error('Court has children can not be deleted');
         }

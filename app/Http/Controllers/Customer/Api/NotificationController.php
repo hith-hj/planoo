@@ -18,7 +18,11 @@ final class NotificationController extends Controller
 
     public function all(Request $request): JsonResponse
     {
-        $notis = $this->services->all($this->getCustomer());
+        $notis = $this->services->all(
+            $this->getCustomer(),
+            $request->integer('page', 1),
+            $request->hasAny(['page', 'perPage']) ? $request->integer('perPage', 10) : null,
+        );
 
         return Success(payload: ['notifications' => $notis->toResourceCollection()]);
     }
@@ -44,7 +48,7 @@ final class NotificationController extends Controller
     {
         $validator = NotificationValidators::view($request->all());
 
-        $this->services->view($validator->safe()->array('notifications'));
+        $this->services->view($this->getCustomer(), $validator->safe()->array('notifications'));
 
         return Success();
     }

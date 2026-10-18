@@ -23,6 +23,7 @@ final class Code extends Model
         'type',
         'code',
         'expire_at',
+        'booking_context',
     ];
 
     protected function casts(): array
@@ -30,6 +31,7 @@ final class Code extends Model
         return [
             'code' => 'int',
             'expire_at' => 'datetime',
+            'booking_context' => 'array',
         ];
     }
 

@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Services\ActivityServices;
 use App\Services\AppointmentServices;
-use App\Services\CodeServices;
 use App\Validators\AppointmentValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +17,6 @@ final class AppointmentController extends Controller
     public function __construct(
         public AppointmentServices $services,
         public ActivityServices $activityServices,
-        public CodeServices $codeServices,
     ) {}
 
     public function all(Request $request)
@@ -56,7 +54,7 @@ final class AppointmentController extends Controller
     public function find(Request $request)
     {
         $validator = AppointmentValidators::find($request->all());
-        $appointment = $this->services->find($validator->safe()->input('appointment_id'));
+        $appointment = $this->services->findForActor(Auth::user(), $validator->safe()->input('appointment_id'));
 
         return Success(payload: [
             'appointment' => $appointment->toResource(),
@@ -77,22 +75,8 @@ final class AppointmentController extends Controller
     {
         $validator = AppointmentValidators::create($request->all());
 
-        $code = $this->codeServices->codeById($validator->safe()->integer('code'));
-        Truthy(! $code->isValid(), 'invalid code');
-        $this->codeServices->deleteCode($code);
-
         $activity = $this->activityServices->find($validator->safe()->input('activity_id'));
-        if ($this->services->checkAppointmentExists($activity, $validator->safe()->all())) {
-            return Error('appointment just got booked');
-        }
-
-        // Prevent customers from double booking themselves over an existing
-        // accepted appointment (own appointments + attended events/courses).
-        if (! $this->services->canCreateAppointment(Auth::user(), $validator->safe()->all())) {
-            return Error('You have Appointment at this date');
-        }
-
-        $appointment = $this->services->create($activity, $validator->safe()->all(), Auth::user());
+        $appointment = $this->services->book($activity, Auth::user(), Auth::user(), $validator->safe()->all());
 
         return Success(payload: ['appointment' => $appointment->toResource()]);
     }
@@ -100,7 +84,7 @@ final class AppointmentController extends Controller
     public function cancel(Request $request)
     {
         $validator = AppointmentValidators::find($request->all());
-        $appointment = $this->services->find($validator->safe()->input('appointment_id'));
+        $appointment = $this->services->findForActor(Auth::user(), $validator->safe()->input('appointment_id'));
         if ($appointment->appointable_type !== Activity::class) {
             return Error('appointment type can not be canceled');
         }

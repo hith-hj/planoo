@@ -10,13 +10,18 @@ use App\Enums\SectionsTypes;
 use App\Enums\SessionDuration;
 use App\Models\Activity;
 use App\Models\Appointment;
+use App\Models\Code;
 use App\Models\Course;
 use App\Models\Customer;
 use App\Models\Event;
 use App\Models\User;
+use App\Support\Pagination;
 use App\Traits\Filters;
 use Carbon\Carbon;
+use DomainException;
 use Exception;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 final class AppointmentServices
 {
@@ -30,6 +35,7 @@ final class AppointmentServices
         array $orderBy = [],
         bool $paginate = true
     ) {
+        Pagination::validate($page, $perPage);
         Required($query, 'query');
         Truthy($paginate === false && count($filters) === 0, 'invalid operation');
         $query->with($this->toBeLoaded());
@@ -43,7 +49,7 @@ final class AppointmentServices
 
         $appointments = $paginate ?
             $query->paginate($perPage, ['*'], 'page', $page) :
-            $query->get();
+            Pagination::bounded($query);
 
         NotFound($paginate ? $appointments->items() : $appointments, 'appointments');
 
@@ -57,7 +63,7 @@ final class AppointmentServices
         $query->with($this->toBeLoaded());
         $this->applyOrderBy($query, $orderBy, ['date', 'time']);
 
-        $appointments = $query->get();
+        $appointments = Pagination::bounded($query);
 
         NotFound($appointments, 'appointments');
 
@@ -73,6 +79,24 @@ final class AppointmentServices
         return $appointment->load($this->toBeLoaded());
     }
 
+    public function findForActor(Customer|User $actor, mixed $id): Appointment
+    {
+        $query = Appointment::query();
+        if ($actor instanceof Customer) {
+            $query->where(function ($query) use ($actor): void {
+                $query->where('customer_id', $actor->id)
+                    ->orWhereHasMorph('holder', [Course::class, Event::class], function ($holder) use ($actor): void {
+                        $holder->whereHas('customers', fn ($customers) => $customers->whereKey($actor->id));
+                    });
+            });
+        } else {
+            $query->whereHasMorph('holder', [Activity::class, Course::class, Event::class],
+                fn ($holder) => $holder->where('user_id', $actor->id));
+        }
+
+        return $query->with($this->toBeLoaded())->findOrFail($id);
+    }
+
     public function checkAvailableSlots(object $owner, array $data): array
     {
         $data = checkAndCastData($data, [
@@ -82,13 +106,16 @@ final class AppointmentServices
         ]);
 
         $duration = SessionDuration::from($data['session_duration'])->value;
-        $day = app(DayServices::class)
-            ->findByObject($owner, $data['day_id'])
-            ->only(['day', 'start', 'end']);
+        $data['date'] = Carbon::parse($data['date'])->toDateString();
+        Truthy(! $owner->is_active, 'inactive owner');
+        $selectedDay = app(DayServices::class)->findByObject($owner, $data['day_id']);
+        Truthy(! $selectedDay->is_active, 'inactive day');
+        $day = $selectedDay->only(['day', 'start', 'end']);
         $dayOfSelectedDate = Carbon::parse($data['date'])->format('l');
         Truthy($day['day'] !== mb_strtolower($dayOfSelectedDate), "selected date don't match selected day");
         $appointments = Appointment::owner($owner::class, $owner->id)
             ->where('date', $data['date'])
+            ->where('status', AppointmentStatus::accepted->value)
             ->get(['date', 'time', 'session_duration']);
 
         $start = Carbon::parse($day['start']);
@@ -105,11 +132,10 @@ final class AppointmentServices
         $previousEnd = $start->copy();
         foreach ($busySessions as $session) {
             $gapStart = $previousEnd->copy();
-            $gapEnd = $session['start']->copy();
+            $gapEnd = $session['start']->lt($end) ? $session['start']->copy() : $end->copy();
             $gapMinutes = $gapStart->diffInMinutes($gapEnd);
 
             if ($gapMinutes >= $duration) {
-                // $slots = [...$this->checkAllowedDurations($gapStart, $gapEnd, $duration)];
                 $slots = array_merge($slots, $this->checkAllowedDurations($gapStart, $gapEnd, $duration));
             }
 
@@ -131,6 +157,16 @@ final class AppointmentServices
             type: CodesTypes::appointment->name,
             timeToExpire: '2:m'
         );
+        $actor = Auth::user();
+        $code->update(['booking_context' => [
+            'actor_type' => $actor ? $actor::class : null,
+            'actor_id' => $actor?->getKey(),
+            'activity_id' => $owner->getKey(),
+            'day_id' => $data['day_id'],
+            'date' => Carbon::parse($data['date'])->toDateString(),
+            'session_duration' => $duration,
+            'slots' => array_column($slots, 'start'),
+        ]]);
 
         return ['code' => $code->id, 'day' => $day['day'], 'date' => $data['date'], 'slots' => $slots];
     }
@@ -148,6 +184,43 @@ final class AppointmentServices
         return Appointment::owner($owner::class, $owner->id)
             ->conflict($data['date'], $start->toTimeString('minute'), $end->toTimeString('minute'))
             ->exists();
+    }
+
+    public function book(Activity $activity, Customer|User $actor, Customer $customer, array $data): Appointment
+    {
+        $data['date'] = Carbon::parse($data['date'])->toDateString();
+
+        return DB::transaction(function () use ($activity, $actor, $customer, $data): Appointment {
+            $activity = Activity::query()->lockForUpdate()->findOrFail($activity->id);
+            $customer = Customer::query()->lockForUpdate()->findOrFail($customer->id);
+            $code = Code::query()->lockForUpdate()->find($data['code']);
+            Truthy(! $code || ! $code->isValid() || $code->type !== CodesTypes::appointment->name, 'invalid code');
+            $context = $code->booking_context ?? [];
+            foreach ([
+                'actor_type' => $actor::class,
+                'actor_id' => $actor->getKey(),
+                'activity_id' => $activity->id,
+                'day_id' => (int) $data['day_id'],
+                'date' => Carbon::parse($data['date'])->toDateString(),
+                'session_duration' => (int) $data['session_duration'],
+            ] as $key => $value) {
+                Truthy(($context[$key] ?? null) !== $value, 'invalid booking context');
+            }
+            Truthy(! in_array($data['time'], $context['slots'] ?? [], true), 'invalid booking slot');
+            $day = $activity->days()->lockForUpdate()->findOrFail($data['day_id']);
+            $start = Carbon::parse($data['date'].' '.$data['time']);
+            $end = $start->copy()->addMinutes((int) $data['session_duration']);
+            Truthy(! $day->is_active || mb_strtolower($start->format('l')) !== $day->day, 'invalid booking day');
+            Truthy($start->isPast() || $start->toDateString() !== $end->toDateString()
+                || $start->format('H:i:s') < Carbon::parse($day->start)->format('H:i:s')
+                || $end->format('H:i:s') > Carbon::parse($day->end)->format('H:i:s'), 'outside booking hours');
+            Truthy($this->checkAppointmentExists($activity, $data), 'appointment just got booked');
+            Truthy(! $this->canCreateAppointment($customer, $data), 'You have Appointment at this date');
+            $appointment = $this->create($activity, $data, $customer);
+            $code->delete();
+
+            return $appointment;
+        }, 3);
     }
 
     public function canCreateAppointment(Customer $customer, array $data): bool
@@ -169,21 +242,12 @@ final class AppointmentServices
             return false;
         }
 
-        if (
-            $customer->events()->count() > 1 &&
-            $customer->events()->appointments()->conflict($date, $startTime, $endTime)->exists()
-        ) {
-            return false;
-        }
-
-        if (
-            $customer->courses()->count() > 1 &&
-            $customer->courses()->appointments()->conflict($date, $startTime, $endTime)->exists()
-        ) {
-            return false;
-        }
-
-        return true;
+        return ! Appointment::query()
+            ->whereHasMorph('holder', [Course::class, Event::class], function ($holder) use ($customer): void {
+                $holder->whereHas('customers', fn ($customers) => $customers->whereKey($customer->id));
+            })
+            ->conflict($date, $startTime, $endTime)
+            ->exists();
     }
 
     public function getAppointmentIfExists(object $owner, array $data): ?Appointment
@@ -219,7 +283,7 @@ final class AppointmentServices
             'time' => $start_time->toTimeString('minute'),
             'end_at' => $end_at->toTimeString('minute'),
             'session_duration' => $data['session_duration'],
-            'price' => $data['price'] ?? $this->caculatePrice($data['session_duration'], $owner),
+            'price' => $data['price'] ?? $this->calculatePrice($data['session_duration'], $owner),
             'status' => AppointmentStatus::accepted->value,
             'notes' => $data['notes'] ?? null,
         ]);
@@ -229,6 +293,13 @@ final class AppointmentServices
 
     public function cancel(object $user, Appointment $appointment): bool
     {
+        if ($user instanceof Customer) {
+            abort_unless($appointment->customer_id === $user->id && $appointment->appointable_type === Activity::class, 403);
+        } elseif ($user instanceof User) {
+            abort_unless($appointment->holder?->user_id === $user->id, 403);
+        } else {
+            abort(403);
+        }
         Truthy($appointment->status !== AppointmentStatus::accepted->value, 'invalid appointment status');
         Truthy(! $this->canCancel($appointment), 'you can\'t cancel now');
 
@@ -253,7 +324,7 @@ final class AppointmentServices
                     ->whereIn('appointable_id', $user->courses()->pluck('courses.id')),
                 SectionsTypes::event->name => Appointment::where('appointable_type', Event::class)
                     ->whereIn('appointable_id', $user->events()->pluck('events.id')),
-                default => throw new Exception('ownerType is required'),
+                default => throw new DomainException('ownerType is required'),
             };
         }
     }
@@ -266,7 +337,7 @@ final class AppointmentServices
                 ->whereIn('appointable_id', $customer->courses()->pluck('courses.id')),
             SectionsTypes::event->name => Appointment::where('appointable_type', Event::class)
                 ->whereIn('appointable_id', $customer->events()->pluck('events.id')),
-            default => throw new Exception('ownerType is required'),
+            default => throw new DomainException('ownerType is required'),
         };
     }
 
@@ -289,10 +360,10 @@ final class AppointmentServices
 
     private function toBeLoaded()
     {
-        return ['customer', 'holder'];
+        return ['customer.medias', 'holder.category', 'holder.medias'];
     }
 
-    private function caculatePrice($session_duration, $owner): int
+    private function calculatePrice($session_duration, $owner): int
     {
         checkAndCastData($owner->toArray(), [
             'session_duration' => 'int',

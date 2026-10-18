@@ -7,24 +7,37 @@ namespace App\Services;
 use App\Interfaces\Reviewable;
 use App\Models\Customer;
 use App\Models\Review;
+use App\Support\Pagination;
 use Illuminate\Support\Collection;
 
 final class ReviewServices
 {
-    public function allByCustomer(Customer $customer): Collection
+    public function allByCustomer(Customer $customer, int $page = 1, ?int $perPage = null): Collection
     {
-        $reviews = $customer->reviews;
+        $query = $customer->reviews()->orderByDesc('created_at')->orderByDesc('id');
+        if ($perPage !== null) {
+            Pagination::validate($page, $perPage);
+
+            return $query->forPage($page, $perPage)->get();
+        }
+        $reviews = Pagination::bounded($query);
         NotFound($reviews, 'reviews');
 
-        return $reviews->sortByDesc('created_at');
+        return $reviews;
     }
 
-    public function all(Reviewable $reviewable): Collection
+    public function all(Reviewable $reviewable, int $page = 1, ?int $perPage = null): Collection
     {
-        $reviews = $reviewable->reviews;
+        $query = $reviewable->reviews()->with('customer.medias')->orderByDesc('created_at')->orderByDesc('id');
+        if ($perPage !== null) {
+            Pagination::validate($page, $perPage);
+
+            return $query->forPage($page, $perPage)->get();
+        }
+        $reviews = Pagination::bounded($query);
         NotFound($reviews, 'reviews');
 
-        return $reviews->load(['customer'])->sortByDesc('created_at');
+        return $reviews;
     }
 
     public function find(int $id)

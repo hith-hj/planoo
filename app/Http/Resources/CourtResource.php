@@ -20,6 +20,9 @@ final class CourtResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'activities_count' => $this->whenCounted('activities'),
+            'courses_count' => $this->whenCounted('courses'),
+            'events_count' => $this->whenCounted('events'),
             ...$this->extras(),
         ];
     }

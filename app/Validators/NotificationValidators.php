@@ -19,7 +19,8 @@ final class NotificationValidators extends Validators
     public static function view(array $data): ValidationResult
     {
         return Validator::make($data, [
-            'notifications' => ['required', 'array', 'min:1'],
+            'notifications' => ['required', 'array', 'min:1', 'max:100'],
+            'notifications.*' => ['required', 'integer', 'distinct'],
         ]);
     }
 

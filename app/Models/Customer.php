@@ -31,6 +31,8 @@ final class Customer extends Authenticatable implements JWTSubject, Locatable, N
         'is_active' => true,
     ];
 
+    protected $hidden = ['password', 'firebase_token', 'remember_token'];
+
     /**
      * The attributes that are mass assignable.
      *

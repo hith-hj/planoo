@@ -6,16 +6,19 @@ namespace App\Services;
 
 use App\Interfaces\Notifiable;
 use App\Models\Notification;
+use App\Support\Pagination;
 use Illuminate\Support\Collection;
 
 final class NotificationServices
 {
-    public function all(Notifiable $notifiable): Collection
+    public function all(Notifiable $notifiable, int $page = 1, ?int $perPage = null): Collection
     {
-        $notis = $notifiable->notifications;
+        Pagination::validate($page, $perPage ?? Pagination::MAX_PER_PAGE);
+        $query = $notifiable->notifications()->orderByDesc('created_at')->orderByDesc('id');
+        $notis = $perPage === null ? Pagination::bounded($query) : $query->forPage($page, $perPage)->get();
         NotFound($notis, 'notifications');
 
-        return $notis->sortByDesc('created_at');
+        return $notis;
     }
 
     public function find(int $id): Notification
@@ -29,7 +32,7 @@ final class NotificationServices
 
     public function checkNew(Notifiable $notifiable): bool
     {
-        return $notifiable->notifications()->where('is_viewed', 0)->count() > 0;
+        return $notifiable->notifications()->where('is_viewed', 0)->exists();
     }
 
     public function findByNotifiable(Notifiable $notifiable, int $id): Notification
@@ -41,11 +44,11 @@ final class NotificationServices
         return $noti;
     }
 
-    public function view(array $ids): bool|int
+    public function view(Notifiable $notifiable, array $ids): bool|int
     {
         Required($ids, 'id');
 
-        return Notification::whereIn('id', $ids)->update(['is_viewed' => 1]);
+        return $notifiable->notifications()->whereIn('id', $ids)->update(['is_viewed' => 1]);
     }
 
     public function delete(Notification $notification): bool|int

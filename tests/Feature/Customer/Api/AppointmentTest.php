@@ -57,7 +57,7 @@ describe('Appointment Controller Tests', function () {
         Appointment::truncate();
         $activity = Activity::factory()->create();
         $appointment = Appointment::factory()
-            ->for($activity, 'holder')
+            ->for($activity, 'holder')->for($this->user, 'customer')
             ->create();
         $res = $this->getJson(route('customer.appointment.find', ['appointment_id' => $appointment->id]));
         $res->assertOk();
@@ -99,6 +99,13 @@ describe('Appointment Controller Tests', function () {
                 timeToExpire: '10:m'
             )->id,
         ]);
+        $day = $activity->days()->findOrFail($data['day_id']);
+        $day->update(['is_active' => true, 'start' => '09:00', 'end' => '18:00']);
+        $activity->update(['is_active' => true]);
+        $quote = $this->postJson(route('customer.appointment.check'), $data)->assertOk();
+        $data['code'] = $quote->json('payload.slots.code');
+        $data['time'] = $quote->json('payload.slots.slots.0.start');
+
         $response = $this->postJson(route('customer.appointment.create'), $data);
         $response->assertOk();
 
@@ -156,7 +163,7 @@ describe('Appointment Controller Tests', function () {
 
     it('cancels an accepted appointment', function () {
         $activity = Activity::inRandomOrder()->first();
-        $appointment = Appointment::factory()->for($activity, 'holder')
+        $appointment = Appointment::factory()->for($activity, 'holder')->for($this->user, 'customer')
             ->create(['status' => AppointmentStatus::accepted->value]);
 
         $response = $this->postJson(
@@ -170,7 +177,7 @@ describe('Appointment Controller Tests', function () {
 
     it('fails to cancel an already canceled appointment', function () {
         $activity = Activity::inRandomOrder()->first();
-        $appointment = Appointment::factory()->for($activity, 'holder')
+        $appointment = Appointment::factory()->for($activity, 'holder')->for($this->user, 'customer')
             ->create(['status' => AppointmentStatus::canceled->value]);
 
         $this->postJson(route('customer.appointment.cancel'), [
@@ -180,7 +187,7 @@ describe('Appointment Controller Tests', function () {
 
     it('fails to cancel an appointment created more than one hour', function () {
         $activity = Activity::inRandomOrder()->first();
-        $appointment = Appointment::factory()->for($activity, 'holder')->create();
+        $appointment = Appointment::factory()->for($activity, 'holder')->for($this->user, 'customer')->create();
         $appointment->forceFill(['created_at' => $appointment->created_at->subHours(2)])->save();
         $response = $this->postJson(route('customer.appointment.cancel'), [
             'appointment_id' => $appointment->id,

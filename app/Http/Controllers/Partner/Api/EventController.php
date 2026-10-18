@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Services\CourtServices;
 use App\Services\CustomerServices;
 use App\Services\EventServices;
+use App\Support\Pagination;
 use App\Validators\EventValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +17,12 @@ final class EventController extends Controller
 {
     public function __construct(public EventServices $services) {}
 
-    public function all()
+    public function all(Request $request)
     {
-        $events = $this->services->allByUser(Auth::user());
+        [$page, $perPage] = Pagination::fromRequest($request);
+        $events = $this->services->allByUser(Auth::user(), $page, $perPage);
 
-        return Success(payload: ['events' => $events->toResourceCollection()]);
+        return Success(payload: ['events' => $events->toResourceCollection(), ...($perPage === null ? [] : compact('page', 'perPage'))]);
     }
 
     public function find(Request $request)

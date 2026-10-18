@@ -30,6 +30,8 @@ final class CourseResource extends JsonResource
             'start_date' => $this->start_date,
             'status' => CourseStatus::from($this->status)->name,
             'rate' => $this->rate,
+            'reviews_count' => $this->whenCounted('reviews'),
+            'customers_count' => $this->whenCounted('customers'),
             ...$this->extras(),
         ];
     }

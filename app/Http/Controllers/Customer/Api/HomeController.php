@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Services\ActivityServices;
 use App\Services\CourseServices;
 use App\Services\EventServices;
+use App\Support\Pagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,7 @@ final class HomeController extends Controller
             'activities' => app(ActivityServices::class)->allByFilter(perPage: 10)->toResourceCollection(),
             'courses' => app(CourseServices::class)->allByFilter(perPage: 10)->toResourceCollection(),
             'events' => app(EventServices::class)->allByFilter(perPage: 10)->toResourceCollection(),
-            // ...$this->getFeatered(),
+            // ...$this->getFeatured(),
         ]]);
     }
 
@@ -34,14 +35,21 @@ final class HomeController extends Controller
 
     public function featured()
     {
-        return Success(payload: $this->getFeatered());
+        return Success(payload: $this->getFeatured());
     }
 
     public function search(Request $request)
     {
+        $request->validate(['search' => ['nullable', 'string', 'max:200']]);
+        $page = $request->integer('page', 1);
+        $perPage = $request->integer('perPage', 10);
+        Pagination::validate($page, $perPage);
         $result = app(ActivityServices::class)->getter(
             model: $request->query('owner'),
             callable: [
+                'limit' => $perPage,
+                'offset' => ($page - 1) * $perPage,
+                'orderBy' => ['id', 'asc'],
                 'where' => [
                     'name',
                     'like',
@@ -51,10 +59,10 @@ final class HomeController extends Controller
             // columns: ['id', 'name', 'rate'],
         ) ?? [];
 
-        return Success(payload: ['result' => $result]);
+        return Success(payload: ['result' => $result, 'page' => $page, 'perPage' => $perPage]);
     }
 
-    private function getFeatered()
+    private function getFeatured()
     {
         return ['featured' => [
             'activity' => app(ActivityServices::class)

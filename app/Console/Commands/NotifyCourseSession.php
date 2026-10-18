@@ -52,6 +52,11 @@ final class NotifyCourseSession extends Command
             }
 
             DB::transaction(function () use ($course, $day, $dateString, $appointmentService) {
+                $course = Course::query()->lockForUpdate()->findOrFail($course->id);
+                if ($course->appointments()->where('date', $dateString)->where('notes', 'course session')->exists()) {
+                    return;
+                }
+                $course->load(['user', 'customers' => fn (BelongsToMany $query) => $query->where('is_complete', false)]);
                 $sessionDuration = $this->calculateSessionDurationFromDay($day);
 
                 $this->handleAppointmentConflict(

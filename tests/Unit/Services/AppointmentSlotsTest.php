@@ -75,3 +75,17 @@ it('matches the selected date to the requested day', function () {
         'date' => Carbon::parse('next sunday')->toDateString(),
     ]))->toThrow(Exception::class);
 });
+
+it('keeps offered slots within opening hours when old bookings are outside them', function () {
+    $activity = Activity::factory()->for(User::factory()->create(), 'user')->create(['is_active' => true]);
+    $activity->appointments()->delete();
+    $day = $activity->days()->create(['day' => 'sunday', 'start' => '09:00', 'end' => '11:00', 'is_active' => true]);
+    $date = now()->next('sunday')->toDateString();
+    Appointment::factory()->for($activity, 'holder')->create([
+        'date' => $date, 'time' => '14:00', 'end_at' => '15:00', 'session_duration' => 60,
+    ]);
+    $result = app(AppointmentServices::class)->checkAvailableSlots($activity, [
+        'day_id' => $day->id, 'date' => $date, 'session_duration' => 60,
+    ]);
+    expect(array_column($result['slots'], 'start'))->toBe(['09:00', '10:00']);
+});

@@ -32,11 +32,11 @@ trait ReviewHandler
             return false;
         }
 
-        $reviews = $this->reviews;
-        if ($reviews->isEmpty()) {
+        $average = $this->reviews()->avg('rate');
+        if ($average === null) {
             return false;
         }
 
-        return $this->update(['rate' => round($reviews->avg('rate') / 2, 1)]);
+        return $this->update(['rate' => round((float) $average / 2, 1)]);
     }
 }

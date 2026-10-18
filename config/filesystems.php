@@ -63,6 +63,13 @@ return [
             'report' => false,
         ],
 
+        'media_mirror' => [
+            'driver' => 'local',
+            'root' => env('MEDIA_MIRROR_ROOT', '/home/planoo/public_html'),
+            'visibility' => 'public',
+            'throw' => true,
+        ],
+
     ],
 
     /*

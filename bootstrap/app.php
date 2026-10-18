@@ -30,8 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [Localization::class, WebSecurityHeaders::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (Exception $e, Request $request) {
-            if ($request->is('api/*') && $request->wantsJson()) {
+        $exceptions->dontReport([DomainException::class]);
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($request->is('api/*')) {
                 return match (true) {
                     $e instanceof AuthenticationException => Error(
                         msg: 'unauthorized request',
@@ -45,12 +46,12 @@ return Application::configure(basePath: dirname(__DIR__))
                     ),
 
                     $e instanceof NotFoundHttpException => Error(
-                        msg: $e->getMessage(),
+                        msg: $e->getPrevious() instanceof ModelNotFoundException ? 'Resource not found.' : $e->getMessage(),
                         code: Response::HTTP_NOT_FOUND
                     ),
 
                     $e instanceof ModelNotFoundException => Error(
-                        msg: "{$e->getModel()} id {$e->getIds()} Not found.",
+                        msg: 'Resource not found.',
                         code: Response::HTTP_NOT_FOUND
                     ),
 
@@ -60,14 +61,13 @@ return Application::configure(basePath: dirname(__DIR__))
                     ),
 
                     $e instanceof HttpException => Error(
-                        msg: 'Http Error: '.$e->getMessage(),
+                        msg: $e->getStatusCode() >= 500 ? 'Internal server error.' : 'Http Error: '.$e->getMessage(),
                         code: $e->getStatusCode()
                     ),
 
-                    $e instanceof JWTException => Error(msg: 'JWT: '.$e->getMessage(), code: 500),
-                    $e instanceof Exception => Error(msg: $e->getMessage()),
-                    $e instanceof Throwable => Error(msg: 'Error : '.$e->getMessage()),
-                    default => Error(msg: 'Something bad happend'),
+                    $e instanceof JWTException => Error(msg: 'Token Authentication Error', code: Response::HTTP_UNAUTHORIZED),
+                    $e instanceof DomainException => Error(msg: $e->getMessage()),
+                    default => Error(msg: 'Internal server error.', code: Response::HTTP_INTERNAL_SERVER_ERROR),
                 };
             }
         });
