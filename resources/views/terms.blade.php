@@ -2,8 +2,7 @@
 @section('content')
     {{-- hero --}}
     <section id="home" class="">
-        <div class="relative w-full h-screen bg-blend-overlay bg-purple flex flex-col justify-center items-center"
-        style="background-image: url('{{ asset('images/hero-bg.avif') }}');">
+        <div class="hero-bg relative w-full h-screen bg-blend-overlay bg-purple flex flex-col justify-center items-center">
             <!-- Hero Text -->
             <h1 class="text-white text-4xl md:text-6xl font-bold mb-8 text-center drop-shadow-md">
                 {{ __('Terms & conditions') }}

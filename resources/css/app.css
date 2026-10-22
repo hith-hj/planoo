@@ -22,12 +22,9 @@
     --max-width-container: 1180px;
 }
 
-/* Specific overrides to match the exact "Better" feel */
-/*.hero-bg {
-    background-image: url('{{asset('images/hero-bg.avif')}}');
-    background-size: cover;
-    background-position: center;
-}*/
+.hero-bg {
+    background-image: url('../../public/images/hero-bg.avif');
+}
 
 .tab-active {
     background-color: white;
