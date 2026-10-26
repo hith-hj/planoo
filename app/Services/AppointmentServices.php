@@ -20,6 +20,7 @@ use App\Traits\Filters;
 use Carbon\Carbon;
 use DomainException;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -339,6 +340,26 @@ final class AppointmentServices
                 ->whereIn('appointable_id', $customer->events()->pluck('events.id')),
             default => throw new DomainException('ownerType is required'),
         };
+    }
+
+    public function checkAppointments(Activity $activity, array $schedule, Collection $existingDays): void
+    {
+        $appointments = $activity->appointments()
+            ->where('status', AppointmentStatus::accepted->value)
+            ->whereDate('date', '>=', today()->toDateString())
+            ->get();
+
+        foreach ($appointments as $appointment) {
+            $weekday = mb_strtolower(Carbon::parse($appointment->date)->format('l'));
+            $day = $schedule[$weekday] ?? null;
+            $active = $day['is_active'] ?? $existingDays->get($weekday)?->is_active ?? true;
+
+            Truthy($day === null || ! $active
+                || Carbon::parse($appointment->time)->format('H:i') < $day['start']
+                || Carbon::parse($appointment->end_at)->format('H:i') > $day['end'],
+                'The schedule cannot exclude an upcoming accepted appointment.'
+            );
+        }
     }
 
     private function checkAllowedDurations($gapStart, $gapEnd, $duration): array

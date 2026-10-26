@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Interfaces\Dayable;
+use App\Models\Activity;
 use App\Models\Day;
 use DomainException;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 final class DayServices
 {
@@ -81,6 +83,34 @@ final class DayServices
     public function delete(Day $day): bool
     {
         return $day->delete();
+    }
+
+    public function updateMany(Dayable $dayable, array $data): Collection
+    {
+        Required($data, 'day data');
+
+        return DB::transaction(function () use ($dayable, $data): Collection {
+            $dayable->newQuery()->whereKey($dayable->id)->lockForUpdate()->firstOrFail();
+            $existingDays = $dayable->days()->lockForUpdate()->get()->keyBy('day');
+            $schedule = collect($data['days'])->keyBy('day');
+
+            if ($dayable instanceof Activity) {
+                app(AppointmentServices::class)->checkAppointments($dayable, $schedule->all(), $existingDays);
+            }
+
+            foreach ($data['days'] as $item) {
+                $day = $existingDays->get($item['day']);
+                if ($day !== null) {
+                    $day->setRelation('holder', $dayable)->update($item);
+                } else {
+                    $dayable->days()->create($item);
+                }
+            }
+
+            $dayable->days()->whereNotIn('day', $schedule->keys()->all())->delete();
+
+            return $dayable->load('days')->days;
+        });
     }
 
     public function toggleActivation(Day $day): bool

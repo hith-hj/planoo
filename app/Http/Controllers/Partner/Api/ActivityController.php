@@ -11,6 +11,7 @@ use App\Support\Pagination;
 use App\Validators\ActivityValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 final class ActivityController extends Controller
 {
@@ -62,14 +63,21 @@ final class ActivityController extends Controller
             $validator->safe()->input('activity_id')
         );
         Truthy($validator->safe()->input('court_id') !== $activity->court_id, 'invalid operation');
-        // TODO: check if the activity has any appointment prevent update ad diactivate
-        $this->services->update(
-            Auth::user(),
-            $activity,
-            $validator->safe()->except('activity_id')
-        );
+        DB::transaction(function () use ($request, $validator, $activity): void {
+            // Booking takes this same lock before checking the schedule.
+            $activity->newQuery()->whereKey($activity->id)->lockForUpdate()->firstOrFail();
+            if ($request->has('days')) {
+                $request->merge(['owner_type' => 'activity', 'owner_id' => $activity->id]);
+                app(DayController::class)->updateMany($request);
+            }
+            $this->services->update(
+                Auth::user(),
+                $activity,
+                $validator->safe()->except('activity_id')
+            );
+        });
 
-        return Success(payload: ['activity' => $activity->fresh()->toResource()]);
+        return Success(payload: ['activity' => $activity->toResource()]);
     }
 
     public function delete(Request $request)

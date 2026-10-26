@@ -127,6 +127,83 @@ describe('Activity Controller Tests', function () {
         $this->patchJson(route('partner.activity.update'), [])->assertStatus(422);
     });
 
+    it('updates the full day schedule and preserves ids for retained weekdays', function () {
+        $activity = Activity::factory()->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')->create();
+        $activity->appointments()->delete();
+        $activity->days()->delete();
+        $monday = $activity->days()->create(['day' => 'monday', 'start' => '09:00', 'end' => '12:00']);
+        $removed = $activity->days()->create(['day' => 'tuesday', 'start' => '09:00', 'end' => '12:00']);
+        $payload = ['activity_id' => $activity->id, ...$activity->toArray(), 'days' => [
+            ['day' => 'monday', 'start' => '10:00', 'end' => '14:00'],
+            ['day' => 'friday', 'start' => '08:30', 'end' => '11:30', 'is_active' => false],
+        ]];
+
+        $response = $this->patchJson(route('partner.activity.update'), $payload)->assertOk();
+        expect($response->json('payload.activity.days'))->toHaveCount(2);
+        expect($activity->days()->where('day', 'monday')->first()->id)->toBe($monday->id);
+        expect($monday->fresh()->start)->toStartWith('10:00');
+        expect(Day::find($removed->id))->toBeNull();
+        expect($activity->days()->where('day', 'friday')->first()->is_active)->toBeFalse();
+
+        // Resending the same schedule must succeed without recreating its days.
+        $ids = $activity->days()->pluck('id')->all();
+        $this->patchJson(route('partner.activity.update'), $payload)->assertOk();
+        expect($activity->days()->pluck('id')->all())->toBe($ids);
+    });
+
+    it('keeps days unchanged when omitted from an activity update', function () {
+        $activity = Activity::factory()->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')->create();
+        $days = $activity->days()->get()->toArray();
+        $this->patchJson(route('partner.activity.update'), [
+            'activity_id' => $activity->id, ...$activity->toArray(), 'name' => 'Updated activity',
+        ])->assertOk();
+        expect($activity->days()->get()->toArray())->toBe($days);
+    });
+
+    it('rejects invalid schedules without changing the activity', function (array $days) {
+        $activity = Activity::factory()->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')->create();
+        $originalDays = $activity->days()->get()->toArray();
+        $this->patchJson(route('partner.activity.update'), [
+            'activity_id' => $activity->id, ...$activity->toArray(), 'name' => 'Must not save', 'days' => $days,
+        ])->assertUnprocessable();
+        expect($activity->fresh()->name)->toBe($activity->name)
+            ->and($activity->days()->get()->toArray())->toBe($originalDays);
+    })->with([
+        'empty schedule' => [[]],
+        'invalid weekday' => [[['day' => 'invalid', 'start' => '09:00', 'end' => '12:00']]],
+        'reversed times' => [[['day' => 'monday', 'start' => '12:00', 'end' => '09:00']]],
+        'non half hour' => [[['day' => 'monday', 'start' => '09:15', 'end' => '12:00']]],
+        'duplicate weekday' => [[
+            ['day' => 'monday', 'start' => '09:00', 'end' => '12:00'],
+            ['day' => 'monday', 'start' => '13:00', 'end' => '17:00'],
+        ]],
+    ]);
+
+    it('protects upcoming bookings while allowing compatible schedule changes', function () {
+        $activity = Activity::factory()->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')->create();
+        $activity->days()->delete();
+        $day = $activity->days()->create(['day' => 'monday', 'start' => '09:00', 'end' => '12:00']);
+        $activity->appointments()->update([
+            'date' => now()->next('monday')->toDateString(), 'time' => '10:00', 'end_at' => '11:00', 'session_duration' => 60,
+        ]);
+        $payload = ['activity_id' => $activity->id, ...$activity->toArray(), 'name' => 'Changed', 'days' => [
+            ['day' => 'monday', 'start' => '11:00', 'end' => '14:00'],
+        ]];
+
+        $this->patchJson(route('partner.activity.update'), $payload)->assertStatus(400)
+            ->assertJson(['message' => 'The schedule cannot exclude an upcoming accepted appointment.']);
+        expect($activity->fresh()->name)->toBe($activity->name)
+            ->and($day->fresh()->start)->toStartWith('09:00');
+
+        $payload['days'][0]['start'] = '08:00';
+        $this->patchJson(route('partner.activity.update'), $payload)->assertOk();
+        expect($day->fresh()->start)->toStartWith('08:00');
+    });
+
     it('deletes an activity', function () {
         $activity = Activity::factory()->for($this->user, 'user')->create();
 

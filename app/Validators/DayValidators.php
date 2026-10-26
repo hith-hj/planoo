@@ -46,6 +46,18 @@ final class DayValidators extends Validators
         ], self::messages());
     }
 
+    public static function updateMany(array $data): ValidationResult
+    {
+        return Validator::make($data, [
+            'days' => ['required', 'array', 'min:1', 'max:7'],
+            'days.*' => ['required', 'array:day,start,end,is_active'],
+            'days.*.day' => ['required', 'string', Rule::in(WeekDays::names()), 'distinct'],
+            'days.*.start' => ['required', 'date_format:H:i', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
+            'days.*.end' => ['required', 'date_format:H:i', 'regex:/^([01]\d|2[0-3]):(00|30)$/', 'after:days.*.start'],
+            'days.*.is_active' => ['sometimes', 'boolean'],
+        ], self::messages());
+    }
+
     public static function delete(array $data): ValidationResult
     {
         return Validator::make($data, [

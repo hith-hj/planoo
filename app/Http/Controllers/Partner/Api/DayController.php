@@ -94,6 +94,19 @@ final class DayController extends Controller
         return Success(msg: 'day deleted');
     }
 
+    public function updateMany(Request $request)
+    {
+        $validator = DayValidators::updateMany($request->all());
+        $days = $this->services->updateMany(
+            getModel(),
+            $validator->safe()->all()
+        );
+
+        return Success(payload: [
+            'days' => $days->toResourceCollection(),
+        ]);
+    }
+
     public function toggleActivation(Request $request)
     {
         $validator = DayValidators::find($request->all());
