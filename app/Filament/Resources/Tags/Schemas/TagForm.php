@@ -22,7 +22,7 @@ final class TagForm
                     ->label('Upload Tag Icon')
                     ->acceptedFileTypes(['image/png'])
                     ->imageEditor()
-                    ->maxSize(100)
+                    ->maxSize(1000)
                     ->rule(Rule::dimensions()->maxWidth(50)->maxHeight(50))
                     ->disk('public')
                     ->directory('uploads/tags_icons'),
