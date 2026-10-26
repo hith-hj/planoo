@@ -68,6 +68,35 @@ describe('Event Controller Tests', function () {
             ->and($createdEvent->medias->count())->toBe(2);
     });
 
+    it('creates a new event without days', function () {
+        $eventData = Event::factory()
+            ->for($this->user, 'user')
+            ->for($this->user->courts()->first(), 'court')
+            ->make()->toArray();
+        $location = Location::factory()->make()->toArray();
+        $media = [
+            'type' => 'image',
+            'media' => Media::factory()->medias(2),
+        ];
+        $tags = Tag::factory()->tags()->make()->toArray();
+
+        $payload = array_merge($eventData,  $location, $media, $tags);
+
+        $response = $this->postJson(route('partner.event.create'), $payload);
+        $response->assertOk();
+
+        expect($response->json('payload.event'))->not->toBeNull();
+
+        $createdId = $response->json('payload.event.id');
+        $createdEvent = Event::with(['tags', 'days', 'medias', 'location'])->find($createdId);
+
+        expect($createdEvent->location)->not->toBeNull()
+            ->and($createdEvent->location->long)->toBe($location['long'])
+            ->and($createdEvent->tags)->not->toBeNull()
+            ->and($createdEvent->medias)->not->toBeNull()
+            ->and($createdEvent->medias->count())->toBe(2);
+    });
+
     it('fails to creates a new course with invalid court id ', function () {
         $courseData = Event::factory()
             ->for($this->user, 'user')
