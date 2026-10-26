@@ -25,6 +25,8 @@ final class CategoryForm
                     ->maxSize(1000)
                     ->rule(Rule::dimensions()->maxWidth(50)->maxHeight(50))
                     ->disk('public')
+                    // Keep existing mirrored icons when the source file is not local.
+                    ->fetchFileInformation(false)
                     ->directory('uploads/categories_icons'),
             ])
             ->columns(1);

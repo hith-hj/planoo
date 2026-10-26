@@ -15,7 +15,7 @@ final class TagInfolist
         return $schema
             ->components([
                 TextEntry::make('name'),
-                ImageEntry::make('icon')->disk('public')->circular(),
+                ImageEntry::make('icon')->disk('public')->checkFileExistence(false)->circular(),
             ]);
     }
 }

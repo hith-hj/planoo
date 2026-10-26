@@ -22,7 +22,8 @@ final class CategoriesTable
         return $table
             ->columns([
                 TextColumn::make('name')->searchable(),
-                ImageColumn::make('icon')->disk('public')->circular(),
+                // Production serves mirrored uploads from a separate document root.
+                ImageColumn::make('icon')->disk('public')->checkFileExistence(false)->circular(),
                 TextColumn::make('activities_count')->counts('activities'),
                 TextColumn::make('courses_count')->counts('courses'),
                 TextColumn::make('events_count')->counts('events'),
