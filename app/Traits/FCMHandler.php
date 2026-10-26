@@ -58,7 +58,7 @@ trait FCMHandler
         Log::warning("FCM token discarded. Reason: {$reason}. Token: {$token}");
 
         // 2. Clear from database
-        $this->update(['fcm_token' => null]);
+        $this->update(['firebase_token' => null]);
     }
 
     private function safeFcmDataArray(array $data): array
