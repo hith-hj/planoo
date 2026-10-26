@@ -10,6 +10,7 @@ use App\Models\Notification;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 trait NotificationsHandler
 {
@@ -24,6 +25,13 @@ trait NotificationsHandler
     private array $data = [];
 
     private string $className = '';
+
+    private ?Throwable $notificationDeliveryException = null;
+
+    public function notificationDeliveryException(): ?Throwable
+    {
+        return $this->notificationDeliveryException;
+    }
 
     public function notifications(): MorphMany
     {
@@ -51,6 +59,7 @@ trait NotificationsHandler
         array $data = [],
         string $provider = 'fcm'
     ): bool {
+        $this->notificationDeliveryException = null;
         $this->title = $title;
         $this->body = $body;
         $this->data = $data;
@@ -95,11 +104,19 @@ trait NotificationsHandler
     private function fcm(): bool
     {
         try {
-            $res = $this->sendFCM($this->fcmToken(), $this->title, $this->body, $this->data);
+            $token = $this->fcmToken();
+            if ($token === null) {
+                $this->store(['result' => 'push skipped: missing firebase token']);
+
+                return true;
+            }
+
+            $res = $this->sendFCM($token, $this->title, $this->body, $this->data);
             $this->store(['result' => $res]);
 
             return true;
         } catch (Exception $e) {
+            $this->notificationDeliveryException = $e;
             Log::error("FCM notification error {$e->getMessage()}");
 
             return false;
@@ -146,6 +163,7 @@ trait NotificationsHandler
 
             return true;
         } catch (Exception $e) {
+            $this->notificationDeliveryException = $e;
             Log::error("Email notification error {$e->getMessage()}");
 
             return false;

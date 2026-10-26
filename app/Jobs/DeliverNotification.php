@@ -39,7 +39,12 @@ final class DeliverNotification implements ShouldBeEncrypted, ShouldQueue
     public function handle(): void
     {
         if (! $this->recipient->deliverNotification($this->title, $this->body, $this->data, $this->provider)) {
-            throw new RuntimeException('Notification delivery failed.');
+            $cause = $this->recipient->notificationDeliveryException();
+
+            throw new RuntimeException(
+                "Notification delivery failed via {$this->provider}.",
+                previous: $cause,
+            );
         }
     }
 }
