@@ -44,7 +44,7 @@ trait FCMHandler
 
             return null;
         } catch (Exception $e) {
-            Log::error('FCM Core Error: ' . $e->getMessage());
+            Log::error('FCM Core Error: '.$e->getMessage());
             throw $e;
         }
     }

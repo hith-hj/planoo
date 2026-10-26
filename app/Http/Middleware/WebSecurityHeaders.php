@@ -6,12 +6,15 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Vite;
 use Symfony\Component\HttpFoundation\Response;
 
 final class WebSecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
+        Vite::useCspNonce();
+
         $response = $next($request);
 
         // Prevent clickjacking by restricting iframe embedding
@@ -29,7 +32,8 @@ final class WebSecurityHeaders
         // Enforce HTTPS communication via HSTS (only add in production)
         if (app()->environment('production')) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-            $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; frame-ancestors 'none';");
+            $nonce = Vite::cspNonce();
+            $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self'; frame-ancestors 'none';");
         }
 
         // $scriptSrc = "'self'";
