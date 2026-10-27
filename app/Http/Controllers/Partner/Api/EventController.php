@@ -79,9 +79,6 @@ final class EventController extends Controller
                 $event,
                 $validator->safe()->except('event_id')
             );
-            if ($request->has('days')) {
-                $this->services->calculateEventEndDate($event);
-            }
         });
 
         return Success(payload: ['event' => $event->toResource()]);

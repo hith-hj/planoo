@@ -91,16 +91,29 @@ final class DayServices
         return DB::transaction(function () use ($dayable, $data): Collection {
             $dayable->newQuery()->whereKey($dayable->id)->lockForUpdate()->firstOrFail();
             $existingDays = $dayable->days()->lockForUpdate()->get()->keyBy('day');
-            $schedule = collect($data['days'])->keyBy('day');
+            $schedule = empty($data['replace_days']) ? $existingDays->map->toArray() : collect();
+
+            foreach ($data['days'] as $item) {
+                if (isset($item['id'])) {
+                    $day = $existingDays->firstWhere('id', (int) $item['id']);
+                    NotFound($day, 'day');
+                    Truthy($day->day !== $item['day'], 'day id does not match weekday');
+                }
+                $schedule->put($item['day'], array_merge(
+                    $existingDays->get($item['day'])?->toArray() ?? [],
+                    Arr::except($item, 'id')
+                ));
+            }
+            Truthy($schedule->count() > 7, 'only 7 days allowed');
 
             app(AppointmentServices::class)->checkAppointments($dayable, $schedule->all(), $existingDays);
 
             foreach ($data['days'] as $item) {
                 $day = $existingDays->get($item['day']);
                 if ($day !== null) {
-                    $day->setRelation('holder', $dayable)->update($item);
+                    $day->setRelation('holder', $dayable)->update(Arr::except($item, 'id'));
                 } else {
-                    $dayable->days()->create($item);
+                    $dayable->days()->create(Arr::except($item, 'id'));
                 }
             }
 

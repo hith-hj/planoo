@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\CourseStatus;
 use App\Enums\NotificationTypes;
 use App\Models\Appointment;
 use App\Models\Course;
@@ -40,7 +41,7 @@ final class NotifyCourseSession extends Command
             'customers' => fn (BelongsToMany $query) => $query->where('is_complete', false),
             'days',
         ])
-            ->whereHas('days', fn ($query) => $query->where('day', $dayName))
+            ->whereHas('days', fn ($query) => $query->where('day', $dayName)->where('is_active', true))
             ->lazy();
 
         $appointmentService = app(AppointmentServices::class);
@@ -53,7 +54,12 @@ final class NotifyCourseSession extends Command
 
             DB::transaction(function () use ($course, $day, $dateString, $appointmentService) {
                 $course = Course::query()->lockForUpdate()->findOrFail($course->id);
-                if ($course->appointments()->where('date', $dateString)->where('notes', 'course session')->exists()) {
+                if ($course->status !== CourseStatus::active->value || ! $course->is_active
+                    || $course->appointments()->where('date', $dateString)->where('notes', 'course session')->exists()) {
+                    return;
+                }
+                $day = $course->days()->where('day', $day->day)->where('is_active', true)->lockForUpdate()->first();
+                if (! $day) {
                     return;
                 }
                 $course->load(['user', 'customers' => fn (BelongsToMany $query) => $query->where('is_complete', false)]);
@@ -107,7 +113,13 @@ final class NotifyCourseSession extends Command
 
     private function calculateSessionDurationFromDay(Day $day): int
     {
-        return (int) Carbon::parse($day->start)->diffInMinutes(Carbon::parse($day->end));
+        $start = Carbon::parse($day->start);
+        $end = Carbon::parse($day->end);
+        if ($end->lessThanOrEqualTo($start)) {
+            $end->addDay();
+        }
+
+        return (int) $start->diffInMinutes($end);
     }
 
     private function handleAppointmentConflict(

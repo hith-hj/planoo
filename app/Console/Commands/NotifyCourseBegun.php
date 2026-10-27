@@ -63,7 +63,12 @@ final class NotifyCourseBegun extends Command
         $dateString = $date->toDateString();
         $dayLabel = mb_strtolower($date->format('l'));
 
-        $day = $course->days->firstWhere('day', $dayLabel);
+        $course = Course::query()->lockForUpdate()->findOrFail($course->id);
+        if ($course->status !== CourseStatus::pending->value || ! $course->is_active) {
+            return;
+        }
+        $course->load(['user', 'customers']);
+        $day = $course->days()->where('day', $dayLabel)->where('is_active', true)->lockForUpdate()->first();
         if (! $day) {
             $this->warn("Skipped course #{$course->id}: No schedule for a {$dayLabel}.");
 
@@ -169,6 +174,12 @@ final class NotifyCourseBegun extends Command
 
     private function sessionDurationInMinutes(Day $day): int
     {
-        return (int) Carbon::parse($day->start)->diffInMinutes(Carbon::parse($day->end));
+        $start = Carbon::parse($day->start);
+        $end = Carbon::parse($day->end);
+        if ($end->lessThanOrEqualTo($start)) {
+            $end->addDay();
+        }
+
+        return (int) $start->diffInMinutes($end);
     }
 }

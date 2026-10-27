@@ -134,7 +134,7 @@ describe('Activity Controller Tests', function () {
         $activity->days()->delete();
         $monday = $activity->days()->create(['day' => 'monday', 'start' => '09:00', 'end' => '12:00']);
         $removed = $activity->days()->create(['day' => 'tuesday', 'start' => '09:00', 'end' => '12:00']);
-        $payload = ['activity_id' => $activity->id, ...$activity->toArray(), 'days' => [
+        $payload = ['activity_id' => $activity->id, ...$activity->toArray(), 'replace_days' => true, 'days' => [
             ['day' => 'monday', 'start' => '10:00', 'end' => '14:00'],
             ['day' => 'friday', 'start' => '08:30', 'end' => '11:30', 'is_active' => false],
         ]];
@@ -174,8 +174,8 @@ describe('Activity Controller Tests', function () {
     })->with([
         'empty schedule' => [[]],
         'invalid weekday' => [[['day' => 'invalid', 'start' => '09:00', 'end' => '12:00']]],
-        'reversed times' => [[['day' => 'monday', 'start' => '12:00', 'end' => '09:00']]],
-        'non half hour' => [[['day' => 'monday', 'start' => '09:15', 'end' => '12:00']]],
+        'equal times' => [[['day' => 'monday', 'start' => '12:00', 'end' => '12:00']]],
+        'invalid time' => [[['day' => 'monday', 'start' => '25:15', 'end' => '12:00']]],
         'duplicate weekday' => [[
             ['day' => 'monday', 'start' => '09:00', 'end' => '12:00'],
             ['day' => 'monday', 'start' => '13:00', 'end' => '17:00'],

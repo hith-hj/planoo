@@ -108,6 +108,7 @@ final class EventServices
         Required($user, 'user');
         Required($data, 'event data');
         $event->update($this->prepEventData($data));
+        $this->calculateEventEndDate($event);
 
         return $event->load($this->toBeLoaded());
     }
@@ -179,7 +180,7 @@ final class EventServices
     {
         $event = $event->load('days');
         $totalSessionsRequired = (int) $event->event_duration;
-        $weeklySchedule = $event->days;
+        $weeklySchedule = $event->days->where('is_active', true);
         $currentDate = Carbon::parse($event->start_date);
         $dayMapping =
             [

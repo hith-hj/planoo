@@ -29,7 +29,7 @@ it('updates schedules for activities courses and events through their own update
     $owner = ($this->scheduleOwner)($type);
     $monday = $owner->days()->create(['day' => 'monday', 'start' => '09:00', 'end' => '12:00']);
     $removed = $owner->days()->create(['day' => 'tuesday', 'start' => '09:00', 'end' => '12:00']);
-    $payload = [$type.'_id' => $owner->id, ...$owner->toArray(), 'days' => [
+    $payload = [$type.'_id' => $owner->id, ...$owner->toArray(), 'replace_days' => true, 'days' => [
         ['day' => 'monday', 'start' => '08:00', 'end' => '14:00'],
         ['day' => 'friday', 'start' => '10:00', 'end' => '12:00'],
     ]];
@@ -74,7 +74,7 @@ it('protects upcoming accepted appointments for every owner type and rolls back 
         ['day' => 'monday', 'start' => '11:00', 'end' => '12:00'],
     ] as $newDay) {
         $this->patchJson(route("partner.{$type}.update"), [
-            $type.'_id' => $owner->id, ...$owner->toArray(), 'name' => 'Must not save', 'days' => [$newDay],
+            $type.'_id' => $owner->id, ...$owner->toArray(), 'name' => 'Must not save', 'replace_days' => true, 'days' => [$newDay],
         ])->assertStatus(400)->assertJson(['message' => 'The schedule cannot exclude an upcoming accepted appointment.']);
         expect($owner->fresh()->name)->toBe($owner->name)
             ->and($day->fresh()->is_active)->toBeTrue()

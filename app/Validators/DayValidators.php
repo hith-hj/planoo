@@ -48,12 +48,30 @@ final class DayValidators extends Validators
 
     public static function updateMany(array $data): ValidationResult
     {
+        // Accept the H:i:s values returned by SQL-backed day resources.
+        if (isset($data['days']) && is_array($data['days'])) {
+            foreach ($data['days'] as &$day) {
+                if (! is_array($day)) {
+                    continue;
+                }
+                foreach (['start', 'end'] as $field) {
+                    if (isset($day[$field]) && is_string($day[$field])
+                        && preg_match('/^([01]\d|2[0-3]):[0-5]\d:00$/', $day[$field])) {
+                        $day[$field] = mb_substr($day[$field], 0, 5);
+                    }
+                }
+            }
+            unset($day);
+        }
+
         return Validator::make($data, [
             'days' => ['required', 'array', 'min:1', 'max:7'],
-            'days.*' => ['required', 'array:day,start,end,is_active'],
+            'replace_days' => ['sometimes', 'boolean'],
+            'days.*' => ['required', 'array:id,day,start,end,is_active'],
+            'days.*.id' => ['sometimes', 'integer', 'distinct'],
             'days.*.day' => ['required', 'string', Rule::in(WeekDays::names()), 'distinct'],
-            'days.*.start' => ['required', 'date_format:H:i', 'regex:/^([01]\d|2[0-3]):(00|30)$/'],
-            'days.*.end' => ['required', 'date_format:H:i', 'regex:/^([01]\d|2[0-3]):(00|30)$/', 'after:days.*.start'],
+            'days.*.start' => ['required', 'date_format:H:i'],
+            'days.*.end' => ['required', 'date_format:H:i', 'different:days.*.start'],
             'days.*.is_active' => ['sometimes', 'boolean'],
         ], self::messages());
     }

@@ -353,12 +353,21 @@ final class AppointmentServices
             $weekday = mb_strtolower(Carbon::parse($appointment->date)->format('l'));
             $day = $schedule[$weekday] ?? null;
             $active = $day['is_active'] ?? $existingDays->get($weekday)?->is_active ?? true;
+            Truthy($day === null || ! $active, 'The schedule cannot exclude an upcoming accepted appointment.');
 
-            Truthy($day === null || ! $active
-                || Carbon::parse($appointment->time)->format('H:i') < $day['start']
-                || Carbon::parse($appointment->end_at)->format('H:i') > $day['end'],
-                'The schedule cannot exclude an upcoming accepted appointment.'
-            );
+            $date = Carbon::parse($appointment->date)->toDateString();
+            $start = Carbon::parse($date.' '.$day['start']);
+            $end = Carbon::parse($date.' '.$day['end']);
+            if ($end->lessThanOrEqualTo($start)) {
+                $end->addDay();
+            }
+            $appointmentStart = Carbon::parse($date.' '.$appointment->time);
+            $appointmentEnd = Carbon::parse($date.' '.$appointment->end_at);
+            if ($appointmentEnd->lessThanOrEqualTo($appointmentStart)) {
+                $appointmentEnd->addDay();
+            }
+            Truthy($appointmentStart->lessThan($start) || $appointmentEnd->greaterThan($end),
+                'The schedule cannot exclude an upcoming accepted appointment.');
         }
     }
 

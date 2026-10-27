@@ -63,7 +63,12 @@ final class NotifyEventBegun extends Command
         $dateString = $date->toDateString();
         $dayLabel = mb_strtolower($date->format('l'));
 
-        $day = $event->days->firstWhere('day', $dayLabel);
+        $event = Event::query()->lockForUpdate()->findOrFail($event->id);
+        if ($event->status !== EventStatus::pending->value || ! $event->is_active) {
+            return;
+        }
+        $event->load(['user', 'customers']);
+        $day = $event->days()->where('day', $dayLabel)->where('is_active', true)->lockForUpdate()->first();
         if (! $day) {
             $this->warn("Skipped event #{$event->id}: No schedule for a {$dayLabel}.");
 
@@ -152,7 +157,13 @@ final class NotifyEventBegun extends Command
 
     private function sessionDurationInMinutes(Day $day): int
     {
-        return (int) Carbon::parse($day->start)->diffInMinutes(Carbon::parse($day->end));
+        $start = Carbon::parse($day->start);
+        $end = Carbon::parse($day->end);
+        if ($end->lessThanOrEqualTo($start)) {
+            $end->addDay();
+        }
+
+        return (int) $start->diffInMinutes($end);
     }
 
     // public function handle(): void

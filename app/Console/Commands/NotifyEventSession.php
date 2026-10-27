@@ -43,7 +43,7 @@ final class NotifyEventSession extends Command
                 'customers',
                 'days',
             ])
-            ->whereHas('days', fn ($query) => $query->where('day', $dayName))
+            ->whereHas('days', fn ($query) => $query->where('day', $dayName)->where('is_active', true))
             ->lazy();
 
         $appointmentService = app(AppointmentServices::class);
@@ -56,12 +56,12 @@ final class NotifyEventSession extends Command
 
             DB::transaction(function () use ($event, $day, $dateString, $appointmentService) {
                 $event = Event::query()->lockForUpdate()->findOrFail($event->id);
-                if ($event->status !== EventStatus::active->value
+                if ($event->status !== EventStatus::active->value || ! $event->is_active
                     || $event->appointments()->where('date', $dateString)->where('notes', 'event session')->exists()) {
                     return;
                 }
                 $event->load(['user', 'customers']);
-                $day = $event->days()->where('day', $day->day)->first();
+                $day = $event->days()->where('day', $day->day)->where('is_active', true)->lockForUpdate()->first();
                 if (! $day) {
                     return;
                 }
@@ -150,6 +150,12 @@ final class NotifyEventSession extends Command
 
     private function sessionDurationInMinutes(Day $day): int
     {
-        return (int) Carbon::parse($day->start)->diffInMinutes(Carbon::parse($day->end));
+        $start = Carbon::parse($day->start);
+        $end = Carbon::parse($day->end);
+        if ($end->lessThanOrEqualTo($start)) {
+            $end->addDay();
+        }
+
+        return (int) $start->diffInMinutes($end);
     }
 }
