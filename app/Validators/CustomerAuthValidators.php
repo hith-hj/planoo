@@ -6,6 +6,7 @@ namespace App\Validators;
 
 use App\Rules\ValidPhoneLength;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator as ValidationResult;
 
 final class CustomerAuthValidators extends Validators
@@ -35,7 +36,7 @@ final class CustomerAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function verify(array $data): ValidationResult
+    public static function verify(array $data, bool $demo): ValidationResult
     {
         return Validator::make($data, [
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
@@ -45,7 +46,7 @@ final class CustomerAuthValidators extends Validators
                 'exists:customers,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
-            'code' => ['required', 'numeric', 'exists:codes,code'],
+            'code' => ['required', 'numeric', Rule::when(! $demo, ['exists:codes,code'])],
         ], self::messages());
     }
 

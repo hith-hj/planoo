@@ -31,7 +31,7 @@ final class AuthController extends Controller
 
     public function verify(Request $request)
     {
-        $validator = CustomerAuthValidators::verify($request->all());
+        $validator = CustomerAuthValidators::verify($request->all(), config('services.DEMO_VERIFICATION', false));
         $this->services->verify($validator);
 
         return Success(msg: 'verified');
