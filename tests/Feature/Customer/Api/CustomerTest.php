@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use App\Models\Customer;
 use App\Models\Media;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->seed();
     $this->user('customer')->api();
-    $this->url = '/api/customer/v1/customer';
 });
 
 describe('Customer Controller Tests', function () {
@@ -80,5 +80,40 @@ describe('Customer Controller Tests', function () {
         $res = $this->postJson(route('customer.customer.toggleNotification'));
         $res->assertOk();
         expect($customer->fresh()->is_notifiable)->toBe(true);
+    });
+
+    it('update customer firebase token', function () {
+        $this->user->update(['firebase_token' => 'old-token']);
+        expect($this->user->firebase_token)->toBe('old-token');
+        $this->postJson(route('customer.updateFirebaseToken'), ['firebase_token' => 'new-token'])->assertOk();
+        expect($this->user->fresh()->firebase_token)->toBe('new-token');
+    });
+
+    it('cant update customer firebase token with null value', function () {
+        $this->user->update(['firebase_token' => 'old-token']);
+        expect($this->user->firebase_token)->toBe('old-token');
+        $this->postJson(route('customer.updateFirebaseToken'))->assertStatus(422);
+    });
+
+    it('rate limit firebase token update', function () {
+        $this->user->update(['firebase_token' => 'old-token']);
+        expect($this->user->firebase_token)->toBe('old-token');
+        $this->postJson(
+            route('customer.updateFirebaseToken'),
+            ['firebase_token' => 'new-token']
+        )->assertOk();
+        $this->postJson(
+            route('customer.updateFirebaseToken'),
+            ['firebase_token' => 'new-token']
+        )->assertStatus(429);
+    });
+
+    it('cant update customer firebase token if not logged in', function () {
+        $this->clearUser()
+            ->postJson(
+                route('customer.updateFirebaseToken'),
+                ['firebase_token' => 'new-token']
+            )
+            ->assertStatus(401);
     });
 });

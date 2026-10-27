@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\ApiSecurityHeaders;
+use App\Http\Middleware\Auth\JwtMiddleware;
 use App\Http\Middleware\Localization;
 use App\Http\Middleware\WebSecurityHeaders;
 use Illuminate\Auth\AuthenticationException;
@@ -12,6 +13,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Validation\ValidationException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -26,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->prependToPriorityList(ThrottleRequests::class, JwtMiddleware::class);
         $middleware->api(append: [Localization::class, ApiSecurityHeaders::class]);
         $middleware->web(append: [Localization::class, WebSecurityHeaders::class]);
     })

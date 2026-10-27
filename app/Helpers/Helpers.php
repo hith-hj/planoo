@@ -60,7 +60,7 @@ if (! function_exists('Error')) {
 if (! function_exists('Exists')) {
     /**
      * check if argument exists
-     * if true throw an exception
+     * if true throw Domain exception
      *
      * @param  mixed  $argument
      * @param  mixed  $name
@@ -97,7 +97,7 @@ if (! function_exists('NotFound')) {
 if (! function_exists('Required')) {
     /**
      * check if argument is empty
-     * if true throw required exception
+     * if true throw Domain exception
      *
      * @param  mixed  $argument
      * @param  mixed  $name
@@ -189,7 +189,7 @@ if (! function_exists('getModel')) {
         $id = $owner_id ?? request('owner_id');
         $type = $owner_type ?? request('owner_type');
         $model = getModelGlobal($type, $id);
-        Truthy($model->user_id !== Auth::id(), 'unauthorized access');
+        Truthy(isset($model->user_id) && $model->user_id !== Auth::id(), 'unauthorized access');
 
         return $model;
     }
@@ -225,7 +225,7 @@ if (! function_exists('checkAndCastData')) {
         }
         $missing = [];
         foreach ($requiredFields as $key => $value) {
-            $value = trim($value);
+            $value = mb_trim($value);
             if (str_contains($value, '|')) {
                 [$type, $default] = explode('|', $value);
                 $value = $type;
@@ -261,7 +261,7 @@ if (! function_exists('checkAndCastData')) {
 if (! function_exists('formatPhone')) {
     function formatPhone(string $phone)
     {
-        $trimmedPhone = str_replace(' ', '', trim($phone));
+        $trimmedPhone = str_replace(' ', '', mb_trim($phone));
 
         if (Str::startsWith($trimmedPhone, '+')) {
             $trimmedPhone = mb_substr($trimmedPhone, 1);

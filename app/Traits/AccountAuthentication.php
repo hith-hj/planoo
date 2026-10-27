@@ -23,8 +23,17 @@ trait AccountAuthentication
     public function verify(Validator $validator): User|Customer
     {
         $user = $this->getAccount($validator);
+        $inputCode = $validator->safe()->integer('code');
+        if (
+            config('services.DEMO_VERIFICATION', false) &&
+            config('services.DEMO_VERIFICATION_CODE', 000000) === $inputCode
+        ) {
+            $user->verify();
+
+            return $user;
+        }
         $code = $user->code(CodesTypes::verification->name);
-        Truthy($code->code !== $validator->safe()->integer('code'), 'invalid code');
+        Truthy($code->code !== $inputCode, 'invalid code');
         Truthy($code->expire_at !== null && ! $code->isValid(), 'code expired');
         $user->verified();
 
@@ -127,6 +136,17 @@ trait AccountAuthentication
         }
 
         $this->guard()->logout();
+    }
+
+    public function updateFirebaseToken(?string $token): bool
+    {
+        /** @var User|Customer $user */
+        $user = $this->guard()->user();
+        if ($user && $token !== null && $user->firebase_token !== $token) {
+            return $user->update(['firebase_token' => $token]);
+        }
+
+        return false;
     }
 
     private function getAccount(Validator $validator): User|Customer

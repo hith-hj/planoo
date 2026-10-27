@@ -92,4 +92,40 @@ describe('User Controller Tests', function () {
         $res->assertOk();
         expect($user->fresh()->is_notifiable)->toBe(true);
     });
+
+    it('update partner firebase token', function () {
+        $this->user->update(['firebase_token' => 'old-token']);
+        expect($this->user->firebase_token)->toBe('old-token');
+        $this->postJson(route('partner.updateFirebaseToken'), ['firebase_token' => 'new-token'])->assertOk();
+        expect($this->user->fresh()->firebase_token)->toBe('new-token');
+    });
+
+    it('cant update partner firebase token with null value', function () {
+        $this->user->update(['firebase_token' => 'old-token']);
+        expect($this->user->firebase_token)->toBe('old-token');
+        $this->postJson(route('partner.updateFirebaseToken'))->assertStatus(422);
+    });
+
+    it('rate limit firebase token update', function () {
+        $this->user->update(['firebase_token' => 'old-token']);
+        expect($this->user->firebase_token)->toBe('old-token');
+
+        $this->postJson(
+            route('partner.updateFirebaseToken'),
+            ['firebase_token' => 'new-token']
+        )->assertOk();
+
+        $this->postJson(
+            route('partner.updateFirebaseToken'),
+            ['firebase_token' => 'new-token']
+        )->assertStatus(429);
+    });
+
+    it('cant update user firebase token if not logged in', function () {
+        $this->clearUser()
+            ->postJson(
+                route('partner.updateFirebaseToken'),
+                ['firebase_token' => 'new-token']
+            )->assertStatus(401);
+    });
 });

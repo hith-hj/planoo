@@ -111,6 +111,13 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
+    public static function updateFirebaseToken(array $data): ValidationResult
+    {
+        return Validator::make($data, [
+            'firebase_token' => ['required', 'unique:users,firebase_token'],
+        ]);
+    }
+
     /**
      * Get the user validation translation messages.
      */

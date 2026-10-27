@@ -32,6 +32,9 @@ Route::controller(AuthController::class)
                 Route::get('refreshToken', 'refreshToken')->name('refreshToken')->middleware(['throttle:1,10']);
             });
 
+            Route::post('updateFirebaseToken', 'updateFirebaseToken')
+                ->name('updateFirebaseToken')
+                ->middleware(['throttle:1,10']);
             Route::post('logout', 'logout')->name('logout');
             Route::post('changePassword', 'changePassword')->name('changePassword');
         }
