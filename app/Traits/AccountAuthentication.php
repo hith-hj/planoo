@@ -23,8 +23,17 @@ trait AccountAuthentication
     public function verify(Validator $validator): User|Customer
     {
         $user = $this->getAccount($validator);
+        $inputCode = $validator->safe()->integer('code');
+        if (
+            config('services.DEMO_VERFICATION', false) &&
+            config('services.DEMO_VERFICATION_CODE', 000000) === $inputCode
+        ) {
+            $user->verify();
+
+            return $user;
+        }
         $code = $user->code(CodesTypes::verification->name);
-        Truthy($code->code !== $validator->safe()->integer('code'), 'invalid code');
+        Truthy($code->code !== $inputCode, 'invalid code');
         Truthy($code->expire_at !== null && ! $code->isValid(), 'code expired');
         $user->verified();
 
