@@ -20,12 +20,14 @@ trait VerificationHandler
             'verified_at' => null,
             'verified_by' => $by,
         ]);
-        $this->notify(
-            title: "$codeType code",
-            body: "Your code: $code->code, expire at {$code->expire_at->format('Y-m-d H:i')}",
-            data: ['type' => NotificationTypes::verification->value, 'code' => $code->code],
-            provider: $by
-        );
+        if (! config('services.DEMO_VERIFICATION', false)) {
+            $this->notify(
+                title: "$codeType code",
+                body: "Your code: $code->code, expire at {$code->expire_at->format('Y-m-d H:i')}",
+                data: ['type' => NotificationTypes::verification->value, 'code' => $code->code],
+                provider: $by
+            );
+        }
 
         return $this;
     }

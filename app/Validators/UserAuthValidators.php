@@ -31,7 +31,7 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function verify(array $data): ValidationResult
+    public static function verify(array $data, bool $demo): ValidationResult
     {
         return Validator::make($data, [
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
@@ -41,7 +41,7 @@ final class UserAuthValidators extends Validators
                 'exists:users,phone',
                 new ValidPhoneLength($data['country_code'] ?? null),
             ],
-            'code' => ['required', 'numeric', 'exists:codes,code'],
+            'code' => ['required', 'numeric', Rule::when(! $demo, ['exists:codes,code'])],
         ], self::messages());
     }
 
