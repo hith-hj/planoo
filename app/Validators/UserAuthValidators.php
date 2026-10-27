@@ -31,7 +31,7 @@ final class UserAuthValidators extends Validators
         ], self::messages());
     }
 
-    public static function verify(array $data, bool $demo): ValidationResult
+    public static function verify(array $data, bool $demo = false): ValidationResult
     {
         return Validator::make($data, [
             'country_code' => ['required', 'regex:/^\+[1-9]\d{0,2}$/'],
