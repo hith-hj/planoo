@@ -12,6 +12,7 @@ use App\Support\Pagination;
 use App\Validators\CourseValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 final class CourseController extends Controller
 {
@@ -64,13 +65,20 @@ final class CourseController extends Controller
         );
         Truthy($validator->safe()->input('court_id') !== $course->court_id, 'invalid operation');
 
-        $this->services->update(
-            Auth::user(),
-            $course,
-            $validator->safe()->except('course_id')
-        );
+        DB::transaction(function () use ($request, $validator, $course): void {
+            $course->newQuery()->whereKey($course->id)->lockForUpdate()->firstOrFail();
+            if ($request->has('days')) {
+                $request->merge(['owner_type' => 'course', 'owner_id' => $course->id]);
+                app(DayController::class)->updateMany($request);
+            }
+            $this->services->update(
+                Auth::user(),
+                $course,
+                $validator->safe()->except('course_id')
+            );
+        });
 
-        return Success(payload: ['course' => $course->fresh()->toResource()]);
+        return Success(payload: ['course' => $course->toResource()]);
     }
 
     public function delete(Request $request)

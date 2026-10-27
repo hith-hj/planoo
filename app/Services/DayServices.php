@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Interfaces\Dayable;
-use App\Models\Activity;
 use App\Models\Day;
 use DomainException;
 use Exception;
@@ -94,9 +93,7 @@ final class DayServices
             $existingDays = $dayable->days()->lockForUpdate()->get()->keyBy('day');
             $schedule = collect($data['days'])->keyBy('day');
 
-            if ($dayable instanceof Activity) {
-                app(AppointmentServices::class)->checkAppointments($dayable, $schedule->all(), $existingDays);
-            }
+            app(AppointmentServices::class)->checkAppointments($dayable, $schedule->all(), $existingDays);
 
             foreach ($data['days'] as $item) {
                 $day = $existingDays->get($item['day']);

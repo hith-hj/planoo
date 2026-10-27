@@ -12,6 +12,7 @@ use App\Support\Pagination;
 use App\Validators\EventValidators;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 final class EventController extends Controller
 {
@@ -67,13 +68,23 @@ final class EventController extends Controller
         );
         Truthy($validator->safe()->input('court_id') !== $event->court_id, 'invalid operation');
 
-        $this->services->update(
-            Auth::user(),
-            $event,
-            $validator->safe()->except('event_id')
-        );
+        DB::transaction(function () use ($request, $validator, $event): void {
+            $event->newQuery()->whereKey($event->id)->lockForUpdate()->firstOrFail();
+            if ($request->has('days')) {
+                $request->merge(['owner_type' => 'event', 'owner_id' => $event->id]);
+                app(DayController::class)->updateMany($request);
+            }
+            $this->services->update(
+                Auth::user(),
+                $event,
+                $validator->safe()->except('event_id')
+            );
+            if ($request->has('days')) {
+                $this->services->calculateEventEndDate($event);
+            }
+        });
 
-        return Success(payload: ['event' => $event->fresh()->toResource()]);
+        return Success(payload: ['event' => $event->toResource()]);
     }
 
     public function delete(Request $request)

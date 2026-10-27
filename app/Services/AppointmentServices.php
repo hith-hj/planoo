@@ -342,9 +342,9 @@ final class AppointmentServices
         };
     }
 
-    public function checkAppointments(Activity $activity, array $schedule, Collection $existingDays): void
+    public function checkAppointments(Activity|Course|Event $owner, array $schedule, Collection $existingDays): void
     {
-        $appointments = $activity->appointments()
+        $appointments = $owner->appointments()
             ->where('status', AppointmentStatus::accepted->value)
             ->whereDate('date', '>=', today()->toDateString())
             ->get();
