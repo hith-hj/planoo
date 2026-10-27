@@ -28,7 +28,7 @@ trait Filters
         bool $debug = false,
     ): Collection|Model|null {
         Truthy(! in_array($model, SectionsTypes::names()), "invalid model type: {$model}");
-        $model = '\App\Models\\'.ucfirst(trim($model));
+        $model = '\App\Models\\'.ucfirst(mb_trim($model));
         $class = class_basename($model);
         Truthy(! class_exists($model), "class $class not found");
 

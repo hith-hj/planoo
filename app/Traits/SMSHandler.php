@@ -94,7 +94,7 @@ trait SMSHandler
         $locale = Request::header('Accept-Language')
             ?? Request::header('X-Language')
             ?? 'en';
-        $shortLocale = mb_substr(mb_strtolower(trim($locale)), 0, 2);
+        $shortLocale = mb_substr(mb_strtolower(mb_trim($locale)), 0, 2);
 
         return $languages[$shortLocale] ?? 'english';
     }

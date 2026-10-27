@@ -122,8 +122,8 @@ function logWebhookActivity(string $status, string|array $data, int $statusCode,
     $logFile = __DIR__.'/webhook_history.log';
 
     // Flatten array payloads to a single string line if needed
-    $data = is_array($data) ? json_encode($data) : trim((string) $data);
-    $responseString = is_array($responseBody) ? json_encode($responseBody) : trim((string) $responseBody);
+    $data = is_array($data) ? json_encode($data) : mb_trim((string) $data);
+    $responseString = is_array($responseBody) ? json_encode($responseBody) : mb_trim((string) $responseBody);
 
     $logEntry = sprintf(
         "[%s] %s | Status: %d | Response: %s | Data: %s \n",
