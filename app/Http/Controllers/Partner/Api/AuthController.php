@@ -86,4 +86,12 @@ final class AuthController extends Controller
 
         return Success(msg: 'updated');
     }
+
+    public function updateFirebaseToken(Request $request)
+    {
+        $validator = UserAuthValidators::updateFirebaseToken($request->all());
+        $result = $this->services->updateFirebaseToken($validator->safe()->input('firebase_token'));
+
+        return $result ? Success() : Error();
+    }
 }

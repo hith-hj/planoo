@@ -115,6 +115,13 @@ final class CustomerAuthValidators extends Validators
         ], self::messages());
     }
 
+    public static function updateFirebaseToken(array $data): ValidationResult
+    {
+        return Validator::make($data, [
+            'firebase_token' => ['required', 'unique:customers,firebase_token'],
+        ]);
+    }
+
     /**
      * Get the customer validation translation messages.
      */

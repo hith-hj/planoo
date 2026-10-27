@@ -129,6 +129,17 @@ trait AccountAuthentication
         $this->guard()->logout();
     }
 
+    public function updateFirebaseToken(?string $token): bool
+    {
+        /** @var User|Customer $user */
+        $user = $this->guard()->user();
+        if ($user && $token !== null && $user->firebase_token !== $token) {
+            return $user->update(['firebase_token' => $token]);
+        }
+
+        return false;
+    }
+
     private function getAccount(Validator $validator): User|Customer
     {
         $user = static::MODEL::where([
