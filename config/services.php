@@ -59,6 +59,6 @@ return [
 
     'conflicts_detection' => env('CONFLICTS_DETECTION', true),
 
-    'DEMO_VERFICATION' => env('DEMO_VERFICATION', false),
-    'DEMO_VERFICATION_CODE' => env('DEMO_VERFICATION_CODE', 000000),
+    'DEMO_VERIFICATION' => env('DEMO_VERFICATION', false),
+    'DEMO_VERIFICATION_CODE' => env('DEMO_VERFICATION_CODE', 000000),
 ];

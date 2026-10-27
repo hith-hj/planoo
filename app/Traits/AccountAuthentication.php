@@ -25,8 +25,8 @@ trait AccountAuthentication
         $user = $this->getAccount($validator);
         $inputCode = $validator->safe()->integer('code');
         if (
-            config('services.DEMO_VERFICATION', false) &&
-            config('services.DEMO_VERFICATION_CODE', 000000) === $inputCode
+            config('services.DEMO_VERIFICATION', false) &&
+            config('services.DEMO_VERIFICATION_CODE', 000000) === $inputCode
         ) {
             $user->verify();
 
