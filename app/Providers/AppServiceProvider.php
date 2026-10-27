@@ -7,6 +7,7 @@ namespace App\Providers;
 use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\LazyLoadingViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
@@ -37,7 +38,12 @@ final class AppServiceProvider extends ServiceProvider
                     'Lazy loading violation: %s::%s',
                     class_basename($model),
                     $relation
-                ));
+                ), [
+                    'model' => $model::class,
+                    'model_id' => $model->getKey(),
+                    'relation' => $relation,
+                    'exception' => new LazyLoadingViolationException($model, $relation),
+                ]);
             });
         }
 
