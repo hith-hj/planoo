@@ -54,7 +54,7 @@ final class ResourceConflictDetector extends Command
     private function handleDatabaseRecords(): void
     {
         $this->comment('Fetching pending courses...');
-        $courses = Course::with(['court.activities.days', 'court.courses.days', 'court.events.days', 'days'])
+        $courses = Course::with(['court.activities.days', 'court.courses.days', 'court.events.days', 'days', 'user'])
             ->where('status', CourseStatus::pending->value)
             ->get();
 
@@ -64,7 +64,7 @@ final class ResourceConflictDetector extends Command
         }
 
         $this->comment('Fetching pending events...');
-        $events = Event::with(['court.activities.days', 'court.courses.days', 'court.events.days', 'days'])
+        $events = Event::with(['court.activities.days', 'court.courses.days', 'court.events.days', 'days', 'user'])
             ->where('status', EventStatus::pending->value)
             ->get();
 
