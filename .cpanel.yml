@@ -4,4 +4,3 @@ deployment:
     - cd repositories/planoo
     - ./vendor/bin/pint
     - php artisan test -p
-    - php artisan migrate:fresh --seed
