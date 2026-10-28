@@ -44,7 +44,8 @@ trait FCMHandler
 
             return null;
         } catch (Exception $e) {
-            Log::error('FCM Core Error: '.$e->getMessage());
+            $this->handleInvalidToken($firebase_token, 'FCM Core Error: '.$e->getMessage());
+
             throw $e;
         }
     }
@@ -55,7 +56,10 @@ trait FCMHandler
     private function handleInvalidToken(string $token, string $reason): void
     {
         Log::warning('FCM token discarded.', ['reason' => $reason, 'recipient_id' => $this->getKey()]);
-        $this->newQuery()->whereKey($this->getKey())->where('firebase_token', $token)->update(['firebase_token' => null]);
+        $this->newQuery()
+            ->whereKey($this->getKey())
+            ->where('firebase_token', $token)
+            ->update(['firebase_token' => null]);
         $this->refresh();
     }
 
