@@ -28,7 +28,7 @@ trait AccountAuthentication
             config('services.DEMO_VERIFICATION', false) &&
             (int) config('services.DEMO_VERIFICATION_CODE', 000000) === $inputCode
         ) {
-            $user->verify();
+            $user->verified();
 
             return $user;
         }
