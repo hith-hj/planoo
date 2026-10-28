@@ -84,7 +84,7 @@ final class DayServices
         return $day->delete();
     }
 
-    public function updateMany(Dayable $dayable, array $data): Collection
+    public function updateMany(Dayable|Model $dayable, array $data): Collection
     {
         Required($data, 'day data');
 
