@@ -106,22 +106,53 @@ trait MediaHandler
 
     private function getAllowedMime(UploadedFile $file): string
     {
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
         $mime = null;
 
         try {
             $mime = $file->getMimeType();
         } catch (LogicException $e) {
-            $mime = $file->getClientMimeType();
+            // 2. Fallback: fileinfo is missing. Check client properties.
+            $allowedExtensions = [
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'webp' => 'image/webp',
+                'mp4' => 'video/mp4',
+            ];
+
+            $extension = mb_strtolower($file->getClientOriginalExtension());
+
+            // Fail if the extension itself isn't allowed
+            if (! array_key_exists($extension, $allowedExtensions)) {
+                throw new DomainException("File extension .$extension is not allowed");
+            }
+
+            // Determine expected MIME type based purely on the file extension
+            $expectedMimeFromExt = $allowedExtensions[$extension];
+
+            // Fetch what the browser claims the MIME type is
+            $clientMime = $file->getClientMimeType();
+
+            // Normalize non-standard client inputs (e.g., image/jpg -> image/jpeg)
+            if ($clientMime === 'image/jpg') {
+                $clientMime = 'image/jpeg';
+            }
+
+            // STRICT MATCH: Compare extension-deduced MIME with browser-provided MIME
+            if ($expectedMimeFromExt !== $clientMime) {
+                throw new DomainException('Security Alert: File extension and MIME type mismatch');
+            }
+
+            $mime = $expectedMimeFromExt;
         }
 
-        $allowed = ['image/jpeg', 'image/png', 'video/mp4'];
-
-        // Normalize bad data or edge cases where client sent image/jpg
+        // 3. Normalize secure check output if necessary
         if ($mime === 'image/jpg') {
             $mime = 'image/jpeg';
         }
 
-        if ($mime === null || ! in_array($mime, $allowed, true)) {
+        if ($mime === null || ! in_array($mime, $allowedMimes, true)) {
             $displayMime = $mime ?? 'Unknown';
             throw new DomainException("File type $displayMime is not supported");
         }
