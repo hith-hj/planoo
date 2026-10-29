@@ -15,6 +15,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\Mime\Exception\LogicException;
 
 trait MediaHandler
 {
@@ -105,11 +106,24 @@ trait MediaHandler
 
     private function getAllowedMime(UploadedFile $file): string
     {
-        $mime = $file->getMimeType();
-        $allowed = ['image/jpeg', 'image/jpg', 'image/png', 'video/mp4'];
+        $mime = null;
 
-        if (! in_array($mime, $allowed)) {
-            throw new DomainException("File type $mime is not supported");
+        try {
+            $mime = $file->getMimeType();
+        } catch (LogicException $e) {
+            $mime = $file->getClientMimeType();
+        }
+
+        $allowed = ['image/jpeg', 'image/png', 'video/mp4'];
+
+        // Normalize bad data or edge cases where client sent image/jpg
+        if ($mime === 'image/jpg') {
+            $mime = 'image/jpeg';
+        }
+
+        if ($mime === null || ! in_array($mime, $allowed, true)) {
+            $displayMime = $mime ?? 'Unknown';
+            throw new DomainException("File type $displayMime is not supported");
         }
 
         return $mime;
