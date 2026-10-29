@@ -39,7 +39,7 @@ abstract class TestCase extends BaseTestCase
     final public function replaceUser($user, bool $is_customer = false)
     {
         $this->user = $user;
-        if($is_customer){
+        if ($is_customer) {
             auth()->shouldUse('customer:api');
         }
         return $this->api();

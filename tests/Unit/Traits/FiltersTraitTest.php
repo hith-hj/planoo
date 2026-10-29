@@ -7,14 +7,7 @@ use App\Models\Category;
 use App\Models\Court;
 use App\Models\Tag;
 use App\Models\User;
-
-/**
- * Harness class exposing the Filters trait for direct testing.
- */
-final class FiltersTraitHarness
-{
-    use App\Traits\Filters;
-}
+use Tests\Unit\Traits\FiltersTraitHarness;
 
 beforeEach(function () {
     // factories chain related records (category associate, tag attach)
@@ -50,7 +43,7 @@ it('never dumps raw sql unless debug is explicitly enabled', function () {
     $harness = new FiltersTraitHarness();
 
     // default ($debug = false): must resolve normally, without throwing
-    expect(fn () => $harness->getter('activity'))->not->toThrow(Exception::class);
+    expect(fn() => $harness->getter('activity'))->not->toThrow(Exception::class);
 });
 
 it('dumps the raw sql only when debug is enabled', function () {
