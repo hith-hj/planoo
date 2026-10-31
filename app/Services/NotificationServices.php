@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 
 final class NotificationServices
 {
-    public function all(Notifiable $notifiable, int $page = 1, ?int $perPage = null): Collection
+    public function all(Notifiable $notifiable, int $page = 1, ?int $perPage = 50): Collection
     {
         Pagination::validate($page, $perPage ?? Pagination::MAX_PER_PAGE);
         $query = $notifiable->notifications()->orderByDesc('created_at')->orderByDesc('id');
