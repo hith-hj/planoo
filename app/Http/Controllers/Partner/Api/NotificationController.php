@@ -21,7 +21,7 @@ final class NotificationController extends Controller
         $notis = $this->services->all(
             $this->getUser(),
             $request->integer('page', 1),
-            $request->hasAny(['page', 'perPage']) ? $request->integer('perPage', 10) : null,
+            $request->hasAny(['page', 'perPage']) ? $request->integer('perPage', 10) : 50,
         );
 
         return Success(payload: ['notifications' => $notis->toResourceCollection()]);
